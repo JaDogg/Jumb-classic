@@ -1,0 +1,70 @@
+' dipol length/ABexamples v1.1
+' define variable as numbers
+DEFNUM freq% const% l% state1% state2%
+
+WIN 0 0 400 300 Dipol-length
+WINCOLOR 231 223 231
+
+' define variables
+LET const% = 142.5
+
+' head text
+COLOR 0 0 170
+WINFONT Tahoma 10
+TEXT 5 5 This program calculate antena diplol length
+' inbox-outbox text
+COLOR 0 0 0
+WINFONT Microsoft 8
+TEXT 20 35 Enter frequency (MHz)
+TEXT 20 130 Dipol length (m/inch)
+
+' create edit controls
+INBOX 20 55 102       
+OUTBOX 20 150 152     
+
+' create button 
+BUTTON 200 140 100 30 SYS 55
+CTSETTEXT 55 Calculate
+' create radiobuttons
+RADIOBUTTON 200 40 100 30 NOBORDER 351
+CTSETTEXT 351 meter
+CTSETSTATE 351 1
+RADIOBUTTON 200 80 100 30 NOBORDER 352
+CTSETTEXT 352 inch
+COLOR 100 100 140
+RECT 180 30 200 200
+
+WAIT 0
+
+SUBB 55
+READINBOX 102
+GETINBOX 102 freq%
+
+CTGETSTATE 351 state1%
+CTGETSTATE 352 state2%
+
+' if nothing entered then endsub
+'-------------------------
+IF freq% = 0 THEN ENDSUB
+'-------------------------
+IF state2% = 1 THEN GOSUB inchsize
+IF state2% = 1 THEN ENDSUB
+LET l% = const% / freq%
+SETOUTBOX 152 l%
+BEEP 2000 50
+COLOR 0 0 150
+CLEARSPACE 20 220 100
+PRINT 20 220 l%
+LET l% = 0
+ENDSUB
+
+SUB inchsize
+LET l% = const% / freq%
+LET l% = l% * 40.81
+SETOUTBOX 152 l%
+BEEP 2000 50
+COLOR 0 0 150
+CLEARSPACE 20 220 20
+PRINT 20 220 l%
+LET l% = 0
+RETURN 

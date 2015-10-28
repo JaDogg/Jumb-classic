@@ -1,0 +1,68 @@
+;new IF/THEN example
+WIN 0 0 400 300 If/Then2
+WINCOLOR 220 220 220
+WINFONT Microsoft 8
+COLOR 0 0 0
+; add buttons
+BUTTON 100 40 110 20 SYS 61
+CTSETTEXT 61 IF a% < b%
+BUTTON 100 80 110 20 SYS 62
+CTSETTEXT 62 IF c% < d%
+;----------------------------------
+GOSUB define_variables
+GOSUB show_variables
+;----------------------------------
+WAIT 0
+;
+SUB define_variables
+DEFNUM a% b% c% d%
+; change var a% to 15 and see how work
+LET a% = 5
+LET b% = 10
+LET c% = 3
+LET d% = 15
+RETURN
+;
+SUB show_variables
+COLOR 0 0 0
+TEXT 10 40 var a% = 
+PRINT 60 40 a%
+TEXT 10 60 var b% = 
+PRINT 60 60 b%
+TEXT 10 80 var c% = 
+PRINT 60 80 c%
+TEXT 10 100 var d% = 
+PRINT 60 100 d%
+RETURN
+;
+SUBB 61    ; 61 is ID of button
+MSG TRUE [ IF var a% is LESS then var b% ]
+IF a% < b% THEN ENDSUB
+; if var a% not less then var b% continue:
+COLOR 200 0 0
+CLEAR$ 10 150
+TEXT 10 150 FALSE
+ENDSUB
+;
+SUBB 62
+;if var c% > var d% then endsub 
+IF c% > d% THEN ENDSUB
+GOSUB isless
+ENDSUB
+;
+SUB isless
+MSG TRUE [ var c% is LESS then var d% ]
+COLOR 0 0 200
+CLEARSPACE 10 150 20
+TEXT 10 150 TRUE.
+RETURN
+
+
+
+
+
+
+
+
+
+

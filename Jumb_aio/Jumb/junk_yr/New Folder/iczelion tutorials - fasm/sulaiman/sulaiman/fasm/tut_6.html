@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 6 : Keyboard Input</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 6 : Keyboard Input">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 6 : Keyboard Input">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 6 : Keyboard Input</div>
+<br>
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+include '%fasminc%\win32a.inc'
+
+section '.data' data readable writeable
+     wHMain         dd   ?
+     wHInstance     dd   ?
+
+     wTitle         db   'Tutorial 6',0
+     wClsName       db   'TUT06',0
+
+     wMsg      MSG
+     wCls      WNDCLASS
+
+     ;exp = experiment
+     expChar   dd   0x20
+     expPs     PAINTSTRUCT
+     expHdc    dd   ?
+
+section '.code' code readable executable
+     start:
+          ; +------------------------------+
+          ; | registering the window class |
+          ; +------------------------------+
+          invoke    GetModuleHandle,NULL
+                    mov  [wHInstance],eax
+                    mov  [wCls.hInstance],eax
+                    mov  [wCls.style],CS_HREDRAW or CS_VREDRAW
+                    mov  [wCls.lpfnWndProc],window_procedure
+                    mov  [wCls.lpszClassName],wClsName
+                    mov  [wCls.hbrBackground],COLOR_WINDOW+1
+          invoke    LoadIcon,NULL,IDI_APPLICATION
+                    mov  [wCls.hIcon],eax
+          invoke    LoadCursor,NULL,IDC_ARROW
+                    mov  [wCls.hCursor],eax
+          invoke    RegisterClass,wCls
+
+          ; +--------------------------+
+          ; | creating the main window |
+          ; +--------------------------+
+          invoke    CreateWindowEx,\
+                         0,\
+                         wClsName,\
+                         wTitle,\
+                         WS_OVERLAPPEDWINDOW or WS_VISIBLE,\
+                         CW_USEDEFAULT,\
+                         CW_USEDEFAULT,\
+                         CW_USEDEFAULT,\
+                         CW_USEDEFAULT,\
+                         NULL,\
+                         NULL,\
+                         [wHInstance],\
+                         NULL
+                    mov  [wHMain],eax
+          ; +---------------------------+
+          ; | entering the message loop |
+          ; +---------------------------+
+          window_message_loop_start:
+               invoke    GetMessage,wMsg,NULL,0,0
+                         or   eax,eax
+                         je   window_message_loop_end
+               invoke    TranslateMessage,wMsg
+               invoke    DispatchMessage,wMsg
+                         jmp  window_message_loop_start
+
+          window_message_loop_end:
+               invoke    ExitProcess,0
+
+          ; +----------------------+
+          ; | the window procedure |
+          ; +----------------------+
+          proc window_procedure,hWnd,uMsg,wParam,lParam
+               push ebx esi edi    ;eventhough the API would preserved, but play safe :p
+               cmp  [uMsg],WM_CHAR
+               je   wmCHAR
+               cmp  [uMsg],WM_PAINT
+               je   wmPAINT
+               cmp  [uMsg],WM_DESTROY
+               je   wmDESTROY
+
+               wmDEFAULT:
+                    invoke    DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+                              jmp  wmBYE
+               wmCHAR:
+                              push [wParam]
+                              pop  [expChar]
+                    invoke    InvalidateRect,[hWnd],NULL,TRUE
+                              jmp  wmBYE
+               wmPAINT:
+                    invoke    BeginPaint,[hWnd],expPs
+                              mov  [expHdc],eax
+                    invoke    TextOut,[expHdc],0,0,expChar,1
+                    invoke    EndPaint,[hWnd],expPs
+                              jmp  wmBYE
+               wmDESTROY:
+                    invoke    PostQuitMessage,0
+
+               wmBYE:
+                    pop  edi esi ebx
+                    return
+          endp
+
+section '.idata' import data readable writeable
+     library   KERNEL32, 'KERNEL32.DLL',\
+               USER32,   'USER32.DLL',\
+               GDI32,    'GDI32.DLL'
+
+     import    KERNEL32,\
+               GetModuleHandle,    'GetModuleHandleA',\
+               ExitProcess,        'ExitProcess'
+
+     import    USER32,\
+               RegisterClass,      'RegisterClassA',\
+               CreateWindowEx,     'CreateWindowExA',\
+               DefWindowProc,      'DefWindowProcA',\
+               ShowWindow,         'ShowWindow',\
+               LoadCursor,         'LoadCursorA',\
+               LoadIcon,           'LoadIconA',\
+               BeginPaint,         'BeginPaint',\
+               InvalidateRect,     'InvalidateRect',\
+               EndPaint,           'EndPaint',\
+               GetMessage,         'GetMessageA',\
+               TranslateMessage,   'TranslateMessage',\
+               DispatchMessage,    'DispatchMessageA',\
+               PostQuitMessage,    'PostQuitMessage'
+
+     import    GDI32,\
+               TextOut,            'TextOutA'
+</pre>
+Result :<br>
+<img src="../img/tut_6.gif">
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

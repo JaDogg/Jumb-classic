@@ -1,0 +1,395 @@
+<html>
+	<head>
+		<title>Windows PE File Format Walkthrough II</title>
+		<meta name="Description"	content="Windows PE File Format Walkthrough II">
+		<meta name="Keywords"		content="FASM, PE, Sulaiman Chang">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Windows PE File Format Walkthrough II</div><br>
+Sulaiman Chang<br>
+September 14, 2004<br>
+<br><br>
+
+<div class="ah1">IMAGE_NT_HEADERS</div><br>
+Now, we are on the way to understand the <span class="fl3">IMAGE_NT_HEADERS</span> structure. This structure is declared in <span class="fl3">WINNT.H</span> file.
+
+<pre class="b3">
+typedef struct _IMAGE_NT_HEADERS {
+    DWORD Signature;
+    IMAGE_FILE_HEADER FileHeader;
+    IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+} IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;
+</pre>
+
+we got so many things to understand now! nevermind, we just move on step by step and hopefully in the end, we would be able to make sense out of it.
+
+<br><br>
+
+The <span class="fl3">IMAGE_NT_HEADERS</span> structure represents the PE header format. The <span class="fl3">Signature</span> should contained the value <span class="fl3">50 45 00 00</span> or <span class="fl3">(ascii) PE 0 0</span> to be identified as a valid PE image.
+
+<br><br><br><br><br>
+<div class="ah1">IMAGE_FILE_HEADER</div><br>
+The <span class="fl3">IMAGE_FILE_HEADER</span> is a 20 bytes structure that included in the structure of IMAGE_NT_HEADERS.
+
+<pre class="b3">
+typedef struct _IMAGE_FILE_HEADER {
+    WORD    Machine;
+    WORD    NumberOfSections;
+    DWORD   TimeDateStamp;
+    DWORD   PointerToSymbolTable;
+    DWORD   NumberOfSymbols;
+    WORD    SizeOfOptionalHeader;
+    WORD    Characteristics;
+} IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;
+</pre>
+
+<table border="0" cellpadding="5" cellspacing="1" bgcolor="#9996AC">
+	<tr valign="top"><td class="td1" width="100">Machine</td><td class="td2">Specifies the architecture type of the computer.<br>
+	0x014C = Intel 386 (generally we use this one)<br>
+	0x0200 = Intel 64-bit</td></tr>
+	<tr valign="top"><td class="td1">NumberOfSections</td><td class="td2">Specifies the number of sections.</td></tr>
+	<tr valign="top"><td class="td1">TimeDateStamp</td><td class="td2">Specifies the time stamp of the image. This represents the date and time the image was created by the linker.</td></tr>
+	<tr valign="top"><td class="td1">PointerToSymbolTable</td><td class="td2">Offset of the symbol table, or zero if no symbol table exists.</td></tr>
+	<tr valign="top"><td class="td1">NumberOfSymbols</td><td class="td2">Specifies the number of symbols in the symbol table.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfOptionalHeader</td><td class="td2">Specifies the size of the optional header, in bytes.</td></tr>
+	<tr valign="top"><td class="td1">Characteristics</td><td class="td2">Specifies the characteristics of the image.<br><br>
+	<div class="fl3">IMAGE_FILE_RELOCS_STRIPPED</div>
+	0x0001  // Relocation info stripped from file.<br><br><br>
+	
+	<div class="fl3">IMAGE_FILE_EXECUTABLE_IMAGE</div>
+	0x0002  // File is executable  (i.e. no unresolved externel references).<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_LINE_NUMS_STRIPPED</div>
+	0x0004  // Line nunbers stripped from file.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_LOCAL_SYMS_STRIPPED</div>
+	0x0008  // Local symbols stripped from file.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_AGGRESIVE_WS_TRIM</div>
+	0x0010  // Agressively trim working set<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_LARGE_ADDRESS_AWARE</div>
+	0x0020  // App can handle >2gb addresses<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_BYTES_REVERSED_LO</div>
+	0x0080  // Bytes of machine word are reversed.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_32BIT_MACHINE</div>
+	0x0100  // 32 bit word machine.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_DEBUG_STRIPPED</div>
+	0x0200  // Debugging info stripped from file in .DBG file<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP</div>
+	0x0400  // If Image is on removable media, copy and run from the swap file.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_NET_RUN_FROM_SWAP</div>
+	0x0800  // If Image is on Net, copy and run from the swap file.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_SYSTEM</div>
+	0x1000  // System File.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_DLL</div>
+	0x2000  // File is a DLL.<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_UP_SYSTEM_ONLY</div>
+	0x4000  // File should only be run on a UP machine<br><br><br>
+	
+
+	<div class="fl3">IMAGE_FILE_BYTES_REVERSED_HI</div>
+	0x8000  // Bytes of machine word are reversed.<br><br><br>
+	</td></tr>
+</table>
+<br>
+now, we got some information how to code our <span class="fl3">IMAGE_NT_HEADERS</span> with <span class="fl3">IMAGE_FILE_HEADER</span>. Below is what we could form using the above information.
+<pre class="fl2">
+IMAGE_NT_HEADERS:                                ;start : 80 (128) to 1EF (495)
+       .Signature           db     'PE',0,0      ;128 131
+       
+
+       IMAGE_FILE_HEADER:                        ;start : 84 (132) to 97 (151)
+              .Machine                           dw     0x014C        ;132 133 for intel 386
+              .NumberOfSection                   dw     0x0003        ;134 135
+              .TimeDateStamp                     dd     %t            ;136 139
+              .PointerToSymbolTable              dd     0             ;140 143
+              .NumberOfSymbols                   dd     0             ;144 147
+              .SizeOfOptionalHeader              dw     0x00E0        ;148 149
+              .Characteristic                    dw     0x818F        ;150 151
+
+db 0x0B,0x01,0x01,0x37,0x00,0x00,0x00,0x00,\
+..... to the end
+</pre>
+our characteristic value is 0x818F which is equal to 
+<pre class="fl2">
++----------------------------------------------+
+| Characteristic value for general PE EXE file |
++----------------------------------------------+
+          IMAGE_FILE_RELOCS_STRIPPED          0x0001
+          IMAGE_FILE_EXECUTABLE_IMAGE         0x0002 +  = 0x0003
+          IMAGE_FILE_LINE_NUMS_STRIPPED       0x0004 +  = 0x0007
+          IMAGE_FILE_LOCAL_SYMS_STRIPPED      0x0008 +  = 0x000F
+          IMAGE_FILE_BYTES_REVERSED_LO        0x0080 +  = 0x008F
+          IMAGE_FILE_32BIT_MACHINE            0x0100 +  = 0x018F
+          IMAGE_FILE_BYTES_REVERSED_HI        0x8000 +  = 0x818F &lt-- our characteristic value
+</pre>
+now, we got some new idea, how our PE file format actually looks like.
+<pre class="b3">
+PE File Format (so far)
+=======================
+0x00 .... 0x3F ------------------------------- IMAGE_DOS_HEADER
+0x40 .... 0x7F ------------------------------- DOS 2.0 Stub Program
+0x80 .... ?    ------------------------------- IMAGE_NT_HEADERS
+          0x84 .... 0x97 ---------------------      IMAGE_FILE_HEADER
+</pre>
+Our <span class="fl3">NumberOfSection</span> value is <span class="fl3">0x0003</span> because we got 3 section for our PE, which are, <span class="fl3">".data", ".code" and ".idata"</span>.
+<br><br>
+<!--Our <span class="fl3">SizeOfOptionalHeader</span> is <span class="fl3">0x00E0</span> because . We will now move on to understand the structure of <span class="fl3">IMAGE_OPTIONAL_HEADER</span>.-->
+
+<pre class="b3">
+typedef struct _IMAGE_OPTIONAL_HEADER {
+    WORD    Magic;
+    BYTE    MajorLinkerVersion;
+    BYTE    MinorLinkerVersion;
+    DWORD   SizeOfCode;
+    DWORD   SizeOfInitializedData;
+    DWORD   SizeOfUninitializedData;
+    DWORD   AddressOfEntryPoint;
+    DWORD   BaseOfCode;
+    DWORD   BaseOfData;
+
+    DWORD   ImageBase;
+    DWORD   SectionAlignment;
+    DWORD   FileAlignment;
+    WORD    MajorOperatingSystemVersion;
+    WORD    MinorOperatingSystemVersion;
+    WORD    MajorImageVersion;
+    WORD    MinorImageVersion;
+    WORD    MajorSubsystemVersion;
+    WORD    MinorSubsystemVersion;
+    DWORD   Win32VersionValue;
+    DWORD   SizeOfImage;
+    DWORD   SizeOfHeaders;
+    DWORD   CheckSum;
+    WORD    Subsystem;
+    WORD    DllCharacteristics;
+    DWORD   SizeOfStackReserve;
+    DWORD   SizeOfStackCommit;
+    DWORD   SizeOfHeapReserve;
+    DWORD   SizeOfHeapCommit;
+    DWORD   LoaderFlags;
+    DWORD   NumberOfRvaAndSizes;
+    IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+} IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;
+</pre>
+
+<table border="0" cellpadding="5" cellspacing="1" bgcolor="#9996AC">
+	<tr valign="top"><td class="td1" width="100">Magic</td><td class="td2">Specifies the state of the image file<br><br>
+	<div class="fl3">IMAGE_NT_OPTIONAL_HDR_MAGIC</div>
+	0x010B (32-bit) // The file is an executable image.<br>
+	0x020B (64-bit) // The file is an executable image.<br><br>
+	<div class="fl3">IMAGE_ROM_OPTIONAL_HDR_MAGIC</div>
+	0x0107 // The file is a ROM image.
+	</td></tr>
+	<tr valign="top"><td class="td1">MajorLinkerVersion</td><td class="td2">Major version number of the linker.</td></tr>
+	<tr valign="top"><td class="td1">MinorLinkerVersion</td><td class="td2">Minor version number of the linker.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfCode</td><td class="td2">The size of the code section, or the sum of all such sections if there are multiple code sections.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfInitializedData</td><td class="td2">The size of the initialized data section, or the sum of all such sections if there are multiple initialized data sections.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfUninitializedData</td><td class="td2">The size of the uninitialized data section, or the sum of all such sections if there are multiple uninitialized data sections.</td></tr>
+	<tr valign="top"><td class="td1">AddressOfEntryPoint</td><td class="td2">Pointer to the entry point function, relative to the image base address. The entry point function is optional for DLLs. When no entry point is present, this member is zero.</td></tr>
+	<tr valign="top"><td class="td1">BaseOfCode</td><td class="td2">Pointer to the beginning of the code section, relative to the image base.</td></tr>
+	<tr valign="top"><td class="td1">BaseOfData</td><td class="td2">Pointer to the beginning of the data section, relative to the image base.</td></tr>
+	<tr valign="top"><td class="td1">ImageBase</td><td class="td2">Preferred address of the first byte of the image when it is loaded in memory. This value is a multiple of 64K bytes. The default value for DLLs is 0x10000000. The default value for Win32-based applications on Windows CE is 0x00010000. The default value for Win32-based applications on Windows NT/Windows 2000 and Windows 95/98 is 0x00400000.</td></tr>
+	<tr valign="top"><td class="td1">SectionAlignment</td><td class="td2">The alignment, in bytes, of sections loaded in memory. This value must be greater than or equal to the FileAlignment member. The default value is the page size for the system.</td></tr>
+	<tr valign="top"><td class="td1">FileAlignment</td><td class="td2">The alignment, in bytes, of the raw data of sections in the image file. The value should be a power of 2 between 512 and 64K (inclusive). The default is 512. If the SectionAlignment member is less than the system page size, this member must be the same as SectionAlignment.</td></tr>
+	<tr valign="top"><td class="td1">MajorOperatingSystemVersion</td><td class="td2">Major version number of the required operating system.</td></tr>
+	<tr valign="top"><td class="td1">MinorOperatingSystemVersion</td><td class="td2">Minor version number of the required operating system.</td></tr>
+	<tr valign="top"><td class="td1">MajorImageVersion</td><td class="td2">Major version number of the image.</td></tr>
+	<tr valign="top"><td class="td1">MinorImageVersion</td><td class="td2">Minor version number of the image.</td></tr>
+	<tr valign="top"><td class="td1">MajorSubsystemVersion</td><td class="td2">Major version number of the subsystem.</td></tr>
+	<tr valign="top"><td class="td1">MinorSubsystemVersion</td><td class="td2">Minor version number of the subsystem.</td></tr>
+	<tr valign="top"><td class="td1">Win32VersionValue</td><td class="td2">This member is reserved.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfImage</td><td class="td2">The size of the image, in bytes, including all headers. Must be a multiple of SectionAlignment.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfHeaders</td><td class="td2">Combined size of the MS-DOS stub, the PE header, and the section headers, rounded to a multiple of the value specified in the FileAlignment member.</td></tr>
+	<tr valign="top"><td class="td1">CheckSum</td><td class="td2">Image file checksum.</td></tr>
+	<tr valign="top"><td class="td1">Subsystem</td><td class="td2">
+	<div class="fl3">IMAGE_SUBSYSTEM_UNKNOWN</div>
+	0x0000 // Unknown subsystem.<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_NATIVE</div>
+	0x0001 // No subsystem required.<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_WINDOWS_GUI</div>
+	0x0002 // Image runs in the Windows GUI subsystem<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_WINDOWS_CUI</div>
+	0x0003 // Image runs in the Windows character-mode subsystem.<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_POSIX_CUI</div>
+	0x0007 // Image runs in the POSIX character-mode subsystem.<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_NATIVE_WINDOWS</div>
+	0x0008 // Image is a native Win9x driver<br><br>
+	<div class="fl3">IMAGE_SUBSYSTEM_WINDOWS_CE_GUI</div>
+	0x0009 // Image runs in the Windows CE subsystem.
+	</td></tr>
+	<tr valign="top"><td class="td1">DllCharacteristics</td><td class="td2">Specifies the DLL characteristics of the image.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfStackReserve</td><td class="td2">The number of bytes to reserve for the stack.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfStackCommit</td><td class="td2">The number of bytes to commit for the stack.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfHeapReserve</td><td class="td2">The number of bytes to reserve for the local heap.</td></tr>
+	<tr valign="top"><td class="td1">SizeOfHeapCommit</td><td class="td2">The number of bytes to commit for the local heap.</td></tr>
+	<tr valign="top"><td class="td1">LoaderFlags</td><td class="td2">This member is obsolete.</td></tr>
+	<tr valign="top"><td class="td1">NumberOfRvaAndSizes</td><td class="td2">Number of directory entries.</td></tr>
+	<tr valign="top"><td class="td1">IMAGE_DATA_DIRECTORY<br>(Occupies 8 bytes * NumberOfRvaAndSizes)</td><td class="td2">
+	<span class="fl3">
+	typedef struct _IMAGE_DATA_DIRECTORY {<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;DWORD   VirtualAddress;<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;DWORD   Size;<br>
+	} IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;<br>
+	</span>
+	</td></tr>
+</table>
+<br>
+ok, i guess we got some information to code our <span class="fl3">IMAGE_OPTIONAL_HEADER</span>
+
+<pre class="b3">
+PE File Format (so far)
+=======================
+0x00 .... 0x3F ------------------------------- IMAGE_DOS_HEADER
+0x40 .... 0x7F ------------------------------- DOS 2.0 Stub Program
+0x80 .... ?    ------------------------------- IMAGE_NT_HEADERS
+          0x84 .... 0x97 ---------------------      IMAGE_FILE_HEADER
+          0x98 .... 0xF7 ---------------------      IMAGE_OPTIONAL_HEADER
+                    0xF8 .... 0x177 ----------           IMAGE_DATA_DIRECTORY
+</pre>
+
+<pre class="fl2">
+       IMAGE_OPTIONAL_HEADER:                    ;start : 98 (152) to F7 (247) * till IMAGE_DATA_DIRECTORY
+                                                                      ;offset
+              .Magic                             dw     0x010B        ;152 153
+              .MajorLinkerVersion                db     0x01          ;154
+              .MinorLinkerVersion                db     0x37          ;155
+              .SizeOfCode                        dd     0             ;156 159
+              .SizeOfInitializedData             dd     0             ;160 163
+              .SizeOfUninitializedData           dd     0             ;164 167
+              .AddressOfEntryPoint               dd     0x2000        ;168 171
+                                                                      ;base + 2000 = 402000 (.code section)
+              .BaseOfCode                        dd     0             ;172 175
+              .BaseOfData                        dd     0             ;176 179
+              .ImageBase                         dd     0x00400000    ;180 183 (default)
+              .SectionAlignment                  dd     0x00001000    ;184 187 4096 bytes
+              .FileAlignment                     dd     0x00000200    ;188 191 512 bytes (default)
+              .MajorOperatingSystemVersion       dw     1             ;192 193
+              .MinorOperatingSystemVersion       dw     0             ;194 195
+              .MajorImageVersion                 dw     0             ;196 197
+              .MinorImageVersion                 dw     0             ;198 199
+              .MajorSubsystemVersion             dw     4             ;200 201
+              .MinorSubsystemVersion             dw     0             ;202 203
+              .Win32VersionValue                 dd     0             ;204 207
+              .SizeOfImage                       dd     0x00004000    ;208 211
+              .SizeOfHeaders                     dd     0x00000200    ;212 215
+              .CheckSum                          dd     0x0000EF20    ;216 219
+              .Subsystem                         dw     2             ;220 221 IMAGE_SUBSYSTEM_WINDOWS_GUI
+              .DllCharacteristics                dw     0             ;222 223
+              .SizeOfStackReserve                dd     0x00001000    ;224 227 4096 bytes
+              .SizeOfStackCommit                 dd     0x00001000    ;228 231 4096 bytes
+              .SizeOfHeapReserve                 dd     0x00100000    ;232 235 1048576 bytes
+              .SizeOfHeapCommit                  dd     0             ;236 239
+              .LoaderFlags                       dd     0             ;240 243
+              .NumberOfRvaAndSizes               dd     0x10          ;244 247 16 decimal
+              
+              IMAGE_DATA_DIRECTORY:              ;start : F8 (248) to 177 (375) * till IMAGE_SECTION_TABLE
+                     rq     1                    ;248 255
+                     .ImportTableVA              dd     0x00003000           ;256 263
+                     .ImportTableSize            dd     0x00000090
+                     rq     14                   ;we don't need them also    ;263 + 112 = 375
+
+db 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x2E,0x64,0x61,0x74,0x61,0x00,0x00,0x00,\
+.... to the end
+</pre>
+Once we finish with IMAGE_DATA_DIRECTORY, we will need to present the system with <span class="fl3">IMAGE_SECTION_HEADER</span>. Since we got 3 sections as defined above, we would need 3 structures of <span class="fl3">IMAGE_SECTION_TABLE</span>
+<pre class="b3">
+#define IMAGE_SIZEOF_SHORT_NAME              8
+
+typedef struct _IMAGE_SECTION_HEADER {
+    BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];
+    union {
+            DWORD   PhysicalAddress;
+            DWORD   VirtualSize;
+    } Misc;
+    DWORD   VirtualAddress;
+    DWORD   SizeOfRawData;
+    DWORD   PointerToRawData;
+    DWORD   PointerToRelocations;
+    DWORD   PointerToLinenumbers;
+    WORD    NumberOfRelocations;
+    WORD    NumberOfLinenumbers;
+    DWORD   Characteristics;
+} IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
+</pre>
+<table border="0" cellpadding="5" cellspacing="1" bgcolor="#9996AC">
+	<tr valign="top"><td class="td1" width="100">Name</td><td class="td2">An 8-byte, null-filled string. There is no terminating null character if the string is exactly eight characters long. For longer names, this member contains a forward slash (/) followed by a decimal number that is an offset into the string table. Executable images do not use a string table and do not support section names longer than eight characters.
+	</td></tr>
+	<tr valign="top"><td class="td1" width="100">PhysicalAddress</td><td class="td2">Specifies the file address.</td></tr>
+	<tr valign="top"><td class="td1" width="100">VirtualSize</td><td class="td2">Total size of the section when loaded into memory. If this value is greater than the <span class="fl3">SizeOfRawData</span> member, the section is filled with zeroes.</td></tr>
+	<tr valign="top"><td class="td1" width="100">VirtualAddress</td><td class="td2">The address of the first byte of the section when loaded into memory, relative to the image base.</td></tr>
+	<tr valign="top"><td class="td1" width="100">SizeOfRawData</td><td class="td2">The size of the initialized data on disk. This value must be a multiple of the <span class="fl3">FileAlignment</span> member of the <span class="fl3">IMAGE_OPTIONAL_HEADER</span> structure. If this value is less than the VirtualSize member, the remainder of the section is filled with zeroes. If the section contains only uninitialized data, the member is zero.</td></tr>
+	<tr valign="top"><td class="td1" width="100">PointerToRawData</td><td class="td2">File pointer to the first page within the COFF file. This value must be a multiple of the <span class="fl3">FileAlignment</span> member of the <span class="fl3">IMAGE_OPTIONAL_HEADER</span> structure. If a section contains only uninitialized data, this member is zero.</td></tr>
+	<tr valign="top"><td class="td1" width="100">PointerToRelocations</td><td class="td2">File pointer to the beginning of the relocation entries for the section. If there are no relocations, this value is zero.</td></tr>
+	<tr valign="top"><td class="td1" width="100">PointerToLinenumbers</td><td class="td2">File pointer to the beginning of the line-number entries for the section. If there are no COFF line numbers, this value is zero.</td></tr>
+	<tr valign="top"><td class="td1" width="100">NumberOfRelocations</td><td class="td2">Number of relocation entries for the section. This value is zero for executable images.</td></tr>
+	<tr valign="top"><td class="td1" width="100">NumberOfLinenumbers</td><td class="td2">Number of line-number entries for the section.</td></tr>
+	<tr valign="top"><td class="td1" width="100">Characteristics</td><td class="td2">Specifies the characteristics of the image.<br><br>
+	<div class="fl3">IMAGE_SCN_TYPE_NO_PAD</div>0x00000008 // Reserved.<br><br>
+	<div class="fl3">IMAGE_SCN_CNT_CODE</div>0x00000020 // Section contains code.<br><br>
+	<div class="fl3">IMAGE_SCN_CNT_INITIALIZED_DATA</div>0x00000040 // Section contains initialized data.<br><br>
+	<div class="fl3">IMAGE_SCN_CNT_UNINITIALIZED_DATA</div>0x00000080 // Section contains uninitialized data.<br><br>
+	<div class="fl3">IMAGE_SCN_LNK_OTHER</div>0x00000100 // Reserved.<br><br>
+	<div class="fl3">IMAGE_SCN_LNK_INFO</div>0x00000200 // Section contains comments or some other type of information.<br><br>
+	<div class="fl3">IMAGE_SCN_LNK_REMOVE</div>0x00000800 // Section contents will not become part of image.<br><br>
+	<div class="fl3">IMAGE_SCN_LNK_COMDAT</div>0x00001000 // Section contents comdat.<br><br>
+	<div class="fl3">IMAGE_SCN_NO_DEFER_SPEC_EXC</div>0x00004000 // Reset speculative exceptions handling bits in the TLB entries for this section.<br><br>
+	<div class="fl3">IMAGE_SCN_GPREL & IMAGE_SCN_MEM_FARDATA</div>0x00008000 // Section content can be accessed relative to GP<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_PURGEABLE & IMAGE_SCN_MEM_16BIT</div>0x00020000 // Reserved.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_LOCKED</div>0x00040000 // Reserved.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_PRELOAD</div> 0x00080000 // Reserved.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_1BYTES</div>0x00100000 // Align data on a 1-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_2BYTES</div>0x00200000 // Align data on a 2-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_4BYTES</div>0x00300000 // Align data on a 4-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_8BYTES</div>0x00400000 // Align data on a 8-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_16BYTES (Default alignment if no others are specified)</div>0x00500000 // Align data on a 16-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_32BYTES</div>0x00600000 // Align data on a 32-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_64BYTES</div>0x00700000 // Align data on a 64-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_ALIGN_128BYTES</div>0x00800000 // Align data on a 128-byte boundary.<br><br>
+	<div class="fl3">IMAGE_SCN_LNK_NRELOC_OVFL</div>0x01000000 // Section contains extended relocations.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_DISCARDABLE</div>0x02000000 // Section can be discarded.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_NOT_CACHED</div>0x04000000 // Section is not cachable.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_NOT_PAGED</div>0x08000000 // Section is not pageable.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_SHARED</div>0x10000000 // Section is shareable.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_EXECUTE</div>0x20000000 // Section is executable.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_READ</div>0x40000000 // Section is readable.<br><br>
+	<div class="fl3">IMAGE_SCN_MEM_WRITE</div>0x80000000 // Section is writeable.<br><br>
+	</td></tr>
+</table>
+<br><br>
+Continue to <a href="tut_pe3.html">Windows PE File Format Walkthrough III</a>
+
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

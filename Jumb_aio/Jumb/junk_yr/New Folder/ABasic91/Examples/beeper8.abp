@@ -1,0 +1,32 @@
+' beep sound/ABv1.1
+WIN 0 0 400 300 Beeps
+WINCOLOR 230 230 235
+' new command for PC sound
+' enter values like integers,firs value is frequency,second is duration
+' frequency is in Hz(40-20000),duration is in msec(1sec=100msec)
+BEEP 2000 100
+BEEP 2100 50
+BEEP 2200 80
+BEEP 2000 100
+BEEP 2200 100
+TEXT 10 10 You hear telephone ring from PC speaker
+' draw pc
+COLOR 0 0 0
+  RECT 100 100 80 120
+   FILL 102 102 RGB 180 180 180
+    LINE 140 80 220 80
+    LINE 180 100 221 80
+    LINE 180 219 220 199
+    LINE 220 199 220 80
+    LINE 100 100 140 80
+   FILL 120 95 RGB 200 200 200
+   FILL 190 100 RGB 170 170 190
+     RECT 110 105 60 10
+     RECT 110 150 50 3 
+     RECT 155 165 8 8
+    CIRCLE 135 195 15
+   CIRCLE 135 195 12
+  CIRCLE 135 195 9
+CIRCLE 135 195 6
+
+

@@ -1,0 +1,22 @@
+[Project]
+Version=3
+Description=JumbC
+Api=fb (FreeBASIC)
+[Make]
+Current=1
+1=Windows Console,fbc -s console
+Recompile=2
+Module=Module Build,fbc -c
+[TabOrder]
+TabOrder=1,2
+[File]
+1=JumbC.bas
+2=JumbC.rc
+3=stack.bas
+[BreakPoint]
+1=
+3=
+[FileInfo]
+1=0,555,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

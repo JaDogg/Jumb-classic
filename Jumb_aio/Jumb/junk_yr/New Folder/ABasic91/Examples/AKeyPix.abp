@@ -1,0 +1,50 @@
+' simple drawing with arrows
+WIN 0 0 600 400 KeyPixel
+WINCOLOR 220 220 230
+WINFONT Verdana 10
+COLOR 0 0 200
+TEXT 10 5 Use arrow keys & draw lines
+DEFNUM x% y%
+
+LET y% = 200
+LET x% = 300
+
+'---------------
+WAIT 0
+'---------------
+
+IFKEY [UP]
+COLOR 0 0 200
+	LOOP 4
+	LET y% = y% - 1
+	PIXEL x% y%
+	ENDLOOP
+ENDKEY
+
+IFKEY [DOWN]
+COLOR 200 0 0
+	LOOP 4
+	LET y% = y% + 1
+	PIXEL x% y%
+	ENDLOOP
+ENDKEY
+
+IFKEY [LEFT]
+COLOR 250 250 0
+	LOOP 4
+	LET x% = x% - 1
+	PIXEL x% y%
+	ENDLOOP
+ENDKEY
+
+IFKEY [RIGHT]
+COLOR 0 150 0
+	LOOP 4
+	LET x% = x% + 1
+	PIXEL x% y%
+	ENDLOOP
+ENDKEY
+
+
+
+

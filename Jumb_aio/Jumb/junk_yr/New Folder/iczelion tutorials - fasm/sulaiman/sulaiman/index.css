@@ -1,0 +1,26 @@
+p, div, body, table, tr, td, ol, li, a, pre, textarea {
+	font-family: courier new;
+	font-size: 12px;
+	color: #A2A0B4;
+	line-height: 14px;
+}
+
+A:link		{text-decoration: none; font-style: italic}
+A:visited	{text-decoration: none; font-style: italic}
+A:hover		{text-decoration: underline; font-style: italic; background-color: #525062};
+
+.b1			{border-width: 1px; border-style: solid; border-color: #9996AC}
+.b2			{background-color: #58556B}
+.b3			{border-style: solid; color: #DBF3DB; border-width: 1px; border-color: #9996AC; background-color: #525062;overflow:hidden}
+.b4			{background-color: #3B3947}
+.b5			{border-style: solid; color: #A8A8A8; border-width: 0px; background-color: #000000;overflow:hidden}
+
+
+.aH1		{font-weight: bold; font-size: 16px; text-decoration: underline}
+
+.fl			{color: #E0DCE4; background-color: #525062}
+.fl2		{color: #E2D4B6; background-color: #525062}
+.fl3		{color: #DBF3DB; background-color: #525062}
+
+.td1		{color: #DBF3DB; background-color: #58556B}
+.td2		{color: #A2A0B4; background-color: #6E6A86}

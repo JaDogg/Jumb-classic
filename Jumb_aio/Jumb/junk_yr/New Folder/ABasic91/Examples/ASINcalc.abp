@@ -1,0 +1,33 @@
+'(sin,cos,tan-in radians),int,sqr functions
+DEFNUM a% b% c% d% e% f%
+WIN 0 0 400 300 Sinus
+WINCOLOR 220 220 220
+
+DECIMALS 6
+LET c% = 90
+COLOR 200 0 0
+
+LET a% = 45
+LET b% = SIN ( a% )
+PRINT 20 50 b%
+
+LET a% = c%
+LET b% = COS ( a% )
+PRINT 20 80 b%
+
+LET e% = 3.14
+COLOR 0 0 200
+DECIMALS 2
+PRINT 20 110 e%
+
+LET d% = INT ( e% )
+COLOR 0 140 0
+DECIMALS 6
+PRINT 24 140 d%
+
+LET e% = 2
+LET f% = SQR ( e% )
+COLOR 180 0 180
+PRINT 20 170 f%
+
+

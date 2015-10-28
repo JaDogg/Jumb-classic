@@ -1,0 +1,33 @@
+'example with VAL function
+WIN 0 0 400 200 VAL(string)
+WINCOLOR 220 220 230
+WINFONT Microsoft 8
+COLOR 0 0 0
+
+DEFNUM a% b% c%
+DEFSTR num$ show$
+
+LET a% = 0
+TEXT 10 10 a% =
+COLOR 220 0 0
+PRINT 50 10 a%
+
+LET b% = 5
+LET num$ = 10
+
+COLOR 0 0 0
+TEXT 10 30 num$ =
+COLOR 0 150 0
+PRINT 50 30 num$
+' ------------------------------
+LET a% = VAL ( num$ )
+COLOR 0 0 0
+TEXT 10 80 a% = VAL ( num$ ) =
+' print var a%
+COLOR 0 0 220
+PRINT 115 80 a%
+BEEP 1600 60
+' -----------------------------
+
+
+

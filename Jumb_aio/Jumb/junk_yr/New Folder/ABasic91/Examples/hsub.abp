@@ -1,0 +1,39 @@
+' Gosub example2
+WIN 0 0 400 350 ClassicGosub
+WINCOLOR 220 220 225
+DEFNUM a% b% c% d% e% f% g%
+GOSUB frame
+GOSUB calc()
+GOSUB #IfThen
+COLOR 0 0 200
+WINFONT Microsoft 10
+TEXT 20 250 This is classic GOSUBs example
+
+WAIT 0
+
+SUB frame
+COLOR 220 10 230
+RECT 20 20 200 200
+RECT 22 22 196 196
+RETURN
+
+SUB calc()
+' sub names are case sensitive
+LET a% = 5
+LET b% = 10
+LET c% = a% + b%
+COLOR 200 0 0
+PRINT 100 100 c%
+BEEP 1000 100
+RETURN
+
+SUB #IfThen
+LET e% = 20
+LET f% = 33
+LET g% = 44
+IF e% > c% THEN f% = g%
+COLOR 0 150 0
+PRINT 100 140 f%
+BEEP 1800 50
+RETURN 
+

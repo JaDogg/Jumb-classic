@@ -1,0 +1,19 @@
+bin/m4.exe 0c5ebdf570bab7088537e170af44b901
+man/cat1/m4.1.txt 00f0356fd9f626f912c405f3eed14b9d
+man/cat1p/m4.1p.txt b192893d5918f9cd55d962cccfa27d32
+contrib/m4/1.4.13/m4-1.4.13/check.log 01bafd4691d54ebed029f80a4b17b33a
+contrib/m4/1.4.13/m4-1.4.13-GnuWin32.README 5b8e7ecf91e03be8eda3d9c67f964e59
+contrib/m4/1.4.13/m4-1.4.13-src/AUTHORS d6b45a1a736c8d1f74f864e8fdf629a4
+contrib/m4/1.4.13/m4-1.4.13-src/BACKLOG b13c5c98ecf32983dfbecea8059db33b
+contrib/m4/1.4.13/m4-1.4.13-src/ChangeLog 52d8975cdb6a28d7057790f88544d57b
+contrib/m4/1.4.13/m4-1.4.13-src/COPYING d32239bcb673463ab874e80d47fae504
+contrib/m4/1.4.13/m4-1.4.13-src/doc/gpl-3.0.texi d09bb9def1895953d24e2e8b9a70ffb6
+contrib/m4/1.4.13/m4-1.4.13-src/doc/m4.info b4aafedb867dfa9a708f4821a970ab31
+contrib/m4/1.4.13/m4-1.4.13-src/examples/COPYING 1d49bd61dc590f014cae7173b43e3e5c
+contrib/m4/1.4.13/m4-1.4.13-src/INSTALL 4700dbe6458434819497721ebe1d8cc4
+contrib/m4/1.4.13/m4-1.4.13-src/NEWS 74464900e3b6744719f9877518780116
+contrib/m4/1.4.13/m4-1.4.13-src/README bcce4c99076c83abbbff3a3fd8c9af55
+contrib/m4/1.4.13/m4-1.4.13-src/THANKS 22e5bb0c25ddfa15926ec50cea41dd3e
+contrib/m4/1.4.13/m4-1.4.13-src/TODO e458f6e4a0bb5d9849f822e451bc7896
+manifest/m4-1.4.13-bin.mft
+manifest/m4-1.4.13-bin.ver 2e586f30eb3353206f68e6c2215956bb

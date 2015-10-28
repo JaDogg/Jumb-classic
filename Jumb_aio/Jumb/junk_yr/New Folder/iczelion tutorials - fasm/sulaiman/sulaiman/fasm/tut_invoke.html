@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>FASM Invoke Explanation</title>
+		<meta name="Description"	content="Explanation of WinAPI calling using INVOKE">
+		<meta name="Keywords"		content="FASM, INVOKE explain, WINAPI INVOKE, macroinstruction, Sulaiman Chang">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">FASM Invoke Explanation</div>
+<br>
+INVOKE is a macroinstruction that can be used for calling the procedures using STDCALL convention, arguments are pushed on stack in the reverse order. For example stdcall foo, 1, 2, 3 will be assembled as:<br>
+<pre class="fl2">
+push 3
+push 2
+push 1
+call foo
+</pre>
+<br>
+Here is another example how to call the WinAPI MessageBox:<br>
+<pre class="fl2">
+push	MB_OK
+push	_caption
+push	_text
+push    [hWnd]
+call	[MessageBox]
+
+is equal with
+
+invoke MessageBox, [hWnd], _text, _caption, MB_OK
+</pre>
+
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

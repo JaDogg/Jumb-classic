@@ -1,0 +1,27 @@
+'window caption as string
+	DEFSTR win$
+		LET win$ = Window caption written as string variable
+
+' create window
+	WIN 0 0 450 400 win$
+		' set window color
+		WINCOLOR 230 230 0
+			' set window font
+			WINFONT Verdana 14
+
+' create button
+	BUTTON 10 10 100 24 SYS 51
+		'set button text
+		CTSETTEXT 51 Show caption string
+
+'wait for events
+WAIT 0
+
+SUBB 51
+	COLOR 200 0 0
+	PRINT 10 50 win$
+	COLOR 0 0 200
+	TEXT 10 100 Caption name written as string
+ENDSUB 
+
+

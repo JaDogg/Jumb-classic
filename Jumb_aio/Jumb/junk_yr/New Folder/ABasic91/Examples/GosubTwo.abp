@@ -1,0 +1,48 @@
+' Gosub example2
+WIN 0 0 400 350 Gosub+Loop
+WINCOLOR 220 220 225
+WINFONT Microsoft 8
+DEFNUM count% 
+
+BUTTON 270 30 85 22 FLAT 51
+CTSETTEXT 51 Draw Rectangle 
+GOSUB frame
+
+WAIT 0
+
+SUBB 51
+GOSUB drawcircle
+GOSUB lines
+  COLOR 0 0 200
+   RECT 40 40 140 140
+   RECT 42 42 136 136
+  BEEP 1600 100
+ENDSUB
+
+SUB frame
+ COLOR 220 0 220
+  RECT 20 20 200 200
+ RECT 22 22 196 196
+RETURN
+
+SUB drawcircle
+COLOR 0 140 0
+ CIRCLE 280 200 50
+  COLOR 0 0 0 
+  TEXT 280 120 Circle drawed
+  BEEP 2000 100
+  COLOR 200 200 0	
+ CIRCLE 280 200 40 
+RETURN
+
+SUB lines
+  LET count% = 80
+    LOOP 5
+      LET count% = count% + 2
+	COLOR 0 0 180
+	PRINT 230 60 count%
+      COLOR 33 33 230
+      LINE 230 count% 330 count%
+    ENDLOOP
+TEXT 270 255 B
+RETURN 

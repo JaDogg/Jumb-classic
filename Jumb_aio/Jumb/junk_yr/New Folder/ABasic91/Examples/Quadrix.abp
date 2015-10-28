@@ -1,0 +1,50 @@
+' Quadrix example/AB1181chm
+WIN 0 0 405 360 Quadrix
+WINCOLOR 220 220 220
+DEFNUM tix% rix% lix% fix% dix% cix% zix%
+ 
+LOOP 8
+COLOR 0 0 250
+LET tix% = tix% + 40
+RECT tix% 20 40 40
+ENDLOOP
+ 
+LOOP 8
+COLOR 0 180 0
+LET rix% = rix% + 40
+RECT rix% 60 40 40
+ENDLOOP
+ 
+LOOP 8
+COLOR 200 0 0
+LET lix% = lix% + 40
+RECT lix% 100 40 40
+ENDLOOP
+ 
+LOOP 8
+COLOR 200 200 0
+LET fix% = fix% + 40
+RECT fix% 140 40 40
+ENDLOOP
+ 
+LOOP 8
+COLOR 200 0 200
+LET dix% = dix% + 40
+RECT dix% 180 40 40
+ENDLOOP
+
+LOOP 8
+COLOR 20 200 100
+LET cix% = cix% + 40
+RECT cix% 220 40 40
+ENDLOOP
+
+LOOP 8
+COLOR 150 150 180
+LET zix% = zix% + 40
+RECT zix% 260 40 40
+ENDLOOP
+
+
+
+

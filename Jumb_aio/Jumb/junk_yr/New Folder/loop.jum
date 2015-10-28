@@ -1,0 +1,15 @@
+;Compile as console
+
+DEFNUM A1
+
+TITLE("loop TEST => Eat THE Loop")
+
+
+LOOP A1 1 100
+	LETINT A1 A1 + 5
+	ECHOINT(A1)
+	ECHO(" ")
+ENDLOOP
+
+PAUSE 
+;prints 6 12 18 24 30 36 42 48 54

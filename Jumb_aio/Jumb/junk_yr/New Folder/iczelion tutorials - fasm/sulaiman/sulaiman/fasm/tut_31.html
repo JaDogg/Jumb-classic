@@ -1,0 +1,865 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 31 : Listview Control</title>
+		<meta name="Author"		content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 31 : Listview Control">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 31 : Listview Control">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 31 : Listview Control</div>
+<br>
+tut_31a.asm
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+M_MAIN		= 10000
+MI_ICON		= 0x0000
+MI_SMALLICON	= 0x0002
+MI_LIST		= 0x0003
+MI_REPORT	= 0x0001
+
+include '%fasminc%\win32a.inc'
+
+macro RGB cR, cG, cB {
+	xor	eax,eax	;clear the eax
+	mov	ah,cB
+	shl	eax,8
+	mov	ah,cG
+	mov	al,cR
+}
+
+section '.data' data readable writeable
+	wndH		dd ?
+	insH		dd ?
+	wndClsName	db 'TUT_31',0
+	wndTitle	db 'Tutorial 31',0
+
+	wndCls	WNDCLASS
+	wndMsg	MSG
+
+	ctlClsNameLv	db 'SysListView32',0
+
+	lvH		dd ?
+	lvTxt1		db 'File Name',0
+	lvTxt2		db 'Size',0
+	lvTxt3		db '%lu',0
+	lvSortSize	dd 0
+	lvSortFile	dd 0
+
+	menuH		dd ?
+
+	lvI1a	db 'Durian',0
+	lvI1b	db '34',0
+	lvI2a	db 'Banana',0
+	lvI2b	db '54',0
+	lvI3a	db 'Watermelon',0
+	lvI3b	db '44',0
+	lvI4a	db 'Apple',0
+	lvI4b	db '55',0
+	lvI5a	db 'Papaya',0
+	lvI5b	db '1',0
+
+section '.code' code readable executable
+start:
+	invoke	GetModuleHandle,0
+		mov  [insH],eax
+		mov  [wndCls.hInstance],eax
+		mov  [wndCls.style],CS_HREDRAW or CS_VREDRAW
+		mov  [wndCls.lpfnWndProc],window_procedure
+		mov  [wndCls.lpszClassName],wndClsName
+		mov  [wndCls.lpszMenuName],10000
+		mov  [wndCls.hbrBackground],COLOR_BTNFACE+1
+	invoke	LoadIcon,NULL,IDI_APPLICATION
+		mov  [wndCls.hIcon],eax
+	invoke	LoadCursor,NULL,IDC_ARROW
+		mov  [wndCls.hCursor],eax
+	invoke	RegisterClass,wndCls
+
+	invoke	CreateWindowEx,WS_EX_CLIENTEDGE,\
+		wndClsName,wndTitle,\
+		WS_OVERLAPPEDWINDOW + WS_VISIBLE,\
+		CW_USEDEFAULT,CW_USEDEFAULT,400,240,\
+		NULL,NULL,[insH],NULL
+		mov  [wndH],eax
+
+	invoke	InitCommonControls
+
+;+---------------------------+
+;| entering the message loop |
+;+---------------------------+
+window_message_loop_start:
+	invoke	GetMessage,wndMsg,NULL,0,0
+		or    eax,eax
+		je    window_message_loop_end
+	invoke	TranslateMessage,wndMsg
+	invoke	DispatchMessage,wndMsg
+		jmp	window_message_loop_start
+
+window_message_loop_end:
+	invoke	ExitProcess,0
+
+;+----------------------+
+;| the window procedure |
+;+----------------------+
+proc window_procedure,hWnd,uMsg,wParam,lParam
+		push ebx esi edi
+		cmp  [uMsg],WM_NOTIFY
+		je   wmNOTIFY
+		cmp  [uMsg],WM_CREATE
+		je   wmCREATE
+		cmp  [uMsg],WM_SIZE
+		je   wmSIZE
+		cmp  [uMsg],WM_DESTROY
+		je   wmDESTROY
+
+	wmDEFAULT:
+		invoke	DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+			jmp  wmBYE
+
+	wmNOTIFY:
+			mov  ebx,[lParam]
+			mov  eax,[ebx + NMHDR.hwndFrom]
+			cmp  eax,[lvH]
+			jne  wmDEFAULT
+
+			cmp  [ebx + NMHDR.code],LVN_COLUMNCLICK
+			je   wmNOTIFY_LVN_COLUMNCLICK
+			cmp  [ebx + NMHDR.code],NM_DBLCLK
+			je   wmNOTIFY_NM_DBLCLK
+			jmp  wmDEFAULT
+
+		wmNOTIFY_LVN_COLUMNCLICK:
+			cmp  [ebx + NMLISTVIEW.iSubItem],1
+			je   COLUMNCLICK_SIZE
+			jmp  COLUMNCLICK_FILE
+
+			COLUMNCLICK_SIZE:
+					cmp  [lvSortSize],1
+					je   SIZE_1
+
+				SIZE_0:
+					mov  [lvSortSize],1
+					jmp  @f
+
+				SIZE_1:
+					mov  [lvSortSize],2
+
+			@@:
+				invoke	SendMessage,[lvH],LVM_SORTITEMS,[lvSortSize],lv_compare
+				call	lv_param_update
+					jmp  wmBYE
+
+			COLUMNCLICK_FILE:
+					cmp  [lvSortFile],3
+					je   FILE_4
+
+				FILE_3:
+					mov  [lvSortFile],3
+					jmp  @f
+
+				FILE_4:
+					mov  [lvSortFile],4
+			@@:
+				invoke	SendMessage,[lvH],LVM_SORTITEMS,[lvSortFile],lv_compare
+				call	lv_param_update
+					jmp  wmBYE
+			
+		wmNOTIFY_NM_DBLCLK:
+			invoke	MessageBox,NULL,wndClsName,wndClsName,MB_OK
+				jmp  wmBYE			
+
+	
+	wmSIZE:
+			mov  eax,[lParam]
+			mov  edx,eax
+			and  eax,0xFFFF
+			shr  edx,16
+		invoke	MoveWindow,[lvH],0,0,eax,edx,TRUE
+			jmp  wmBYE
+
+	wmCREATE:
+		invoke	CreateWindowEx,NULL,ctlClsNameLv,NULL,\
+			LVS_REPORT + WS_CHILD + WS_VISIBLE,\
+			0,0,0,0,\
+			[hWnd],NULL,[insH],NULL
+			mov  [lvH],eax
+		call	lv_col_insert
+		call	lv_col_info_fill
+		invoke	GetMenu,[hWnd]
+			mov  [menuH],eax
+		invoke	CheckMenuRadioItem,eax,MI_ICON,MI_REPORT,MI_REPORT,MF_CHECKED
+			jmp  wmBYE
+
+	wmDESTROY:
+		invoke	PostQuitMessage,0
+
+	wmBYE:
+		pop edi esi ebx
+		return
+   endp
+
+proc lv_param_update
+	lvi1	LVITEM
+	enter
+		invoke	SendMessage,[lvH],LVM_GETITEMCOUNT,0,0
+			mov  ebx,eax
+			mov  [lvi1.mask],LVIF_PARAM
+			mov  [lvi1.iSubItem],0
+			mov  [lvi1.iItem],0
+	@@:
+			cmp  ebx,0
+			je   @f
+			push [lvi1.iItem]
+			pop  [lvi1.lParam]
+			lea  eax,[lvi1]
+		invoke	SendMessage,[lvH],LVM_SETITEM,0,eax
+			inc  [lvi1.iItem]
+			dec  ebx
+			jmp  @b
+	@@:
+		return
+endp
+
+proc convert_strhval,str
+	result	dd ?
+	enter
+		push ecx edi edx esi
+		mov  [result],0
+		mov  edi,[str]
+	invoke	lstrlen,[str]
+
+	a:
+		cmp  eax,0
+		je   b
+		xor  edx,edx
+		mov  dl,[edi]
+		sub  dl,'0'
+		mov  esi,eax
+		dec  esi
+		push eax
+		mov  eax,edx
+		push ebx
+		mov  ebx,10
+	@@:
+		cmp  esi,0
+		je   @f
+		mul  ebx
+		dec  esi
+		jmp  @b
+	@@:
+		pop  ebx
+		add  [result],eax
+		pop  eax
+		inc  edi
+		dec  eax
+		jmp  a
+	b:
+		pop  esi edx edi ecx
+		mov  eax,[result]
+		return
+endp
+
+proc lv_compare,lParam1,lParam2,lParamSort
+	buf1	rb 0xFF
+	buf2	rb 0xFF
+	lvi0	LVITEM
+	enter
+		mov  [lvi0.mask],LVIF_TEXT
+		lea  eax,[buf1]
+		mov  [lvi0.pszText],eax
+		mov  [lvi0.cchTextMax],0xFF
+
+		cmp  [lParamSort],2
+		jbe  compare_1
+		jmp  compare_3
+		return
+
+	compare_1:
+			push edi
+			mov  [lvi0.iSubItem],1
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam1],eax
+			lea  eax,[buf1]
+		stdcall	convert_strhval,eax
+			mov  edi,eax
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam2],eax
+			lea  eax,[buf1]
+		stdcall	convert_strhval,eax
+			cmp  [lParamSort],1
+			jne  @f
+			sub  edi,eax
+			mov  eax,edi
+			jmp  compare_1_exit
+		@@:
+			sub  eax,edi
+
+		compare_1_exit:
+				pop  edi
+				return
+
+	compare_3:
+			mov  [lvi0.iSubItem],0
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam1],eax
+			lea  edx,[buf2]		;destination
+			lea  eax,[buf1]		;source
+		invoke	lstrcpy,edx,eax
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam2],eax
+			lea  edx,[buf2]
+			lea  eax,[buf1]
+			cmp  [lParamSort],3
+			jne  @f
+		invoke	lstrcmpi,edx,eax
+			return
+		@@:
+		invoke	lstrcmpi,eax,edx
+			return
+
+endp
+
+proc lv_col_insert
+	lvCol	LVCOLUMN
+	enter
+		mov  [lvCol.mask],LVCF_TEXT + LVCF_WIDTH
+		mov  [lvCol.pszText],lvTxt1
+		mov  [lvCol.cx],150
+		lea  edx,[lvCol]
+		push edx
+	invoke	SendMessage,[lvH],LVM_INSERTCOLUMN,0,edx
+		mov  [lvCol.pszText],lvTxt2
+		mov  [lvCol.cx],100
+	invoke	SendMessage,[lvH],LVM_INSERTCOLUMN,1
+		return
+endp
+
+proc lv_col_info_fill
+	lvItem	LVITEM
+	enter
+		push lvI5b
+		push lvI5a
+		push lvI4b
+		push lvI4a
+		push lvI3b
+		push lvI3a
+		push lvI2b
+		push lvI2a
+		push lvI1b
+		push lvI1a
+		mov  ebx,0
+		
+	@@:
+		mov  [lvItem.mask],LVIF_TEXT + LVIF_PARAM
+		pop  [lvItem.pszText]
+		mov  [lvItem.iSubItem],0
+		mov  [lvItem.iItem],ebx
+		mov  [lvItem.lParam],ebx
+		lea  eax,[lvItem]
+	invoke	SendMessage,[lvH],LVM_INSERTITEM,0,eax
+		mov  [lvItem.mask],LVIF_TEXT
+		inc  [lvItem.iSubItem]
+		pop  [lvItem.pszText]
+		lea  eax,[lvItem]
+	invoke	SendMessage,[lvH],LVM_SETITEM,0,eax
+		inc  ebx
+		cmp  ebx,5
+		jb   @b
+		return
+endp
+
+section '.idata' import data readable
+	library	kernel32, 'KERNEL32.DLL',\
+		user32,   'USER32.DLL',\
+		comctl32, 'COMCTL32.DLL'
+
+	include '%fasminc%\apia\Kernel32.inc'
+	include '%fasminc%\apia\User32.inc'
+	include '%fasminc%\apia\Comctl32.inc'
+
+section '.rsrc' resource from 'tut_31.rc.res'
+</pre>
+Result : tut_31a.asm<br><br>
+<img src="../img/tut_31a.gif">
+<br><br>
+tut_31b.asm
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+M_MAIN		= 10000
+MI_ICON		= 0x0000
+MI_SMALLICON	= 0x0002
+MI_LIST		= 0x0003
+MI_REPORT	= 0x0001
+
+include '%fasminc%\win32a.inc'
+
+macro RGB cR, cG, cB {
+	xor	eax,eax	;clear the eax
+	mov	ah,cB
+	shl	eax,8
+	mov	ah,cG
+	mov	al,cR
+}
+
+struct WIN32_FIND_DATA
+	.dwFileAttributes	dd ?
+	.ftCreationTime		dq ?
+	.ftLastAccessTime	dq ?
+	.ftLastWriteTime	dq ?
+	.nFileSizeHigh		dd ?
+	.nFileSizeLow		dd ?
+	.dwReserved0		dd ?
+	.dwReserved1		dd ?
+	.cFileName		rb 260
+	.cAlternateFileName	rb 14
+ends
+
+section '.data' data readable writeable
+	wndH		dd ?
+	insH		dd ?
+	wndClsName	db 'TUT_31',0
+	wndTitle	db 'Tutorial 31',0
+
+	wndCls	WNDCLASS
+	wndMsg	MSG
+
+	ctlClsNameLv	db 'SysListView32',0
+
+	lvH		dd ?
+	lvTxt1		db 'File Name',0
+	lvTxt2		db 'Size',0
+	lvTxt3		db '%lu',0
+	lvSortSize	dd 0
+	lvSortFile	dd 0
+
+	menuH		dd ?
+
+	fFileH		dd ?
+	fData		WIN32_FIND_DATA
+	fTxt1		db '*.*',0
+
+
+section '.code' code readable executable
+start:
+	invoke	GetModuleHandle,0
+		mov  [insH],eax
+		mov  [wndCls.hInstance],eax
+		mov  [wndCls.style],CS_HREDRAW or CS_VREDRAW
+		mov  [wndCls.lpfnWndProc],window_procedure
+		mov  [wndCls.lpszClassName],wndClsName
+		mov  [wndCls.lpszMenuName],10000
+		mov  [wndCls.hbrBackground],COLOR_BTNFACE+1
+	invoke	LoadIcon,NULL,IDI_APPLICATION
+		mov  [wndCls.hIcon],eax
+	invoke	LoadCursor,NULL,IDC_ARROW
+		mov  [wndCls.hCursor],eax
+	invoke	RegisterClass,wndCls
+
+	invoke	CreateWindowEx,WS_EX_CLIENTEDGE,\
+		wndClsName,wndTitle,\
+		WS_OVERLAPPEDWINDOW + WS_VISIBLE,\
+		CW_USEDEFAULT,CW_USEDEFAULT,400,240,\
+		NULL,NULL,[insH],NULL
+		mov  [wndH],eax
+
+	invoke	InitCommonControls
+
+;+---------------------------+
+;| entering the message loop |
+;+---------------------------+
+window_message_loop_start:
+	invoke	GetMessage,wndMsg,NULL,0,0
+		or    eax,eax
+		je    window_message_loop_end
+	invoke	TranslateMessage,wndMsg
+	invoke	DispatchMessage,wndMsg
+		jmp	window_message_loop_start
+
+window_message_loop_end:
+	invoke	ExitProcess,0
+
+;+----------------------+
+;| the window procedure |
+;+----------------------+
+proc window_procedure,hWnd,uMsg,wParam,lParam
+		push ebx esi edi
+		cmp  [uMsg],WM_COMMAND
+		je   wmCOMMAND
+		cmp  [uMsg],WM_NOTIFY
+		je   wmNOTIFY
+		cmp  [uMsg],WM_CREATE
+		je   wmCREATE
+		cmp  [uMsg],WM_SIZE
+		je   wmSIZE
+		cmp  [uMsg],WM_DESTROY
+		je   wmDESTROY
+
+	wmDEFAULT:
+		invoke	DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+			jmp  wmBYE
+
+	wmCOMMAND:
+			cmp  [lParam],0
+			jne  wmBYE
+		invoke	GetWindowLong,[lvH],GWL_STYLE
+			and  eax,not LVS_TYPEMASK
+			mov  edx,[wParam]
+			and  edx,0xFFFF
+			push edx
+			or   eax,edx
+		invoke	SetWindowLong,[lvH],GWL_STYLE,eax
+			pop  edx
+		invoke	CheckMenuRadioItem,[menuH],MI_ICON,MI_LIST,edx,MF_CHECKED
+			jmp  wmBYE
+
+	wmNOTIFY:
+			mov  ebx,[lParam]
+			mov  eax,[ebx + NMHDR.hwndFrom]
+			cmp  eax,[lvH]
+			jne  wmDEFAULT
+
+			cmp  [ebx + NMHDR.code],LVN_COLUMNCLICK
+			je   wmNOTIFY_LVN_COLUMNCLICK
+			cmp  [ebx + NMHDR.code],NM_DBLCLK
+			je   wmNOTIFY_NM_DBLCLK
+			jmp  wmDEFAULT
+
+		wmNOTIFY_LVN_COLUMNCLICK:
+			cmp  [ebx + NMLISTVIEW.iSubItem],1
+			je   COLUMNCLICK_SIZE
+			jmp  COLUMNCLICK_FILE
+
+			COLUMNCLICK_SIZE:
+					cmp  [lvSortSize],1
+					je   SIZE_1
+
+				SIZE_0:
+					mov  [lvSortSize],1
+					jmp  @f
+
+				SIZE_1:
+					mov  [lvSortSize],2
+
+			@@:
+				invoke	SendMessage,[lvH],LVM_SORTITEMS,[lvSortSize],lv_compare
+				call	lv_param_update
+					jmp  wmBYE
+
+			COLUMNCLICK_FILE:
+					cmp  [lvSortFile],3
+					je   FILE_4
+
+				FILE_3:
+					mov  [lvSortFile],3
+					jmp  @f
+
+				FILE_4:
+					mov  [lvSortFile],4
+			@@:
+				invoke	SendMessage,[lvH],LVM_SORTITEMS,[lvSortFile],lv_compare
+				call	lv_param_update
+					jmp  wmBYE
+			
+		wmNOTIFY_NM_DBLCLK:
+			call	lv_item_focus
+				jmp  wmBYE			
+
+	
+	wmSIZE:
+			mov  eax,[lParam]
+			mov  edx,eax
+			and  eax,0xFFFF
+			shr  edx,16
+		invoke	MoveWindow,[lvH],0,0,eax,edx,TRUE
+			jmp  wmBYE
+
+	wmCREATE:
+		invoke	CreateWindowEx,NULL,ctlClsNameLv,NULL,\
+			LVS_REPORT + WS_CHILD + WS_VISIBLE,\
+			0,0,0,0,\
+			[hWnd],NULL,[insH],NULL
+			mov  [lvH],eax
+		call	lv_col_insert
+		call	lv_col_info_fill
+			RGB 0xAF,0xB5,0xC9
+		invoke	SendMessage,[lvH],LVM_SETTEXTCOLOR,0,eax
+			RGB 0x2E,0x35,0x50
+		invoke	SendMessage,[lvH],LVM_SETBKCOLOR,0,eax
+			RGB 0x2E,0x35,0x50
+		invoke	SendMessage,[lvH],LVM_SETTEXTBKCOLOR,0,eax
+		invoke	GetMenu,[hWnd]
+			mov  [menuH],eax
+		invoke	CheckMenuRadioItem,eax,MI_ICON,MI_LIST,MI_REPORT,MF_CHECKED
+			jmp  wmBYE
+
+	wmDESTROY:
+		invoke	PostQuitMessage,0
+
+	wmBYE:
+		pop edi esi ebx
+		return
+   endp
+
+proc lv_item_focus
+	lvi4	LVITEM
+	buf4	rb 0xFF
+	enter
+
+	invoke	SendMessage,[lvH],LVM_GETNEXTITEM,-1,LVNI_FOCUSED
+		mov  [lvi4.iItem],eax
+		mov  [lvi4.iSubItem],0
+		mov  [lvi4.mask],LVIF_TEXT
+		lea  eax,[buf4]
+		mov  [lvi4.pszText],eax
+		mov  [lvi4.cchTextMax],0xFF
+		lea  eax,[lvi4]
+	invoke	SendMessage,[lvH],LVM_GETITEM,0,eax
+		lea  eax,[buf4]
+	invoke	MessageBox,NULL,eax,wndTitle,MB_OK
+	return
+endp
+
+proc lv_param_update
+	lvi1	LVITEM
+	enter
+		invoke	SendMessage,[lvH],LVM_GETITEMCOUNT,0,0
+			mov  ebx,eax
+			mov  [lvi1.mask],LVIF_PARAM
+			mov  [lvi1.iSubItem],0
+			mov  [lvi1.iItem],0
+	@@:
+			cmp  ebx,0
+			je   @f
+			push [lvi1.iItem]
+			pop  [lvi1.lParam]
+			lea  eax,[lvi1]
+		invoke	SendMessage,[lvH],LVM_SETITEM,0,eax
+			inc  [lvi1.iItem]
+			dec  ebx
+			jmp  @b
+	@@:
+		return
+endp
+
+proc convert_strhval,str
+	result	dd ?
+	enter
+		push ecx edi edx esi
+		mov  [result],0
+		mov  edi,[str]
+	invoke	lstrlen,[str]
+
+	a:
+		cmp  eax,0
+		je   b
+		xor  edx,edx
+		mov  dl,[edi]
+		sub  dl,'0'
+		mov  esi,eax
+		dec  esi
+		push eax
+		mov  eax,edx
+		push ebx
+		mov  ebx,10
+	@@:
+		cmp  esi,0
+		je   @f
+		mul  ebx
+		dec  esi
+		jmp  @b
+	@@:
+		pop  ebx
+		add  [result],eax
+		pop  eax
+		inc  edi
+		dec  eax
+		jmp  a
+	b:
+		pop  esi edx edi ecx
+		mov  eax,[result]
+		return
+endp
+
+proc lv_compare,lParam1,lParam2,lParamSort
+	buf1	rb 0xFF
+	buf2	rb 0xFF
+	lvi0	LVITEM
+	enter
+		mov  [lvi0.mask],LVIF_TEXT
+		lea  eax,[buf1]
+		mov  [lvi0.pszText],eax
+		mov  [lvi0.cchTextMax],0xFF
+
+		cmp  [lParamSort],2
+		jbe  compare_1
+		jmp  compare_3
+		return
+
+	compare_1:
+			push edi
+			mov  [lvi0.iSubItem],1
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam1],eax
+			lea  eax,[buf1]
+		stdcall	convert_strhval,eax
+			mov  edi,eax
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam2],eax
+			lea  eax,[buf1]
+		stdcall	convert_strhval,eax
+			cmp  [lParamSort],1
+			jne  @f
+			sub  edi,eax
+			mov  eax,edi
+			jmp  compare_1_exit
+		@@:
+			sub  eax,edi
+
+		compare_1_exit:
+				pop  edi
+				return
+
+	compare_3:
+			mov  [lvi0.iSubItem],0
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam1],eax
+			lea  edx,[buf2]		;destination
+			lea  eax,[buf1]		;source
+		invoke	lstrcpy,edx,eax
+			lea  eax,[lvi0]
+		invoke	SendMessage,[lvH],LVM_GETITEMTEXT,[lParam2],eax
+			lea  edx,[buf2]
+			lea  eax,[buf1]
+			cmp  [lParamSort],3
+			jne  @f
+		invoke	lstrcmpi,edx,eax
+			return
+		@@:
+		invoke	lstrcmpi,eax,edx
+			return
+
+endp
+
+proc lv_col_insert
+	lvCol	LVCOLUMN
+	enter
+		mov  [lvCol.mask],LVCF_TEXT + LVCF_WIDTH
+		mov  [lvCol.pszText],lvTxt1
+		mov  [lvCol.cx],150
+		lea  edx,[lvCol]
+		push edx
+	invoke	SendMessage,[lvH],LVM_INSERTCOLUMN,0,edx
+		or   [lvCol.mask],LVCF_FMT
+		mov  [lvCol.fmt],LVCFMT_RIGHT
+		mov  [lvCol.pszText],lvTxt2
+		mov  [lvCol.cx],100
+	invoke	SendMessage,[lvH],LVM_INSERTCOLUMN,1
+		return
+endp
+
+proc lv_col_info_fill
+		push edi
+	invoke	FindFirstFile,fTxt1,fData
+		cmp  eax,INVALID_HANDLE_VALUE
+		je   fill_exit
+		mov  [fFileH],eax
+		xor  edi,edi
+		
+	fill_start:
+			cmp  eax,0
+			je   fill_end
+
+			cmp  [fData.dwFileAttributes],FILE_ATTRIBUTE_DIRECTORY
+			je   @f
+		stdcall	lv_col_info_insert,edi
+			inc  edi
+
+		@@:
+		invoke	FindNextFile,[fFileH],fData
+			jmp  fill_start
+
+	fill_end:
+		invoke	FindClose,[fFileH]
+		
+	fill_exit:
+		pop  edi
+		return
+endp
+
+proc lv_col_info_insert,row
+	lvi2	LVITEM
+	buf3	rb 20
+	enter
+
+		mov  [lvi2.mask],LVIF_TEXT + LVIF_PARAM
+		mov  [lvi2.pszText],fData.cFileName
+		mov  [lvi2.iSubItem],0
+		push [row]
+		push [row]
+		pop  [lvi2.iItem]
+		pop  [lvi2.lParam]
+
+		lea  eax,[lvi2]
+	invoke	SendMessage,[lvH],LVM_INSERTITEM,0,eax
+		mov  [lvi2.mask],LVIF_TEXT
+		inc  [lvi2.iSubItem]
+		lea  eax,[buf3]
+	invoke	wsprintf,eax,lvTxt3,[fData.nFileSizeLow]
+		lea  eax,[buf3]
+		mov  [lvi2.pszText],eax
+		lea  eax,[lvi2]
+	invoke	SendMessage,[lvH],LVM_SETITEM,0,eax
+		return
+endp
+
+section '.idata' import data readable
+	library	kernel32, 'KERNEL32.DLL',\
+		user32,   'USER32.DLL',\
+		comctl32, 'COMCTL32.DLL'
+
+	include '%fasminc%\apia\Kernel32.inc'
+	include '%fasminc%\apia\User32.inc'
+	include '%fasminc%\apia\Comctl32.inc'
+
+section '.rsrc' resource from 'tut_31.rc.res'
+</pre>
+<br><br>
+
+tut_31.res
+<pre class="fl3">
+#define M_MAIN		10000
+#define MI_ICON		0x0000
+#define MI_SMALLICON	0x0002
+#define MI_LIST		0x0003
+#define MI_REPORT	0x0001
+
+M_MAIN MENU
+{
+	POPUP "&View"
+	{
+		MENUITEM "Lar&ge Icons",MI_ICON
+		MENUITEM "S&mall Icons",MI_SMALLICON
+		MENUITEM "&List",MI_LIST
+		MENUITEM "&Details",MI_REPORT
+	}
+}
+</pre>
+<br>
+Result : tut_31b.asm<br><br>
+<img src="../img/tut_31b.gif">
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

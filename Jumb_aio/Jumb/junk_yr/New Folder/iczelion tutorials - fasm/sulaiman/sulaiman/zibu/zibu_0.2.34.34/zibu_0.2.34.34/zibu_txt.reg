@@ -1,0 +1,7 @@
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\txtfile\shell\Open Zibu]
+
+[HKEY_CLASSES_ROOT\txtfile\shell\Open Zibu\command]
+@="H:\\YOUR_ZIBU_UNZIPPED_DIRECTORY\\ZIBU.EXE %1"
+

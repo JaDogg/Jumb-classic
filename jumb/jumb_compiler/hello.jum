@@ -1,0 +1,38 @@
+;Jumb compiler current condition support compiling 
+;following script to asm code (need fasm to create an exe)
+
+;declare integers
+DEFNUM TMPINT TMPINT2 TMPINT3
+
+;inline assembly
+ASM XOR EAX,EAX  ; (comments here will be included in asm output)
+
+TITLE(TRIM(LCASE(UCASE("    H3110 W0rlD   ")))) ; setr the title of console screen
+;why the ucase it there = no reason just for testing the compiler
+
+;this is equal in fb to ===  ? "Jumb HELLO WORLD DEMO";
+ECHO("Jumb HELLO WORLD DEMO")
+
+ECHONEWLINE ;just print a new line
+
+;comments are asm like
+LOOP TMPINT 0 7
+	ECHONEWLINE
+	LOOP TMPINT2 TMPINT 7
+		LOOP TMPINT3 TMPINT2 7
+		
+			ECHOINT(TMPINT3) ; print an integer
+			ECHO(" ")
+			
+		ENDLOOP
+	ENDLOOP
+
+ENDLOOP
+
+ECHONEWLINE
+ECHONEWLINE
+
+ECHO("Press any key to exit")
+PAUSE ;same as sleep in freebasic
+
+TERMINATE ; destroy app or END it

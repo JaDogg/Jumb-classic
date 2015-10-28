@@ -1,0 +1,48 @@
+[Project]
+Version=3
+Description=JumbEDIT
+Api=fb (FreeBASIC),win (Windows)
+Grouping=1
+AddMainFiles=1
+AddModuleFiles=1
+ResExport=
+CompileIfNewer=0
+IncVersion=0
+RunCmd=0
+[Make]
+Module=Module Build,fbc -c
+Recompile=2
+Current=2
+1=Windows Console,fbc -s console
+2=Windows GUI,fbc -s gui
+Output=
+Run=
+Delete=
+[TabOrder]
+TabOrder=1,3,4,5,6,7,2,8
+[File]
+1=JumbEDIT.bas
+2=JumbEDIT.rc
+3=JumbE.bi
+4=RAEdit.bi
+5=advshll.bas
+6=FileIO.bas
+7=Misc.bas
+8=RegLib.bas
+[BreakPoint]
+1=
+3=
+4=
+5=
+6=
+7=
+8=
+[FileInfo]
+1=0,167,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,40,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,257,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5=0,22,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6=0,13,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7=0,73,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+8=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

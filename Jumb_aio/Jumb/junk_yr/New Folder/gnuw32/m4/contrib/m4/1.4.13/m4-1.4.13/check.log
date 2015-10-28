@@ -1,0 +1,748 @@
+make.exe  check-recursive
+make[1]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13' wordt binnengegaan
+Making check in .
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13' wordt binnengegaan
+make[2]: Er is niets te doen voor 'check-am'.
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13' wordt verlaten
+Making check in examples
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/examples' wordt binnengegaan
+make[2]: Er is niets te doen voor 'check'.
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/examples' wordt verlaten
+Making check in lib
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt binnengegaan
+make.exe  check-recursive
+make[3]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt binnengegaan
+make[4]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt binnengegaan
+make[4]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt verlaten
+make[3]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt verlaten
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/lib' wordt verlaten
+Making check in src
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/src' wordt binnengegaan
+make[2]: Er is niets te doen voor 'check'.
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/src' wordt verlaten
+Making check in doc
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/doc' wordt binnengegaan
+make[2]: Er is niets te doen voor 'check'.
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/doc' wordt verlaten
+Making check in checks
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/checks' wordt binnengegaan
+PATH=`pwd`/../src":"$PATH; export PATH; \
+	../../m4-1.4.13-src/checks/check-them -I ../../m4-1.4.13-src/checks/../examples ../../m4-1.4.13-src/checks/*[0-9][0-9][0-9].* ../../m4-1.4.13-src/checks/stackovf.test
+m4 (GNU M4) 1.4.13
+Copyright (C) 2009 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Rene' Seindal.
+Ignoring carriage returns
+Checking ../../m4-1.4.13-src/checks/001.preprocess
+Checking ../../m4-1.4.13-src/checks/002.debugging_
+Checking ../../m4-1.4.13-src/checks/003.command_li
+Checking ../../m4-1.4.13-src/checks/004.command_li
+Checking ../../m4-1.4.13-src/checks/005.comments
+Checking ../../m4-1.4.13-src/checks/006.comments
+Checking ../../m4-1.4.13-src/checks/007.input_proc
+Checking ../../m4-1.4.13-src/checks/008.input_proc
+Checking ../../m4-1.4.13-src/checks/009.inhibiting
+Checking ../../m4-1.4.13-src/checks/010.inhibiting
+Checking ../../m4-1.4.13-src/checks/011.inhibiting
+Checking ../../m4-1.4.13-src/checks/012.inhibiting
+Checking ../../m4-1.4.13-src/checks/013.inhibiting
+Checking ../../m4-1.4.13-src/checks/014.inhibiting
+Checking ../../m4-1.4.13-src/checks/015.inhibiting
+Checking ../../m4-1.4.13-src/checks/016.inhibiting
+Checking ../../m4-1.4.13-src/checks/017.macro_argu
+Checking ../../m4-1.4.13-src/checks/018.macro_argu
+Checking ../../m4-1.4.13-src/checks/019.macro_argu
+Checking ../../m4-1.4.13-src/checks/020.macro_argu
+Checking ../../m4-1.4.13-src/checks/021.macro_argu
+Checking ../../m4-1.4.13-src/checks/022.quoting_ar
+Checking ../../m4-1.4.13-src/checks/023.macro_expa
+Checking ../../m4-1.4.13-src/checks/024.macro_expa
+Checking ../../m4-1.4.13-src/checks/025.define
+Checking ../../m4-1.4.13-src/checks/026.define
+Checking ../../m4-1.4.13-src/checks/027.define
+Checking ../../m4-1.4.13-src/checks/028.arguments
+Checking ../../m4-1.4.13-src/checks/029.arguments
+Checking ../../m4-1.4.13-src/checks/030.arguments
+Checking ../../m4-1.4.13-src/checks/031.arguments
+Checking ../../m4-1.4.13-src/checks/032.arguments
+Checking ../../m4-1.4.13-src/checks/033.arguments
+Checking ../../m4-1.4.13-src/checks/034.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/035.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/036.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/037.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/038.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/039.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/040.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/041.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/042.pseudo_arg
+Checking ../../m4-1.4.13-src/checks/043.undefine
+Checking ../../m4-1.4.13-src/checks/044.undefine
+Checking ../../m4-1.4.13-src/checks/045.defn
+Checking ../../m4-1.4.13-src/checks/046.defn
+Checking ../../m4-1.4.13-src/checks/047.defn
+Checking ../../m4-1.4.13-src/checks/048.defn
+Checking ../../m4-1.4.13-src/checks/049.defn
+Checking ../../m4-1.4.13-src/checks/050.defn
+Checking ../../m4-1.4.13-src/checks/051.defn
+Checking ../../m4-1.4.13-src/checks/052.pushdef
+Checking ../../m4-1.4.13-src/checks/053.pushdef
+Checking ../../m4-1.4.13-src/checks/054.indir
+Checking ../../m4-1.4.13-src/checks/055.indir
+Checking ../../m4-1.4.13-src/checks/056.indir
+Checking ../../m4-1.4.13-src/checks/057.builtin
+Checking ../../m4-1.4.13-src/checks/058.builtin
+Checking ../../m4-1.4.13-src/checks/059.builtin
+Checking ../../m4-1.4.13-src/checks/060.builtin
+Checking ../../m4-1.4.13-src/checks/061.builtin
+Checking ../../m4-1.4.13-src/checks/062.ifdef
+Checking ../../m4-1.4.13-src/checks/063.ifelse
+Checking ../../m4-1.4.13-src/checks/064.ifelse
+Checking ../../m4-1.4.13-src/checks/065.ifelse
+Checking ../../m4-1.4.13-src/checks/066.ifelse
+Checking ../../m4-1.4.13-src/checks/067.ifelse
+Checking ../../m4-1.4.13-src/checks/068.shift
+Checking ../../m4-1.4.13-src/checks/069.shift
+Checking ../../m4-1.4.13-src/checks/070.shift
+Checking ../../m4-1.4.13-src/checks/071.shift
+Checking ../../m4-1.4.13-src/checks/072.shift
+Checking ../../m4-1.4.13-src/checks/073.shift
+Checking ../../m4-1.4.13-src/checks/074.shift
+Checking ../../m4-1.4.13-src/checks/075.shift
+Checking ../../m4-1.4.13-src/checks/076.forloop
+Checking ../../m4-1.4.13-src/checks/077.forloop
+Checking ../../m4-1.4.13-src/checks/078.forloop
+Checking ../../m4-1.4.13-src/checks/079.foreach
+Checking ../../m4-1.4.13-src/checks/080.foreach
+Checking ../../m4-1.4.13-src/checks/081.foreach
+Checking ../../m4-1.4.13-src/checks/082.foreach
+Checking ../../m4-1.4.13-src/checks/083.foreach
+Checking ../../m4-1.4.13-src/checks/084.foreach
+Checking ../../m4-1.4.13-src/checks/085.stacks
+Checking ../../m4-1.4.13-src/checks/086.stacks
+Checking ../../m4-1.4.13-src/checks/087.compositio
+Checking ../../m4-1.4.13-src/checks/088.compositio
+Checking ../../m4-1.4.13-src/checks/089.compositio
+Checking ../../m4-1.4.13-src/checks/090.compositio
+Checking ../../m4-1.4.13-src/checks/091.dumpdef
+Checking ../../m4-1.4.13-src/checks/092.dumpdef
+Checking ../../m4-1.4.13-src/checks/093.trace
+Checking ../../m4-1.4.13-src/checks/094.trace
+Checking ../../m4-1.4.13-src/checks/095.trace
+Checking ../../m4-1.4.13-src/checks/096.trace
+Checking ../../m4-1.4.13-src/checks/097.trace
+Checking ../../m4-1.4.13-src/checks/098.debug_leve
+Checking ../../m4-1.4.13-src/checks/099.debug_leve
+Checking ../../m4-1.4.13-src/checks/100.debug_leve
+Checking ../../m4-1.4.13-src/checks/101.debug_outp
+Checking ../../m4-1.4.13-src/checks/102.dnl
+Checking ../../m4-1.4.13-src/checks/103.dnl
+Checking ../../m4-1.4.13-src/checks/104.dnl
+Checking ../../m4-1.4.13-src/checks/105.changequot
+Checking ../../m4-1.4.13-src/checks/106.changequot
+Checking ../../m4-1.4.13-src/checks/107.changequot
+Checking ../../m4-1.4.13-src/checks/108.changequot
+Checking ../../m4-1.4.13-src/checks/109.changequot
+Checking ../../m4-1.4.13-src/checks/110.changequot
+Checking ../../m4-1.4.13-src/checks/111.changequot
+Checking ../../m4-1.4.13-src/checks/112.changequot
+Checking ../../m4-1.4.13-src/checks/113.changequot
+Checking ../../m4-1.4.13-src/checks/114.changequot
+Checking ../../m4-1.4.13-src/checks/115.changequot
+Checking ../../m4-1.4.13-src/checks/116.changecom
+Checking ../../m4-1.4.13-src/checks/117.changecom
+Checking ../../m4-1.4.13-src/checks/118.changecom
+Checking ../../m4-1.4.13-src/checks/119.changecom
+Checking ../../m4-1.4.13-src/checks/120.changecom
+Checking ../../m4-1.4.13-src/checks/121.changecom
+Checking ../../m4-1.4.13-src/checks/122.changeword
+Checking ../../m4-1.4.13-src/checks/123.changeword
+@ ../doc/m4.texinfo:4603: Origin of test
+../../m4-1.4.13-src/checks/123.changeword: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 22:30:59.281250000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 22:30:59.187500000 +0200
+@@ -1,5 +1,4 @@
+ 
+ 
+ esyscmd(foo)
+-hi
+ 
+@ ../doc/m4.texinfo:4603: Origin of test
+../../m4-1.4.13-src/checks/123.changeword: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 22:30:59.453125000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 22:30:59.375000000 +0200
+@@ -0,0 +1,2 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:6: cannot run command `echo hi': No such file or directory
+Checking ../../m4-1.4.13-src/checks/124.changeword
+Checking ../../m4-1.4.13-src/checks/125.changeword
+Checking ../../m4-1.4.13-src/checks/126.changeword
+ skipping: syscmd does not have unix semantics
+Checking ../../m4-1.4.13-src/checks/127.changeword
+Checking ../../m4-1.4.13-src/checks/128.m4wrap
+Checking ../../m4-1.4.13-src/checks/129.m4wrap
+Checking ../../m4-1.4.13-src/checks/130.m4wrap
+Checking ../../m4-1.4.13-src/checks/131.m4wrap
+Checking ../../m4-1.4.13-src/checks/132.m4wrap
+Checking ../../m4-1.4.13-src/checks/133.m4wrap
+Checking ../../m4-1.4.13-src/checks/134.include
+Checking ../../m4-1.4.13-src/checks/135.include
+Checking ../../m4-1.4.13-src/checks/136.include
+Checking ../../m4-1.4.13-src/checks/137.include
+Checking ../../m4-1.4.13-src/checks/138.include
+Checking ../../m4-1.4.13-src/checks/139.include
+Checking ../../m4-1.4.13-src/checks/140.diversions
+Checking ../../m4-1.4.13-src/checks/141.diversions
+Checking ../../m4-1.4.13-src/checks/142.diversions
+ skipping: syscmd does not have unix semantics
+Checking ../../m4-1.4.13-src/checks/143.diversions
+Checking ../../m4-1.4.13-src/checks/144.divert
+Checking ../../m4-1.4.13-src/checks/145.divert
+Checking ../../m4-1.4.13-src/checks/146.divert
+Checking ../../m4-1.4.13-src/checks/147.divert
+Checking ../../m4-1.4.13-src/checks/148.divert
+Checking ../../m4-1.4.13-src/checks/149.undivert
+Checking ../../m4-1.4.13-src/checks/150.undivert
+Checking ../../m4-1.4.13-src/checks/151.undivert
+Checking ../../m4-1.4.13-src/checks/152.undivert
+Checking ../../m4-1.4.13-src/checks/153.undivert
+Checking ../../m4-1.4.13-src/checks/154.undivert
+Checking ../../m4-1.4.13-src/checks/155.divnum
+Checking ../../m4-1.4.13-src/checks/156.cleardiver
+Checking ../../m4-1.4.13-src/checks/157.cleardiver
+Checking ../../m4-1.4.13-src/checks/158.len
+Checking ../../m4-1.4.13-src/checks/159.index_macr
+Checking ../../m4-1.4.13-src/checks/160.index_macr
+Checking ../../m4-1.4.13-src/checks/161.regexp
+Checking ../../m4-1.4.13-src/checks/162.regexp
+Checking ../../m4-1.4.13-src/checks/163.regexp
+Checking ../../m4-1.4.13-src/checks/164.substr
+Checking ../../m4-1.4.13-src/checks/165.substr
+Checking ../../m4-1.4.13-src/checks/166.translit
+Checking ../../m4-1.4.13-src/checks/167.translit
+Checking ../../m4-1.4.13-src/checks/168.translit
+Checking ../../m4-1.4.13-src/checks/169.translit
+Checking ../../m4-1.4.13-src/checks/170.patsubst
+Checking ../../m4-1.4.13-src/checks/171.patsubst
+Checking ../../m4-1.4.13-src/checks/172.patsubst
+Checking ../../m4-1.4.13-src/checks/173.patsubst
+Checking ../../m4-1.4.13-src/checks/174.patsubst
+Checking ../../m4-1.4.13-src/checks/175.format
+Checking ../../m4-1.4.13-src/checks/176.format
+Checking ../../m4-1.4.13-src/checks/177.format
+Checking ../../m4-1.4.13-src/checks/178.incr
+Checking ../../m4-1.4.13-src/checks/179.eval
+Checking ../../m4-1.4.13-src/checks/180.eval
+Checking ../../m4-1.4.13-src/checks/181.eval
+Checking ../../m4-1.4.13-src/checks/182.eval
+Checking ../../m4-1.4.13-src/checks/183.eval
+Checking ../../m4-1.4.13-src/checks/184.eval
+Checking ../../m4-1.4.13-src/checks/185.platform_m
+Checking ../../m4-1.4.13-src/checks/186.platform_m
+Checking ../../m4-1.4.13-src/checks/187.platform_m
+Checking ../../m4-1.4.13-src/checks/188.syscmd
+@ ../doc/m4.texinfo:6493: Origin of test
+../../m4-1.4.13-src/checks/188.syscmd: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:45.703125000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:45.625000000 +0200
+@@ -1,3 +1,2 @@
+ 
+-foo
+ 
+@ ../doc/m4.texinfo:6493: Origin of test
+../../m4-1.4.13-src/checks/188.syscmd: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:45.859375000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:45.765625000 +0200
+@@ -0,0 +1,2 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: cannot run command `echo foo': No such file or directory
+Checking ../../m4-1.4.13-src/checks/189.syscmd
+@ ../doc/m4.texinfo:6522: Origin of test
+../../m4-1.4.13-src/checks/189.syscmd: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:47.031250000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:46.953125000 +0200
+@@ -0,0 +1,2 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:1: cannot run command `cat': No such file or directory
+Checking ../../m4-1.4.13-src/checks/190.esyscmd
+@ ../doc/m4.texinfo:6570: Origin of test
+../../m4-1.4.13-src/checks/190.esyscmd: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:47.578125000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:47.515625000 +0200
+@@ -1,3 +1,2 @@
+ 
+-FOO
+ 
+@ ../doc/m4.texinfo:6570: Origin of test
+../../m4-1.4.13-src/checks/190.esyscmd: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:47.734375000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:47.656250000 +0200
+@@ -0,0 +1,2 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: cannot run command `echo foo': No such file or directory
+Checking ../../m4-1.4.13-src/checks/191.sysval
+@ ../doc/m4.texinfo:6600: Origin of test
+../../m4-1.4.13-src/checks/191.sysval: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:48.359375000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:48.281250000 +0200
+@@ -2,12 +2,12 @@
+ 
+ non-zero
+ 
+-2
++127
+ 
+-0
++127
+ 
+ non-zero
+ 
+-2
++127
+ 
+-0
++127
+@ ../doc/m4.texinfo:6600: Origin of test
+../../m4-1.4.13-src/checks/191.sysval: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:48.531250000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:48.453125000 +0200
+@@ -0,0 +1,12 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: cannot run command `false': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:4: cannot run command `exit 2': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:6: cannot run command `true': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:8: cannot run command `false': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:10: cannot run command `exit 2': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:12: cannot run command `true': No such file or directory
+Checking ../../m4-1.4.13-src/checks/192.sysval
+ skipping: syscmd does not have unix semantics
+Checking ../../m4-1.4.13-src/checks/193.mkstemp
+@ ../doc/m4.texinfo:6744: Origin of test
+../../m4-1.4.13-src/checks/193.mkstemp: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:50.000000000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:49.921875000 +0200
+@@ -1,9 +1,9 @@
+ 
+-0
++127
+ created
+ same length
+ different file
+ different file
+ different file
+ 
+-0
++127
+@ ../doc/m4.texinfo:6744: Origin of test
+../../m4-1.4.13-src/checks/193.mkstemp: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:50.171875000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:50.093750000 +0200
+@@ -0,0 +1,6 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: cannot run command `rm -f foo-??????': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: esyscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:4: cannot run command `echo \` foo-?????? \'': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:13: cannot run command `rm foo-FXvYwY foo-aLRMTM foo-FuhqLE': No such file or directory
+Checking ../../m4-1.4.13-src/checks/194.mkstemp
+@ ../doc/m4.texinfo:6775: Origin of test
+../../m4-1.4.13-src/checks/194.mkstemp: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:50.812500000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:50.734375000 +0200
+@@ -1,4 +1,4 @@
++127
++127
+ 0
+-0
+-16
+-0
++127
+@ ../doc/m4.texinfo:6775: Origin of test
+../../m4-1.4.13-src/checks/194.mkstemp: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:50.953125000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:50.890625000 +0200
+@@ -0,0 +1,7 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:1: cannot run command `rm -rf foodir': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: cannot run command `mkdir foodir': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:3: cannot create tempfile `foodir/fooXXXXX': No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:4: cannot run command `rm -r foodir': No such file or directory
+Checking ../../m4-1.4.13-src/checks/195.mkstemp
+@ ../doc/m4.texinfo:6790: Origin of test
+../../m4-1.4.13-src/checks/195.mkstemp: stdout mismatch
+--- m4-tmp.4376/m4-xout	2009-05-04 23:03:51.593750000 +0200
++++ m4-tmp.4376/m4-out	2009-05-04 23:03:51.500000000 +0200
+@@ -1,4 +1,4 @@
+-0
++127
+ 9
+ 
+ foo-def
+@ ../doc/m4.texinfo:6790: Origin of test
+../../m4-1.4.13-src/checks/195.mkstemp: stderr mismatch
+--- m4-tmp.4376/m4-xerr	2009-05-04 23:03:51.750000000 +0200
++++ m4-tmp.4376/m4-err	2009-05-04 23:03:51.671875000 +0200
+@@ -1,2 +1,6 @@
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:1: cannot run command `rm -f foo-*': No such file or directory
+ j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:2: recommend using mkstemp instead
+ j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:4: recommend using mkstemp instead
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe: syscmd subprocess failed: No such file or directory
++j:\Devel\m4\1.4.13\m4-1.4.13\src\m4.exe:stdin:5: cannot run command `test -f foo-*': No such file or directory
+Checking ../../m4-1.4.13-src/checks/196.errprint
+Checking ../../m4-1.4.13-src/checks/197.location
+Checking ../../m4-1.4.13-src/checks/198.location
+Checking ../../m4-1.4.13-src/checks/199.location
+Checking ../../m4-1.4.13-src/checks/200.m4exit
+Checking ../../m4-1.4.13-src/checks/201.m4exit
+Checking ../../m4-1.4.13-src/checks/202.using_froz
+Checking ../../m4-1.4.13-src/checks/203.using_froz
+ skipping: syscmd does not have unix semantics
+Checking ../../m4-1.4.13-src/checks/204.using_froz
+Checking ../../m4-1.4.13-src/checks/205.extensions
+Checking ../../m4-1.4.13-src/checks/206.other_inco
+Checking ../../m4-1.4.13-src/checks/207.other_inco
+Checking ../../m4-1.4.13-src/checks/208.improved_e
+Checking ../../m4-1.4.13-src/checks/209.improved_f
+Checking ../../m4-1.4.13-src/checks/210.improved_f
+Checking ../../m4-1.4.13-src/checks/211.improved_f
+Checking ../../m4-1.4.13-src/checks/212.improved_f
+Checking ../../m4-1.4.13-src/checks/213.improved_f
+Checking ../../m4-1.4.13-src/checks/214.improved_f
+Checking ../../m4-1.4.13-src/checks/215.improved_f
+Checking ../../m4-1.4.13-src/checks/216.improved_f
+Checking ../../m4-1.4.13-src/checks/217.improved_f
+Checking ../../m4-1.4.13-src/checks/218.improved_f
+Checking ../../m4-1.4.13-src/checks/219.improved_f
+Checking ../../m4-1.4.13-src/checks/220.improved_f
+Checking ../../m4-1.4.13-src/checks/221.improved_f
+Checking ../../m4-1.4.13-src/checks/222.improved_f
+Checking ../../m4-1.4.13-src/checks/223.improved_c
+Checking ../../m4-1.4.13-src/checks/224.improved_c
+Checking ../../m4-1.4.13-src/checks/225.improved_m
+Checking ../../m4-1.4.13-src/checks/226.improved_m
+Checking ../../m4-1.4.13-src/checks/227.improved_c
+Checking ../../m4-1.4.13-src/checks/228.improved_c
+Checking ../../m4-1.4.13-src/checks/229.improved_c
+Checking ../../m4-1.4.13-src/checks/230.improved_f
+Checking ../../m4-1.4.13-src/checks/stackovf.test
+../../m4-1.4.13-src/checks/stackovf.test: skipping test, no stack overflow support detected in m4
+
+Skipped checks were:
+  ../../m4-1.4.13-src/checks/126.changeword ../../m4-1.4.13-src/checks/142.diversions ../../m4-1.4.13-src/checks/192.sysval ../../m4-1.4.13-src/checks/203.using_froz ../../m4-1.4.13-src/checks/stackovf.test
+Failed checks were:
+  ../../m4-1.4.13-src/checks/123.changeword:out ../../m4-1.4.13-src/checks/123.changeword:err ../../m4-1.4.13-src/checks/188.syscmd:out ../../m4-1.4.13-src/checks/188.syscmd:err ../../m4-1.4.13-src/checks/189.syscmd:err ../../m4-1.4.13-src/checks/190.esyscmd:out ../../m4-1.4.13-src/checks/190.esyscmd:err ../../m4-1.4.13-src/checks/191.sysval:out ../../m4-1.4.13-src/checks/191.sysval:err ../../m4-1.4.13-src/checks/193.mkstemp:out ../../m4-1.4.13-src/checks/193.mkstemp:err ../../m4-1.4.13-src/checks/194.mkstemp:out ../../m4-1.4.13-src/checks/194.mkstemp:err ../../m4-1.4.13-src/checks/195.mkstemp:out ../../m4-1.4.13-src/checks/195.mkstemp:err
+make[2]: [check] Fout 1 (genegeerd)
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/checks' wordt verlaten
+Making check in tests
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt binnengegaan
+make.exe  check-recursive
+make[3]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt binnengegaan
+make[4]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt binnengegaan
+make.exe  libtests.a test-alloca-opt.exe test-array_list.exe test-array_oset.exe test-avltree_oset.exe test-binary-io.exe test-btowc.exe test-c-ctype.exe test-c-stack.exe test-closein.exe test-dirname.exe test-environ.exe test-errno.exe test-fcntl.exe test-fflush.exe test-fflush2.exe test-filenamecat.exe test-fopen.exe test-fpending.exe test-fpurge.exe test-freadahead.exe test-freading.exe test-frexp-nolibm.exe test-frexpl-nolibm.exe test-fseeko.exe test-ftello.exe test-getdtablesize.exe test-gettimeofday.exe test-isnand-nolibm.exe test-isnanf-nolibm.exe test-isnanl-nolibm.exe test-linkedhash_list.exe test-lseek.exe test-lstat.exe test-malloca.exe test-math.exe test-mbrtowc.exe test-mbsinit.exe test-memchr2.exe test-open.exe  test-printf-frexp.exe test-printf-frexpl.exe test-quotearg.exe test-rawmemchr.exe test-sched.exe test-sigaction.exe test-signal.exe test-signbit.exe test-snprintf.exe test-stdbool.exe test-stdint.exe test-stdio.exe test-stdlib.exe test-strchrnul.exe test-strerror.exe test-string.exe test-strsignal.exe test-strstr.exe test-strtod.exe test-sys_stat.exe test-sys_time.exe test-unistd.exe test-vasnprintf.exe test-vasprintf-posix.exe test-vasprintf.exe test-wchar.exe test-wcrtomb.exe test-wctype.exe test-xvasprintf.exe
+make[5]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt binnengegaan
+ CC  gl_array_list.o
+ CC  gl_array_oset.o
+ CC  setenv.o
+ CC  unsetenv.o
+ AR  libtests.a
+ CC  test-alloca-opt.o
+../../m4-1.4.13-src/tests/test-alloca-opt.c:38: warning: function declaration isn't a prototype
+ CCLD  test-alloca-opt.exe
+ CC  test-array_list.o
+ CCLD  test-array_list.exe
+ CC  test-array_oset.o
+ CCLD  test-array_oset.exe
+ CC  test-avltree_oset.o
+ CCLD  test-avltree_oset.exe
+ CC  test-binary-io.o
+../../m4-1.4.13-src/tests/test-binary-io.c:44: warning: function declaration isn't a prototype
+ CCLD  test-binary-io.exe
+ CC  test-btowc.o
+ CCLD  test-btowc.exe
+ CC  test-c-ctype.o
+../../m4-1.4.13-src/tests/test-c-ctype.c:388: warning: function declaration isn't a prototype
+ CCLD  test-c-ctype.exe
+ CC  test-c-stack.o
+ CCLD  test-c-stack.exe
+ CC  test-closein.o
+ CCLD  test-closein.exe
+ CC  test-dirname.o
+../../m4-1.4.13-src/tests/test-dirname.c:135: warning: function declaration isn't a prototype
+ CCLD  test-dirname.exe
+ CC  test-environ.o
+../../m4-1.4.13-src/tests/test-environ.c:27: warning: function declaration isn't a prototype
+ CCLD  test-environ.exe
+ CC  test-errno.o
+../../m4-1.4.13-src/tests/test-errno.c:108: warning: function declaration isn't a prototype
+ CCLD  test-errno.exe
+ CC  test-fcntl.o
+../../m4-1.4.13-src/tests/test-fcntl.c:33: warning: function declaration isn't a prototype
+ CCLD  test-fcntl.exe
+ CC  test-fflush.o
+ CCLD  test-fflush.exe
+ CC  test-fflush2.o
+ CCLD  test-fflush2.exe
+ CC  test-filenamecat.o
+ CCLD  test-filenamecat.exe
+ CC  test-fopen.o
+../../m4-1.4.13-src/tests/test-fopen.c:38: warning: function declaration isn't a prototype
+ CCLD  test-fopen.exe
+ CC  test-fpending.o
+../../m4-1.4.13-src/tests/test-fpending.c:41: warning: function declaration isn't a prototype
+ CCLD  test-fpending.exe
+ CC  test-fpurge.o
+../../m4-1.4.13-src/tests/test-fpurge.c:43: warning: function declaration isn't a prototype
+ CCLD  test-fpurge.exe
+ CC  test-freadahead.o
+ CCLD  test-freadahead.exe
+ CC  test-freading.o
+../../m4-1.4.13-src/tests/test-freading.c:42: warning: function declaration isn't a prototype
+ CCLD  test-freading.exe
+ CC  test-frexp.o
+../../m4-1.4.13-src/tests/test-frexp.c:63: warning: function declaration isn't a prototype
+ CCLD  test-frexp-nolibm.exe
+ CC  test-frexpl.o
+../../m4-1.4.13-src/tests/test-frexpl.c:89: warning: function declaration isn't a prototype
+ CCLD  test-frexpl-nolibm.exe
+ CC  test-fseeko.o
+ CCLD  test-fseeko.exe
+ CC  test-ftello.o
+ CCLD  test-ftello.exe
+ CC  test-getdtablesize.o
+ CCLD  test-getdtablesize.exe
+ CC  test-gettimeofday.o
+ CCLD  test-gettimeofday.exe
+ CC  test-isnand-nolibm.o
+In file included from ../../m4-1.4.13-src/tests/test-isnand-nolibm.c:21:
+../../m4-1.4.13-src/tests/test-isnand.h:43: warning: function declaration isn't a prototype
+ CCLD  test-isnand-nolibm.exe
+ CC  test-isnanf-nolibm.o
+In file included from ../../m4-1.4.13-src/tests/test-isnanf-nolibm.c:21:
+../../m4-1.4.13-src/tests/test-isnanf.h:43: warning: function declaration isn't a prototype
+ CCLD  test-isnanf-nolibm.exe
+ CC  test-isnanl-nolibm.o
+In file included from ../../m4-1.4.13-src/tests/test-isnanl-nolibm.c:23:
+../../m4-1.4.13-src/tests/test-isnanl.h:56: warning: function declaration isn't a prototype
+ CCLD  test-isnanl-nolibm.exe
+ CC  test-linkedhash_list.o
+ CCLD  test-linkedhash_list.exe
+ CC  test-lseek.o
+ CCLD  test-lseek.exe
+ CC  test-lstat.o
+ CCLD  test-lstat.exe
+ CC  test-malloca.o
+../../m4-1.4.13-src/tests/test-malloca.c:37: warning: function declaration isn't a prototype
+ CCLD  test-malloca.exe
+ CC  test-math.o
+../../m4-1.4.13-src/tests/test-math.c:44: warning: function declaration isn't a prototype
+ CCLD  test-math.exe
+ CC  test-mbrtowc.o
+ CCLD  test-mbrtowc.exe
+ CC  test-mbsinit.o
+ CCLD  test-mbsinit.exe
+ CC  test-memchr2.o
+../../m4-1.4.13-src/tests/test-memchr2.c:44: warning: function declaration isn't a prototype
+ CCLD  test-memchr2.exe
+ CC  test-open.o
+../../m4-1.4.13-src/tests/test-open.c:40: warning: function declaration isn't a prototype
+ CCLD  test-open.exe
+ CC  test-printf-frexp.o
+../../m4-1.4.13-src/tests/test-printf-frexp.c:51: warning: function declaration isn't a prototype
+ CCLD  test-printf-frexp.exe
+ CC  test-printf-frexpl.o
+../../m4-1.4.13-src/tests/test-printf-frexpl.c:69: warning: function declaration isn't a prototype
+ CCLD  test-printf-frexpl.exe
+ CC  test-quotearg.o
+ CCLD  test-quotearg.exe
+ CC  test-rawmemchr.o
+../../m4-1.4.13-src/tests/test-rawmemchr.c:43: warning: function declaration isn't a prototype
+ CCLD  test-rawmemchr.exe
+ CC  test-sched.o
+../../m4-1.4.13-src/tests/test-sched.c:33: warning: function declaration isn't a prototype
+ CCLD  test-sched.exe
+ CC  test-sigaction.o
+ CCLD  test-sigaction.exe
+ CC  test-signal.o
+../../m4-1.4.13-src/tests/test-signal.c:26: warning: function declaration isn't a prototype
+ CCLD  test-signal.exe
+ CC  test-signbit.o
+../../m4-1.4.13-src/tests/test-signbit.c:68: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-signbit.c:113: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-signbit.c:156: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-signbit.c:199: warning: function declaration isn't a prototype
+ CCLD  test-signbit.exe
+ CC  test-snprintf.o
+ CCLD  test-snprintf.exe
+ CC  test-stdbool.o
+../../m4-1.4.13-src/tests/test-stdbool.c:93: warning: function declaration isn't a prototype
+ CCLD  test-stdbool.exe
+ CC  test-stdint.o
+../../m4-1.4.13-src/tests/test-stdint.c:358: warning: function declaration isn't a prototype
+ CCLD  test-stdint.exe
+ CC  test-stdio.o
+../../m4-1.4.13-src/tests/test-stdio.c:28: warning: function declaration isn't a prototype
+ CCLD  test-stdio.exe
+ CC  test-stdlib.o
+../../m4-1.4.13-src/tests/test-stdlib.c:27: warning: function declaration isn't a prototype
+ CCLD  test-stdlib.exe
+ CC  test-strchrnul.o
+../../m4-1.4.13-src/tests/test-strchrnul.c:39: warning: function declaration isn't a prototype
+ CCLD  test-strchrnul.exe
+ CC  test-strerror.o
+ CCLD  test-strerror.exe
+ CC  test-string.o
+../../m4-1.4.13-src/tests/test-string.c:25: warning: function declaration isn't a prototype
+ CCLD  test-string.exe
+ CC  test-strsignal.o
+ CCLD  test-strsignal.exe
+ CC  test-strstr.o
+ CCLD  test-strstr.exe
+ CC  test-strtod.o
+../../m4-1.4.13-src/tests/test-strtod.c:51: warning: function declaration isn't a prototype
+ CCLD  test-strtod.exe
+ CC  test-sys_stat.o
+../../m4-1.4.13-src/tests/test-sys_stat.c:261: warning: function declaration isn't a prototype
+ CCLD  test-sys_stat.exe
+ CC  test-sys_time.o
+../../m4-1.4.13-src/tests/test-sys_time.c:27: warning: function declaration isn't a prototype
+ CCLD  test-sys_time.exe
+ CC  test-unistd.o
+../../m4-1.4.13-src/tests/test-unistd.c:48: warning: function declaration isn't a prototype
+ CCLD  test-unistd.exe
+ CC  test-vasnprintf.o
+../../m4-1.4.13-src/tests/test-vasnprintf.c:54: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-vasnprintf.c:89: warning: function declaration isn't a prototype
+ CCLD  test-vasnprintf.exe
+ CC  test-vasprintf-posix.o
+../../m4-1.4.13-src/tests/test-vasprintf-posix.c:48: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-vasprintf-posix.c:3648: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-vasprintf-posix.c:3654: warning: function declaration isn't a prototype
+ CCLD  test-vasprintf-posix.exe
+ CC  test-vasprintf.o
+../../m4-1.4.13-src/tests/test-vasprintf.c:53: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-vasprintf.c:69: warning: function declaration isn't a prototype
+ CCLD  test-vasprintf.exe
+ CC  test-wchar.o
+../../m4-1.4.13-src/tests/test-wchar.c:29: warning: function declaration isn't a prototype
+ CCLD  test-wchar.exe
+ CC  test-wcrtomb.o
+ CCLD  test-wcrtomb.exe
+ CC  test-wctype.o
+../../m4-1.4.13-src/tests/test-wctype.c:28: warning: function declaration isn't a prototype
+ CCLD  test-wctype.exe
+ CC  test-xvasprintf.o
+../../m4-1.4.13-src/tests/test-xvasprintf.c:56: warning: function declaration isn't a prototype
+../../m4-1.4.13-src/tests/test-xvasprintf.c:70: warning: function declaration isn't a prototype
+ CCLD  test-xvasprintf.exe
+make[5]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt verlaten
+make.exe  check-TESTS
+make[5]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt binnengegaan
+PASS: test-alloca-opt.exe
+PASS: test-array_list.exe
+PASS: test-array_oset.exe
+PASS: test-avltree_oset.exe
+PASS: test-binary-io.sh
+Skipping test: no traditional french locale is supported
+SKIP: test-btowc1.sh
+Skipping test: no french Unicode locale is supported
+SKIP: test-btowc2.sh
+PASS: test-c-ctype.exe
+c_stack_action: Unknown error
+skipping test: SKIP: test-c-stack.sh
+c_stack_action: Unknown error
+skipping test: SKIP: test-c-stack2.sh
+PASS: test-closein.sh
+PASS: test-dirname.exe
+PASS: test-environ.exe
+PASS: test-errno.exe
+PASS: test-fcntl.exe
+PASS: test-fflush.exe
+PASS: test-fflush2.sh
+PASS: test-filenamecat.exe
+PASS: test-fopen.exe
+PASS: test-fpending.sh
+PASS: test-fpurge.exe
+PASS: test-freadahead.sh
+PASS: test-freading.exe
+PASS: test-frexp-nolibm.exe
+PASS: test-frexpl-nolibm.exe
+PASS: test-fseeko.sh
+PASS: test-fseeko2.sh
+PASS: test-ftello.sh
+PASS: test-ftello2.sh
+PASS: test-getdtablesize.exe
+PASS: test-gettimeofday.exe
+PASS: test-isnand-nolibm.exe
+PASS: test-isnanf-nolibm.exe
+PASS: test-isnanl-nolibm.exe
+PASS: test-linkedhash_list.exe
+PASS: test-lseek.sh
+PASS: test-lstat.exe
+PASS: test-malloca.exe
+FAIL: test-math.exe
+Skipping test: no traditional french locale is supported
+SKIP: test-mbrtowc1.sh
+Skipping test: no french Unicode locale is supported
+SKIP: test-mbrtowc2.sh
+Skipping test: no traditional japanese locale is supported
+SKIP: test-mbrtowc3.sh
+Skipping test: no transitional chinese locale is supported
+SKIP: test-mbrtowc4.sh
+Skipping test: no french Unicode locale is supported
+SKIP: test-mbsinit.sh
+PASS: test-memchr2.exe
+PASS: test-open.exe
+PASS: test-printf-frexp.exe
+PASS: test-printf-frexpl.exe
+PASS: test-quotearg.sh
+PASS: test-rawmemchr.exe
+PASS: test-sched.exe
+PASS: test-sigaction.exe
+PASS: test-signal.exe
+PASS: test-signbit.exe
+PASS: test-snprintf.exe
+PASS: test-stdbool.exe
+PASS: test-stdint.exe
+PASS: test-stdio.exe
+PASS: test-stdlib.exe
+PASS: test-strchrnul.exe
+PASS: test-strerror.exe
+PASS: test-string.exe
+PASS: test-strsignal.exe
+PASS: test-strstr.exe
+PASS: test-strtod.exe
+PASS: test-sys_stat.exe
+PASS: test-sys_time.exe
+PASS: test-unistd.exe
+PASS: test-vasnprintf.exe
+../../m4-1.4.13-src/tests/test-vasprintf-posix.c:3479: assertion failed
+
+This application has requested the Runtime to terminate it in an unusual way.
+Please contact the application's support team for more information.
+FAIL: test-vasprintf-posix.exe
+PASS: test-vasprintf.exe
+PASS: test-wchar.exe
+PASS: test-wcrtomb.sh
+PASS: test-wctype.exe
+PASS: test-xvasprintf.exe
+===============================
+2 of 66 tests failed
+(9 tests were not run)
+Please report to bug-m4@gnu.org
+===============================
+make[5]: [check-TESTS] Fout 1 (genegeerd)
+make[5]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt verlaten
+make[4]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt verlaten
+make[3]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt verlaten
+make[2]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13/tests' wordt verlaten
+make[1]: Map '/cygdrive/j/Devel/m4/1.4.13/m4-1.4.13' wordt verlaten

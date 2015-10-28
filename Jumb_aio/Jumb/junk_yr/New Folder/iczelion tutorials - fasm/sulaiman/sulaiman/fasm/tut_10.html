@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 10 : Dialog Box as Main Window</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 10 : Dialog Box as Main Window">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 10 : Dialog Box as Main Window">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 10 : Dialog Box as Main Window</div>
+<br>
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+include '%fasminc%\win32a.inc'
+
+section '.data' data readable writeable
+     hMain     dd   ?
+     hInstance dd   ?
+
+     wTitle    db   'Tutorial 10',0
+     wClsName  db   'DLGCLASS',0
+
+     wMsg      MSG
+     wCls      WNDCLASS
+
+     ;experiment variables
+     expDlgName     db   'My Dialog',0
+     expTxt         db   "Wow! I'm in an edit box now",0
+     expBuffer:     times 513 db 0
+     expHDlg        dd   ?
+
+section '.code' code readable executable
+     start:
+          ; +---------------------------+
+          ; | register the window class |
+          ; +---------------------------+
+          invoke    GetModuleHandle,NULL
+                    mov  [hInstance],eax
+          invoke    DialogBoxParam,[hInstance],31,NULL,dialog_procedure,NULL
+          invoke    ExitProcess,0
+
+          ; +----------------------+
+          ; | the dialog procedure |
+          ; +----------------------+
+          proc dialog_procedure,hDlg,uMsg,wParam,lParam
+               push ebx esi edi
+               cmp  [uMsg],WM_COMMAND
+               je   wmCOMMAND
+               cmp  [uMsg],WM_CLOSE
+               je   wmCLOSE
+               cmp  [uMsg],WM_INITDIALOG
+               je   wmINITDIALOG
+               jmp  wmBYE
+
+               wmINITDIALOG:
+                    invoke    GetDlgItem,[hDlg],3000
+                    invoke    SetFocus,eax
+                              jmp  wmBYE
+               wmCLOSE:
+                    invoke    SendMessage,[hDlg],WM_COMMAND,3002,0
+                              jmp  wmBYE
+
+               wmCOMMAND:
+                    cmp  [wParam],0xFFFF and 32000
+                    je   wmCOMMAND_32000
+                    cmp  [wParam],0xFFFF and 32001
+                    je   wmCOMMAND_32001
+                    cmp  [wParam],0xFFFF and 32002
+                    je   wmCOMMAND_32002
+                    cmp  [wParam],BN_CLICKED shl 16 or 3002
+                    je   wmCOMMAND_3002
+                    cmp  [wParam],BN_CLICKED shl 16 or 3001
+                    je   wmCOMMAND_3001
+                    jmp  wmBYE
+
+                    wmCOMMAND_3002:     ;exit button
+                         invoke    EndDialog,[hDlg],0
+                                   jmp  wmBYE
+                    wmCOMMAND_3001:     ;say hello button
+                         invoke    SetDlgItemText,[hDlg],3000,expTxt
+                                   jmp  wmBYE
+                    wmCOMMAND_32000:    ;menu get text
+                         invoke    GetDlgItemText,[hDlg],3000,expBuffer,512
+                         invoke    MessageBox,NULL,expBuffer,expDlgName,MB_OK
+                                   jmp  wmBYE
+                    wmCOMMAND_32001:    ;clear text
+                         invoke    SetDlgItemText,[hDlg],3000,NULL
+                                   jmp  wmBYE
+                    wmCOMMAND_32002:    ;exit
+                         invoke    SendMessage,[hDlg],WM_COMMAND,3002,0
+                                   jmp  wmBYE
+
+               wmBYE:
+                    pop  edi esi ebx
+                    return
+          endp
+
+section '.idata' import data readable writeable
+     library   KERNEL32, 'KERNEL32.DLL',\
+               USER32,   'USER32.DLL'
+
+     import    KERNEL32,\
+               GetModuleHandle,    'GetModuleHandleA',\
+               ExitProcess,        'ExitProcess'
+
+
+     import    USER32,\
+               LoadCursor,         'LoadCursorA',\
+               LoadIcon,           'LoadIconA',\
+               DialogBoxParam,     'DialogBoxParamA',\
+               GetDlgItem,         'GetDlgItem',\
+               EndDialog,          'EndDialog',\
+               SetFocus,           'SetFocus',\
+               MessageBox,         'MessageBoxA',\
+               SetDlgItemText,     'SetDlgItemTextA',\
+               GetDlgItemText,     'GetDlgItemTextA',\
+               SendMessage,        'SendMessageA',\
+               PostQuitMessage,    'PostQuitMessage'
+
+section '.rsrc' resource data readable
+     directory RT_MENU,appMenu,\
+               RT_DIALOG,appDialog
+
+     resource  appMenu,\
+               30,LANG_NEUTRAL,menuMain
+     resource  appDialog,\
+               31,LANG_NEUTRAL,dlgMain
+
+     menu menuMain
+          menuitem  'Test Controls',0,MFR_POPUP + MFR_END
+          menuitem       'Get Text',32000,MFT_STRING
+          menuitem       'Clear Text',32001,MFT_STRING
+                         menuseparator
+          menuitem       'E&xit',32002,MFR_END
+
+     dialog dlgMain,'Our First Dialog Box',10,10,205,60,\
+          DS_CENTER + WS_CAPTION + WS_MINIMIZEBOX + WS_SYSMENU + WS_VISIBLE + WS_OVERLAPPED + DS_MODALFRAME + DS_3DLOOK,30
+          dialogitem     'EDIT','',3000,15,17,111,13,ES_AUTOHSCROLL + ES_LEFT + WS_BORDER + WS_VISIBLE + WS_TABSTOP
+          dialogitem     'BUTTON','Say Hello',3001,141,10,52,13,BS_DEFPUSHBUTTON + WS_VISIBLE + WS_TABSTOP
+          dialogitem     'BUTTON','E&xit',3002,141,26,52,13,WS_VISIBLE + WS_TABSTOP
+     enddialog
+
+</pre>
+Result :<br>
+<table width="100%"><tr valign="top"><td><img src="../img/tut_10a.gif"></td><td><img src="../img/tut_10b.gif"></td></tr></table>
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

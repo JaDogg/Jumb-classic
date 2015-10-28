@@ -1,0 +1,64 @@
+' new example for text box control
+DEFSTR t$ text$ text2$ newtext$ b3text$
+'create window
+WIN 0 0 640 500 TextEditor
+' set window color
+WINCOLOR 220 220 225
+
+'set string variable
+LET text$ = File_Loaded
+LET text2$ = File_Saved
+LET t$ = Open
+LET newtext$ = New
+LET b3text$ = Save
+
+'new
+BUTTON 20 10 100 20 FLAT 52
+'open
+BUTTON 140 10 100 20 FLAT 51
+'save
+BUTTON 260 10 100 20 FLAT 53
+
+'set front pen
+COLOR 100 100 110
+'draw rectangle
+RECT 14 5 600 35
+
+'create text box
+TEXTBOX 15 50 600 400 251
+
+'set control font
+CONTROLFONT 251 CourierNew 10
+'set control color
+CONTROLCOLOR 251 230 230 255 50 50 90
+
+'ConTrol Set Text-/set textbox with text/
+CTSETTEXT 52 newtext$
+CTSETTEXT 53 b3text$
+CTSETTEXT 51 t$
+
+WAIT 0
+
+'button event ID=51
+SUBB 51
+' new CTSETTEXT erase previus content of control
+OPENFILE ASTEXT
+'TEXTBUFFER is string buffer wich hold text
+CTSETTEXT 251 TEXTBUFFER
+GOSUB textbutton2
+ENDSUB
+
+SUBB 52
+CLEARCONTROL 251
+ENDSUB
+
+SUBB 53
+CTGETTEXT 251 TEXTBUFFER
+SAVEFILE ASTEXT
+CLEARSPACE 500 10
+PRINT 500 10 text2$
+ENDSUB
+
+SUB textbutton2
+PRINT 500 10 text$
+RETURN 

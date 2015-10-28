@@ -1,0 +1,50 @@
+' AB examples v1.1
+DEFNUM LeftRect% 
+' create window
+WIN 100 100 550 400 LittleStory
+' set window color
+WINCOLOR 255 255 214
+' create close button
+BUTTON 10 10 80 25 FLAT 51
+CTSETTEXT 51 Close Window
+COLOR 20 20 100
+' add text
+TEXT 40 80 AUREL BASIC is Small and simple Script Programming Language
+' create rectangle
+RECT 40 100 450 140
+' fil with color lightgray
+FILL 42 102 RGB 255 255 214
+' set window font
+WINFONT Verdana 9
+COLOR 0 0 200
+' add more text
+ TEXT 60 120 He learn you how make programs is not miracle
+  TEXT 60 140 This tool is in first place for beginners in programming world
+  TEXT 60 160 If you dont know how , just press button H for Help
+ TEXT 60 180 Thanks for using Aurel Basic //AUTOR//
+' color for rectangle
+COLOR 0 0 0
+LET LeftRect% = 40
+' start loop
+LOOP 5
+ RECT LeftRect% 250 50 50
+ LET LeftRect% = LeftRect% + 100
+ENDLOOP
+' color red
+FILL 44 254 RGB 200 0 0
+' color green
+FILL 144 254 RGB 0 200 0
+' color blue
+FILL 244 254 RGB 0 0 200
+' color yellow
+FILL 344 254 RGB 255 255 0
+' color gray
+FILL 444 254 RGB 158 158 158
+
+' wait for subb event
+WAIT 0
+
+' start sub event
+SUBB 51
+ CLOSEWIN
+ENDSUB 

@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 2 : MessageBox</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 2 : MessageBox">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 2 : MessageBox">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 2 : MessageBox</div>
+<br>
+<pre class="fl2">
+include '%fasminc%/win32ax.inc'
+
+.data
+     msgBoxCaption  db   'Iczelion Tutorial No.2',0
+     msgBoxText     db   'Win32 Assembly with FASM is Great!',0
+
+.code
+     start:
+          invoke    MessageBox,NULL,msgBoxText,msgBoxCaption,MB_OK
+          invoke    ExitProcess,0
+
+.end start
+</pre>
+Result :<br>
+<img src="../img/tut_2.gif">
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

@@ -1,0 +1,353 @@
+' example AllSuff/ABasic v1.1
+' define number variables
+DEFNUM a% b% c% d% e% f% g%
+DEFNUM h% i% j% k% l% m% n%
+DEFNUM o% p% r% s% t% u% v%
+DEFNUM z% x% y% w% q% cy%
+' define string variables
+DEFSTR a$ b$ c$ d$ e$ f$ g$
+DEFSTR h$ i$ j$ k$ l$ m$ n$
+DEFSTR o$ p$ r$ s$ t$ u$ v$
+DEFSTR z$ x$ y$ w$ q$
+DEFSTR it1$ it2$ it3$ it4$ it5$ it6$ it7$
+DEFSTR it8$ it9$ 
+' open window
+WIN 0 0 640 560 AllStuff
+' set window color
+WINCOLOR 231 223 231
+' set font
+WINFONT CourierNew 10
+' set variables
+LET a% = 1
+LET b% = 2
+LET c% = 3
+LET d% = 4
+LET e% = 5
+LET f% = 6
+LET g% = 7
+; -------------
+LET h% = 8
+LET i% = 9
+LET j% = 10
+LET k% = 11
+LET l% = 12
+LET m% = 13
+LET n% = 14
+; ------------
+LET o% = 15
+LET p% = 16
+LET r% = 17
+LET s% = 18
+LET t% = 19
+LET u% = 20
+LET v% = 21
+; ------------
+LET z% = 22
+LET x% = 23
+LET y% = 24
+LET w% = 25
+LET q% = 26
+LET cy% = 0
+' set strings
+LET it1$ = 1.item
+LET it2$ = 2.item
+LET it3$ = 3.item
+LET it4$ = 4.item
+LET it5$ = 5.item
+LET it6$ = 6.item
+LET it7$ = 7.item
+LET it8$ = 8.item
+LET it9$ = 9.item
+;
+LET a$ = one
+LET b$ = two
+LET c$ = tree
+LET d$ = four
+LET e$ = five
+LET f$ = six
+LET g$ = seven
+LET h$ = eight
+LET i$ = nine
+LET j$ = ten
+LET k$ = This
+LET l$ = is
+LET m$ = simple
+LET n$ = and
+LET o$ = friendly
+LET p$ = programming
+LET r$ = language
+LET s$ = based
+LET t$ = on
+LET u$ = simple
+LET v$ = classic
+LET z$ = basic
+LET x$ = ******
+LET y$ = Aurel
+LET w$ = Basic
+LET q$ = ****
+' create buttons
+BUTTON 20 30 80 20 SYS 51
+CTSETTEXT 51 Set.Inboxes
+
+BUTTON 20 60 80 20 SYS 52
+CTSETTEXT 52 Set.Outboxes
+
+BUTTON 20 90 80 20 SYS 53
+CTSETTEXT 53 ShowStrings
+
+BUTTON 20 120 80 20 SYS 54
+CTSETTEXT 54 ShowVarValues
+
+BUTTON 20 150 80 20 SYS 55
+CTSETTEXT 55 ShowVarNames
+
+BUTTON 20 180 80 20 SYS 56 
+CTSETTEXT 56 ShowCircles
+
+BUTTON 20 210 80 20 SYS 57 
+CTSETTEXT 57 Rectangles
+
+BUTTON 20 240 80 20 SYS 58
+CTSETTEXT 58 ShowImage
+
+BUTTON 20 270 80 20 SYS 59
+CTSETTEXT 59 LBControlColor
+
+BUTTON 20 300 80 20 SYS 60
+CTSETTEXT 60 CheckState
+
+'create radio button control
+RADIOBUTTON 360 30 100 30 NOBORDER 351
+CTSETTEXT 351 Radio Button
+'create checkbox
+CHECKBOX 360 80 100 30 NOBORDER 401
+CTSETTEXT 401 Checkbox
+' create listbox
+LISTBOX 240 30 100 140 201
+LBADDSTRING 201 it1$
+LBADDSTRING 201 it2$
+LBADDSTRING 201 it3$
+LBADDSTRING 201 it4$
+LBADDSTRING 201 it5$
+LBADDSTRING 201 it6$
+LBADDSTRING 201 it7$
+LBADDSTRING 201 it8$
+LBADDSTRING 201 it9$
+' create inboxes
+INBOX 120 200 101
+INBOX 195 200 102
+INBOX 270 200 103
+INBOX 345 200 104
+INBOX 420 200 105
+INBOX 120 240 106
+INBOX 195 240 107
+INBOX 270 240 108
+INBOX 345 240 109
+INBOX 420 240 110
+' create outboxes
+OUTBOX 120 290 151
+OUTBOX 195 290 152
+OUTBOX 270 290 153
+OUTBOX 345 290 154
+OUTBOX 420 290 155
+OUTBOX 120 332 156
+OUTBOX 195 332 157
+OUTBOX 270 332 158 
+OUTBOX 345 332 159
+OUTBOX 420 332 160
+' inbox names
+WINFONT CourierNew 10
+COLOR 55 55 55
+TEXT 120 182 Inbox 1
+TEXT 195 182 Inbox 2
+TEXT 270 182 Inbox 3
+TEXT 345 182 Inbox 4
+TEXT 420 182 Inbox 5
+TEXT 120 222 Inbox 6
+TEXT 195 222 Inbox 7
+TEXT 270 222 Inbox 8
+TEXT 345 222 Inbox 9
+TEXT 420 222 Inbox 10
+COLOR 55 55 155
+TEXT 120 272 Outbox 1
+TEXT 195 272 Outbox 2
+TEXT 270 272 Outbox 3
+TEXT 345 272 Outbox 4
+TEXT 420 272 Outbox 5
+TEXT 120 314 Outbox 6
+TEXT 195 314 Outbox 7
+COLOR 255 5 5
+TEXT 270 314 Outbox 8
+COLOR 5 155 5
+TEXT 345 314 Outbox 9
+COLOR 5 5 255
+TEXT 420 314 Outbox 10
+COLOR 0 0 0
+
+WAIT 0
+
+SUBB 51
+SETINBOX 101 a%
+SETINBOX 102 b%
+SETINBOX 103 c%
+SETINBOX 104 d%
+SETINBOX 105 e%
+SETINBOX 106 f%
+SETINBOX 107 g%
+SETINBOX 108 h%
+SETINBOX 109 i%
+SETINBOX 110 j%
+ENDSUB
+
+SUBB 52
+SETOUTBOX 151 k%
+SETOUTBOX 152 l%
+SETOUTBOX 153 m%
+SETOUTBOX 154 n%
+SETOUTBOX 155 o%
+SETOUTBOX 156 p%
+SETOUTBOX 157 r%
+SETOUTBOX 158 s%
+SETOUTBOX 159 t%
+SETOUTBOX 160 u%
+ENDSUB
+
+SUBB 53
+'COLOR black
+  COLOR 0 0 0
+   RECT 20 360 480 80
+   'COLOR lightblue
+   'FILL 22 362 RGB 190 190 245
+  '  COLOR white
+  COLOR 55 55 55
+WINFONT CourierNew 10
+  COLOR 200 0 0
+	PRINT 25 365 a$
+	PRINT 75 365 b$
+	PRINT 125 365 c$
+	PRINT 175 365 d$
+ 	PRINT 225 365 e$
+ 	PRINT 275 365 f$
+ 	PRINT 320 365 g$
+ 	PRINT 375 365 h$
+	PRINT 425 365 i$
+ 	PRINT 464 365 j$
+  COLOR 0 140 0
+	PRINT 25 385 k$
+	PRINT 65 385 l$
+	PRINT 90 385 m$
+	PRINT 155 385 n$
+	PRINT 190 385 o$
+	PRINT 265 385 p$
+	PRINT 365 385 r$
+  COLOR 0 0 200
+	PRINT 25 405 s$
+	PRINT 75 405 t$
+	PRINT 105 405 u$
+	PRINT 165 405 v$
+	PRINT 235 405 z$
+	PRINT 290 405 x$
+	PRINT 355 405 y$
+	PRINT 405 405 w$
+	PRINT 455 405 q$
+TEXT 20 330 Strings
+ENDSUB
+
+' print variables---------
+SUBB 54
+WINFONT CourierNew 10
+' COLOR red
+COLOR 200 0 0 
+PRINT 520 10 a%
+PRINT 520 30 b%
+PRINT 520 50 c%
+PRINT 520 70 d%
+PRINT 520 90 e%
+PRINT 520 110 f%
+PRINT 520 130 g%
+PRINT 520 150 h%
+PRINT 520 170 i%
+PRINT 520 190 j%
+PRINT 520 210 k%
+PRINT 520 230 l%
+PRINT 520 250 m%
+PRINT 520 270 n%
+PRINT 520 290 o%
+PRINT 520 310 p%
+PRINT 520 330 r%
+PRINT 520 350 s%
+PRINT 520 370 t%
+PRINT 520 390 u%
+PRINT 520 410 v%
+PRINT 520 430 z%
+PRINT 520 450 x%
+PRINT 520 470 y%
+PRINT 520 490 w%
+PRINT 520 510 q%
+ENDSUB
+' show variable names-----
+SUBB 55
+WINFONT CourierNew 10
+COLOR 0 120 0
+TEXT 550 10 a
+TEXT 550 30 b
+TEXT 550 50 c
+TEXT 550 70 d
+TEXT 550 90 e
+TEXT 550 110 f
+TEXT 550 130 g
+TEXT 550 150 h
+TEXT 550 170 i
+TEXT 550 190 j
+TEXT 550 210 k
+TEXT 550 230 l
+TEXT 550 250 m
+TEXT 550 270 n
+TEXT 550 290 o
+TEXT 550 310 p
+TEXT 550 330 r
+TEXT 550 350 s
+TEXT 550 370 t
+TEXT 550 390 u
+TEXT 550 410 v
+TEXT 550 430 z
+TEXT 550 450 x
+TEXT 550 470 y
+TEXT 550 490 w
+TEXT 550 510 q
+ENDSUB
+' draw circles--------------
+SUBB 56
+      COLOR 0 0 200
+	LET cy% = 20
+	LOOP 11
+	  CIRCLE 600 cy% 20
+	  LET cy% = cy% + 40
+	ENDLOOP
+ENDSUB
+'----------------------------
+SUBB 57
+	RECT 20 450 480 60
+	RECT 30 460 460 40
+	RECT 40 470 440 20
+	; COLOR red
+	FILL 22 452 RGB 200 0 0 
+	; COLOR green
+	FILL 32 462 RGB 0 180 0
+      ; COLOR blue
+	FILL 42 472 RGB 0 0 200
+     WINFONT Microsoft 10
+     COLOR 55 55 55
+   TEXT 44 472 'RECTANGLES'
+ENDSUB
+' load image------------------
+SUBB 58
+RECT 120 60 100 100
+LOADIMAGE bluefC.gif
+SHOWIMAGE 125 65
+ENDSUB
+' change listbox color
+SUBB 59
+CONTROLCOLOR 201 0 0 0 223 239 245 
+ENDSUB 
+

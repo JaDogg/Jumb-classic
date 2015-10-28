@@ -1,0 +1,239 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 19 : Tree View Control</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 19 : Tree View Control">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 19 : Tree View Control">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 19 : Tree View Control</div>
+<br>
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+include '%fasminc%\win32a.inc'
+
+section '.data' data readable writeable
+        wndH            dd ?
+        insH            dd ?
+        wndClsName      db 'TUT_19',0
+        wndTitle        db 'Tutorial 19',0
+
+        wndCls  WNDCLASS
+        wndMsg  MSG
+        
+        ctlClsNameTv    db 'SysTreeView32',0
+        
+        tv1H            dd ?
+        tv1Insert       TVINSERTSTRUCT
+        tv1HitInfo      TVHITTESTINFO
+        tv1Txt1         db 'Node - Parent',0
+        tv1Txt2         db 'Node - Child 1',0
+        tv1Txt3         db 'Node - Child 2',0
+        
+        imgl1H          dd ?
+        imgl1DragH      dd ?
+        imgl1Drag       dd FALSE
+        imgl1ItemRect   RECT
+        
+        bmp1H           dd ?
+        
+section '.code' code readable executable
+   start:
+        invoke  GetModuleHandle,0
+                mov  [insH],eax
+                mov  [wndCls.hInstance],eax
+                mov  [wndCls.style],CS_HREDRAW or CS_VREDRAW
+                mov  [wndCls.lpfnWndProc],window_procedure
+                mov  [wndCls.lpszClassName],wndClsName
+                mov  [wndCls.hbrBackground],COLOR_BTNFACE+1
+        invoke  LoadIcon,NULL,IDI_APPLICATION
+                mov  [wndCls.hIcon],eax
+        invoke  LoadCursor,NULL,IDC_ARROW
+                mov  [wndCls.hCursor],eax
+        invoke  RegisterClass,wndCls
+
+        invoke  CreateWindowEx,WS_EX_CLIENTEDGE,\
+                wndClsName,wndTitle,\
+                WS_OVERLAPPEDWINDOW + WS_VISIBLE,\
+                CW_USEDEFAULT,CW_USEDEFAULT,\
+                230,300,\
+                NULL,NULL,[insH],NULL
+                mov  [wndH],eax
+        
+        invoke  InitCommonControls
+
+   ;+---------------------------+
+   ;| entering the message loop |
+   ;+---------------------------+
+   window_message_loop_start:
+        invoke  GetMessage,wndMsg,NULL,0,0
+                or    eax,eax
+                je    window_message_loop_end
+        invoke  TranslateMessage,wndMsg
+        invoke  DispatchMessage,wndMsg
+                jmp     window_message_loop_start
+
+   window_message_loop_end:
+        invoke  ExitProcess,0
+
+   ;+----------------------+
+   ;| the window procedure |
+   ;+----------------------+
+   proc window_procedure,hWnd,uMsg,wParam,lParam
+                push ebx esi edi
+                cmp  [uMsg],WM_CREATE
+                je   wmCREATE
+                cmp  [uMsg],WM_NOTIFY
+                je   wmNOTIFY
+                cmp  [uMsg],WM_MOUSEMOVE
+                je   wmMOUSEMOVE
+                cmp  [uMsg],WM_LBUTTONUP
+                je   wmLBUTTONUP
+                cmp  [uMsg],WM_DESTROY
+                je   wmDESTROY
+        wmDEFAULT:
+                invoke  DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+                        jmp  wmBYE
+        wmLBUTTONUP:
+                invoke  ImageList_DragLeave,[tv1H]
+                invoke  ImageList_EndDrag
+                invoke  SendMessage,[tv1H],TVM_GETNEXTITEM,TVGN_DROPHILITE,0
+                invoke  SendMessage,[tv1H],TVM_SELECTITEM,TVGN_CARET,eax
+                invoke  SendMessage,[tv1H],TVM_SELECTITEM,TVGN_DROPHILITE,NULL
+                invoke  ReleaseCapture
+                        mov  [imgl1Drag],FALSE
+                        jmp  wmBYE
+        wmMOUSEMOVE:
+                        cmp  [imgl1Drag],TRUE
+                        jne  wmDEFAULT
+                        mov  eax,[lParam]
+                        and  eax,0xFFFF
+                        mov  ecx,[lParam]
+                        shr  ecx,16
+                        mov  [tv1HitInfo.pt.x],eax
+                        mov  [tv1HitInfo.pt.y],ecx
+                invoke  ImageList_DragMove,eax,ecx
+                invoke  ImageList_DragShowNolock,FALSE
+                invoke  SendMessage,[tv1H],TVM_HITTEST,0,tv1HitInfo
+                        cmp  eax,NULL
+                        je   @f
+                invoke  SendMessage,[tv1H],TVM_SELECTITEM,TVGN_DROPHILITE,eax
+                @@:
+                invoke  ImageList_DragShowNolock,TRUE
+                        jmp  wmBYE
+        wmNOTIFY:
+                        mov  edx,[lParam]
+                        cmp  [edx + NMTREEVIEW.hdr.code],TVN_BEGINDRAG
+                        jne  wmDEFAULT
+                invoke  SendMessage,[tv1H],TVM_CREATEDRAGIMAGE,0,[edx + NMTREEVIEW.itemNew.hItem]
+                        mov  [imgl1DragH],eax
+                invoke  SendMessage,[tv1H],TVM_GETITEMRECT,TRUE,imgl1ItemRect
+                invoke  ImageList_BeginDrag,[imgl1DragH],0,0,0
+                invoke  ImageList_DragEnter,[tv1H],[edx + NMTREEVIEW.ptDrag.x],[edx + NMTREEVIEW.ptDrag.y]
+                invoke  GetParent,[tv1H]
+                invoke  SetCapture,eax
+                        mov  [imgl1Drag],TRUE
+                        jmp  wmBYE
+        wmCREATE:
+                invoke  CreateWindowEx,NULL,ctlClsNameTv,NULL,\
+                        WS_VISIBLE + WS_CHILD + WS_BORDER + TVS_HASBUTTONS + TVS_LINESATROOT + TVS_HASLINES,\
+                        10,10,200,250,\
+                        [hWnd],NULL,[insH],NULL
+                        mov  [tv1H],eax
+                ;invoke ImageList_Create,16,16,FALSE,2,10                       ;without mask
+                invoke  ImageList_Create,16,16,ILC_COLOR16 + ILC_MASK,2,10      ;with mask
+                        mov  [imgl1H],eax
+                invoke  LoadBitmap,[insH],31
+                        mov  [bmp1H],eax
+                ;invoke ImageList_Add,[imgl1H],[bmp1H],NULL                     ;without mask
+                invoke  ImageList_AddMasked,[imgl1H],[bmp1H],0x0000FF00         ;with mask
+                invoke  DeleteObject,[bmp1H]
+                invoke  SendMessage,[tv1H],TVM_SETIMAGELIST,TVSIL_NORMAL,[imgl1H]
+                        mov  [tv1Insert.hParent],NULL
+                        mov  [tv1Insert.hInsertAfter],TVI_ROOT
+                        mov  [tv1Insert.item.mask],TVIF_TEXT+TVIF_IMAGE+TVIF_SELECTEDIMAGE
+                        mov  [tv1Insert.item.pszText],tv1Txt1
+                        mov  [tv1Insert.item.iImage],0
+                        mov  [tv1Insert.item.iSelectedImage],1
+                invoke  SendMessage,[tv1H],TVM_INSERTITEM,0,tv1Insert
+                        mov  [tv1Insert.hParent],eax
+                        mov  [tv1Insert.hInsertAfter],TVI_LAST
+                        mov  [tv1Insert.item.pszText],tv1Txt2
+                invoke  SendMessage,[tv1H],TVM_INSERTITEM,0,tv1Insert
+                        mov  [tv1Insert.item.pszText],tv1Txt3
+                invoke  SendMessage,[tv1H],TVM_INSERTITEM,0,tv1Insert
+                        jmp  wmBYE
+        wmDESTROY:
+                invoke  PostQuitMessage,0
+        wmBYE:
+                pop edi esi ebx
+                return
+   endp
+
+section '.idata' import data readable
+    library     KERNEL32, 'KERNEL32.DLL',\
+                USER32,   'USER32.DLL',\
+                GDI32,    'GDI32.DLL',\
+                COMCTL32, 'COMCTL32.DLL'
+    
+    import      KERNEL32,\
+                GetModuleHandle,        'GetModuleHandleA',\
+                ExitProcess,            'ExitProcess'
+    import      USER32,\
+                RegisterClass,          'RegisterClassA',\
+                CreateWindowEx,         'CreateWindowExA',\
+                DefWindowProc,          'DefWindowProcA',\
+                LoadCursor,             'LoadCursorA',\
+                LoadIcon,               'LoadIconA',\
+                LoadBitmap,             'LoadBitmapA',\
+                SendMessage,            'SendMessageA',\
+                GetMessage,             'GetMessageA',\
+                MessageBox,             'MessageBoxA',\
+                SetCapture,             'SetCapture',\
+                ReleaseCapture,         'ReleaseCapture',\
+                GetParent,              'GetParent',\
+                DestroyWindow,          'DestroyWindow',\
+                TranslateMessage,       'TranslateMessage',\
+                DispatchMessage,        'DispatchMessageA',\
+                PostQuitMessage,        'PostQuitMessage'
+    import      GDI32,\
+                DeleteObject,           'DeleteObject'
+    import      COMCTL32,\
+                InitCommonControls,     'InitCommonControls',\
+                ImageList_Create,       'ImageList_Create',\
+                ImageList_Add,          'ImageList_Add',\
+                ImageList_AddMasked,    'ImageList_AddMasked',\
+                ImageList_GetImageCount,'ImageList_GetImageCount',\
+                ImageList_BeginDrag,    'ImageList_BeginDrag',\
+                ImageList_EndDrag,      'ImageList_EndDrag',\
+                ImageList_DragEnter,    'ImageList_DragEnter',\
+                ImageList_DragMove,     'ImageList_DragMove',\
+                ImageList_DragLeave,    'ImageList_DragLeave',\
+                ImageList_DragShowNolock,'ImageList_DragShowNolock'
+                
+
+section '.rsrc' resource data readable
+        directory       RT_BITMAP, appBmp
+        
+        resource        appBmp,\
+                        31,LANG_NEUTRAL,bmpA
+        
+        bitmap          bmpA, 'ico1.bmp'
+</pre>
+Result :<br>
+<table width="100%"><tr valign="top"><td>ico1.bmp<br><br><img src="../img/tut_19a.gif"></td><td>tut_19.asm<br><br><img src="../img/tut_19b.gif"></td></tr></table>
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

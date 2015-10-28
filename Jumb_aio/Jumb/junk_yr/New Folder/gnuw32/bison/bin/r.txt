@@ -1,0 +1,15 @@
+  %{
+  #define _GNU_SOURCE
+  #include <stdio.h>
+  #include "ptypes.h"
+%}
+
+%union {
+  long int n;
+  tree t;  /* tree is defined in ‘ptypes.h’. */
+}
+
+%{
+  static void print_token_value (FILE *, int, YYSTYPE);
+  #define YYPRINT(F, N, L) print_token_value (F, N, L)
+%} 

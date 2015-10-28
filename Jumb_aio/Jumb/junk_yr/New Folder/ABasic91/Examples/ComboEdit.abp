@@ -1,0 +1,63 @@
+' example ComboBox control
+DEFNUM a% b% c%
+DEFSTR a$ b$ c$ combo2(item5)$ edtext$
+WIN 0 0 400 300 ComboBox
+WINCOLOR 220 220 220
+WINFONT Verdana 10
+COLOR 0 0 220
+TEXT 10 10 ComboBox Example with EditBox control
+WINFONT Microsoft 8
+LET combo2(item5)$ = ITEM5
+GOSUB createCombo2
+
+BUTTON 200 50 80 22 SYS 51
+CTSETTEXT 51 GetSelString
+BUTTON 50 160 80 22 SYS 52
+CTSETTEXT 52 GetEditText
+
+COMBOBOX 50 50 120 100 451
+/* edit box control with autoHscroll*/
+EDITBOX 200 100 140 20 501
+
+CBADDSTRING 451 Simple
+CBADDSTRING 451 Easy
+CBADDSTRING 451 Powertronix
+CBADDSTRING 451 Of
+CBADDSTRING 451 Aurel
+CBADDSTRING 451 Basic
+
+WAIT 0
+
+SUBB 51
+' remember always use GetString with string name
+CBGETSTRING 451 a$
+CLEARSPACE 200 80 120
+PRINT 200 80 a$
+CLEARCONTROL 501
+CTSETTEXT 501 a$
+ENDSUB
+
+SUBB 52
+CTGETTEXT 501 edtext$
+GOSUB cleartext
+PRINT 50 200 edtext$
+ENDSUB
+
+SUB createCombo2
+COMBOBOX 200 130 140 100 452
+CONTROLCOLOR 452 0 0 0 200 200 230
+' add items as text
+CBADDSTRING 452 Second
+CBADDSTRING 452 ComboBox
+CBADDSTRING 452 With
+CBADDSTRING 452 Purple
+' added item as string
+CBADDSTRING 452 combo2(item5)$
+CBADDSTRING 452 Color
+RETURN
+
+SUB cleartext
+' what missing in next line?
+CLEARSPACE 50 200 120
+RETURN 
+

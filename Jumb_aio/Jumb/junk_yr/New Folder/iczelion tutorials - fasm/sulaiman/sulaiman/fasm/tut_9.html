@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 9 : Child Window Controls</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 9 : Child Window Controls">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 9 : Child Window Controls">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 9 : Child Window Controls</div>
+<br>
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+include '%fasminc%\win32a.inc'
+
+section '.data' data readable writeable
+     wHMain         dd   ?
+     wHInstance     dd   ?
+
+     wTitle         db   'Tutorial 9',0 ;name of our window
+     wClsName       db   'TUT09',0      ;name of our window class
+
+     wMsg      MSG
+     wCls      WNDCLASS
+
+     ;controller
+     btnClsName     db   'button',0
+     btnTxt         db   'My First Button',0
+     editClsName    db   'edit',0
+     editTxt        db   "Wow! i'm inside an edit box now",0
+     editBuffer:    times 513 db 0
+
+     btnHandle      dd   ?
+     editHandle     dd   ?
+     ;controller constant
+     btnId     equ  100
+     editId    equ  200
+
+section '.code' code readable executable
+     start:
+          ; +------------------------------+
+          ; | registering the window class |
+          ; +------------------------------+
+          invoke    GetModuleHandle,NULL
+                    mov  [wHInstance],eax
+                    mov  [wCls.hInstance],eax
+                    mov  [wCls.style],CS_HREDRAW or CS_VREDRAW
+                    mov  [wCls.lpfnWndProc],window_procedure
+                    mov  [wCls.lpszClassName],wClsName
+                    mov  [wCls.lpszMenuName],30   ;our menu id
+                    mov  [wCls.hbrBackground],COLOR_WINDOW+1
+          invoke    LoadIcon,NULL,IDI_APPLICATION
+                    mov  [wCls.hIcon],eax
+          invoke    LoadCursor,NULL,IDC_ARROW
+                    mov  [wCls.hCursor],eax
+          invoke    RegisterClass,wCls
+
+          ; +--------------------------+
+          ; | creating the main window |
+          ; +--------------------------+
+          invoke    CreateWindowEx,\
+                         0,\
+                         wClsName,\
+                         wTitle,\
+                         WS_OVERLAPPEDWINDOW,\
+                         CW_USEDEFAULT,\
+                         CW_USEDEFAULT,\
+                         300,\
+                         200,\
+                         NULL,\
+                         NULL,\
+                         [wHInstance],\
+                         NULL
+                    mov  [wHMain],eax
+          invoke    ShowWindow,[wHMain],SW_SHOW
+          ; +---------------------------+
+          ; | entering the message loop |
+          ; +---------------------------+
+          window_message_loop_start:
+               invoke    GetMessage,wMsg,NULL,0,0
+                         or   eax,eax
+                         je   window_message_loop_end
+               invoke    TranslateMessage,wMsg
+               invoke    DispatchMessage,wMsg
+                         jmp  window_message_loop_start
+
+          window_message_loop_end:
+               invoke    ExitProcess,0
+
+          ; +----------------------+
+          ; | the window procedure |
+          ; +----------------------+
+          proc window_procedure,hWnd,uMsg,wParam,lParam
+               push ebx esi edi    ;eventhough the API would preserved, but play safe :p
+               cmp  [uMsg],WM_COMMAND
+               je   wmCOMMAND
+               cmp  [uMsg],WM_CREATE
+               je   wmCREATE
+               cmp  [uMsg],WM_DESTROY
+               je   wmDESTROY
+
+               wmDEFAULT:
+                    invoke    DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+                              jmp  wmBYE
+               wmCREATE:
+                    invoke    CreateWindowEx,\
+                                   WS_EX_CLIENTEDGE,\
+                                   editClsName,\
+                                   NULL,\
+                                   WS_CHILD or WS_VISIBLE or WS_BORDER or ES_LEFT or ES_AUTOHSCROLL,\
+                                   50,35,200,25,[hWnd],editId,[wHInstance],NULL
+                              mov  [editHandle],eax
+                    invoke    SetFocus,eax
+                    invoke    CreateWindowEx,\
+                                   NULL,\
+                                   btnClsName,\
+                                   btnTxt,\
+                                   WS_CHILD or WS_VISIBLE or BS_DEFPUSHBUTTON,\
+                                   75,70,140,25,[hWnd],btnId,[wHInstance],NULL
+                              mov  [btnHandle],eax
+                              jmp  wmBYE
+               wmCOMMAND:
+                              mov  eax,[wParam]
+                              cmp  [lParam],0
+                              je   wmCOMMAND_menu
+                              cmp  ax,btnId  ;check whether is button id
+                              je   wmCOMMAND_button
+                              jmp  wmBYE
+
+                    wmCOMMAND_menu:
+                                   cmp  ax,11     ;write something to textbox
+                                   je   menu_writesomething
+                                   cmp  ax,12     ;clear our textbox
+                                   je   menu_cleartext
+                                   cmp  ax,13     ;messagebox our text
+                                   je   menu_messagebox
+                                   jmp  wmBYE
+                              menu_writesomething:
+                                   invoke    SetWindowText,[editHandle],editTxt
+                                             jmp  wmBYE
+                              menu_cleartext:
+                                   invoke    SetWindowText,[editHandle],NULL
+                                             jmp  wmBYE
+                              menu_messagebox:
+                                   invoke    GetWindowText,[editHandle],editBuffer,512
+                                   invoke    MessageBox,NULL,editBuffer,wTitle,MB_OK
+                                             jmp  wmBYE
+                    wmCOMMAND_button:
+                                   shr  ax,16
+                                   cmp  ax,0  ;BN_CLICKED = 0
+                                   je   button_clicked
+                                   jmp  wmBYE
+                              button_clicked:
+                                   invoke    SendMessage,[hWnd],WM_COMMAND,13,0
+                                             jmp  wmBYE
+
+               wmDESTROY:
+                    invoke    PostQuitMessage,0
+
+               wmBYE:
+                    pop  edi esi ebx
+                    return
+          endp
+
+section '.idata' import data readable writeable
+     library   KERNEL32, 'KERNEL32.DLL',\
+               USER32,   'USER32.DLL'
+
+     import    KERNEL32,\
+               GetModuleHandle,    'GetModuleHandleA',\
+               ExitProcess,        'ExitProcess'
+
+     import    USER32,\
+               RegisterClass,      'RegisterClassA',\
+               CreateWindowEx,     'CreateWindowExA',\
+               DefWindowProc,      'DefWindowProcA',\
+               ShowWindow,         'ShowWindow',\
+               LoadCursor,         'LoadCursorA',\
+               LoadIcon,           'LoadIconA',\
+               SetFocus,           'SetFocus',\
+               SetWindowText,      'SetWindowTextA',\
+               GetWindowText,      'GetWindowTextA',\
+               GetMessage,         'GetMessageA',\
+               SendMessage,        'SendMessageA',\
+               MessageBox,         'MessageBoxA',\
+               TranslateMessage,   'TranslateMessage',\
+               DispatchMessage,    'DispatchMessageA',\
+               PostQuitMessage,    'PostQuitMessage'
+
+section '.rsrc' resource data readable
+     directory RT_MENU,appMenu
+
+     resource  appMenu,\
+               30,LANG_NEUTRAL,menuMain
+
+     menu menuMain
+          menuitem  '&PopUp',10,MFR_POPUP or MFR_END
+          menuitem       '&Write Something to Textbox',11,MFT_STRING
+          menuitem       '&Clear Textbox',12,MFT_STRING
+                         menuseparator
+          menuitem       '&MessageBox my text',13,MFR_END
+</pre>
+Result :<br>
+<table width="100%"><tr valign="top"><td><img src="../img/tut_9a.gif"></td><td><img src="../img/tut_9b.gif"></td></tr></table>
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

@@ -1,0 +1,74 @@
+; Controls created in SUB
+WIN 0 0 400 300 ControlsInSub
+WINCOLOR 220 217 220
+WINFONT Microsoft 8
+DEFSTR selected$
+
+GOSUB createLB
+GOSUB createbutton
+GOSUB AddLBItems
+GOSUB AboutWalk
+
+WAIT 0
+
+SUBB 51
+ LBGETSTRING 202 selected$
+  CLEARSPACE 200 100 20
+  COLOR 0 0 160
+ PRINT 200 100 selected$
+ENDSUB
+
+
+SUB createLB
+ COLOR 0 140 0
+  TEXT 20 5 ListBox 1
+  LISTBOX 20 20 100 150 202
+ CONTROLCOLOR 202 0 0 0 255 255 212
+RETURN 
+
+SUB createbutton
+  BUTTON 200 25 100 20 SYS 51
+  CTSETTEXT 51 GetLBItem
+  CONTROLCOLOR 51 255 255 255 160 80 80
+RETURN
+
+SUB AddLBItems
+	LBADDSTRING 202 1.item
+	LBADDSTRING 202 2.item
+	LBADDSTRING 202 3.item
+	LBADDSTRING 202 4.item
+	LBADDSTRING 202 5.item
+	LBADDSTRING 202 6.item
+	LBADDSTRING 202 7.item
+	LBADDSTRING 202 8.item
+RETURN
+
+SUB AboutWalk
+	COLOR 100 100 150
+	RECT 20 180 150 70
+	COLOR 0 0 0
+	TEXT 25 185 Click one item in ListBox
+	TEXT 25 200 Use arow keys Up/Down
+	TEXT 25 215 And walk trough items
+RETURN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

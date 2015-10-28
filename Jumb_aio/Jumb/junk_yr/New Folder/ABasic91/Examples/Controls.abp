@@ -1,0 +1,88 @@
+' Controls in Aurel Basic ------------------------
+/* define variables */
+DEFSTR windowcaption$
+LET windowcaption$ = Controls in Aurel Basic
+DEFSTR it1$ it2$ it3$ it4$ it5$ it6$ it7$
+DEFSTR it8$ it9$ 
+
+'create window
+WIN 100 100 740 600 windowcaption$
+	' set window color
+	WINCOLOR 200 200 220
+		' set window font
+		WINFONT Verdana 9
+			' set color
+			COLOR 0 0 140
+			' draw rectangle
+			RECT 5 15 90 110
+			' print text on window
+			TEXT 10 8 Buttons
+' set string variables for listbox
+LET it1$ = 1.item
+LET it2$ = 2.item
+LET it3$ = 3.item
+LET it4$ = 4.item
+LET it5$ = 5.item
+LET it6$ = 6.item
+LET it7$ = 7.item
+LET it8$ = 8.item
+LET it9$ = 9.item
+
+' buttons -----------------------------------
+BUTTON 10 30 80 24 SYS 50
+'control set text
+CTSETTEXT 50 SYS button1
+
+	BUTTON 10 60 80 24 FLAT 51
+	CTSETTEXT 51 FLAT button2
+
+		BUTTON 10 90 80 24 BMP 52
+		REPLACESTATICBMP 52 bmpbutton.bmp
+'combobox------------------------------------
+RECT 105 15 140 110
+TEXT 120 8 Combo Box
+COMBOBOX 110 30 130 100 451
+	GOSUB comboitems
+
+'listbox --------------------------------------
+LISTBOX 10 150 100 140 201
+	LBAddString 201 it1$
+		LBADDSTRING 201 it2$
+			LBADDSTRING 201 it3$
+			LBADDSTRING 201 it4$
+			LBADDSTRING 201 it5$
+			LBADDSTRING 201 it6$
+			LBADDSTRING 201 it7$
+		LBADDSTRING 201 it8$
+	LBADDSTRING 201 it9$
+
+
+'wait for subs -------------------------------
+WAIT 0
+'---------------------------------------------
+SUBB 50
+	MSGBOX ID(50) First SYS button pressed
+		ENDSUB
+'---------------------------------------------
+SUBB 51
+	MSGBOX ID(51) Second FLAT button pressed
+		ENDSUB
+'---------------------------------------------
+SUBB 52
+	MSGBOX ID(52) Third BMP button pressed
+		ENDSUB
+'---------------------------------------------
+SUB comboitems
+	CBADDSTRING 451 Simple
+	CBADDSTRING 451 Easy
+	CBADDSTRING 451 Powertronix
+	CBADDSTRING 451 Of
+	CBADDSTRING 451 Aurel
+	CBADDSTRING 451 Basic
+RETURN
+
+
+
+
+
+

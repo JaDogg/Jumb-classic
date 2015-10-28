@@ -1,0 +1,106 @@
+' CalcTrafo/ABexamples v1.1
+' define variable as numbers
+DEFNUM u1% u2% l% n1% n2% p% sp%
+DEFNUM const% step% f% null% u2u1%
+
+WIN 0 0 400 300 Transformer
+WINCOLOR 231 182 165
+
+GOSUB constants
+'frame
+COLOR 135 76 26
+RECT 10 10 170 180
+RECT 10 200 170 60
+RECT 190 10 195 250
+
+COLOR 0 0 0 
+
+' draw trafo
+RECT 40 40 100 100
+RECT 60 60 60 60
+FILL 42 42 RGB 231 223 231
+
+' draw primary turns
+LET step% = 70
+LINE 20 70 60 70
+  LOOP 20
+   LET step% = step% + 2
+   LINE 40 step% 60 step%
+  ENDLOOP
+LINE 20 110 60 110
+
+' draw secondary turns
+LET step% = 70
+LINE 120 70 160 70
+   LOOP 10
+	LET step% = step% + 4
+	LINE 120 step% 140 step%
+   ENDLOOP
+LINE 120 110 160 110
+
+'draw conector points
+CIRCLE 17 70 3
+CIRCLE 17 110 3
+CIRCLE 163 70 3
+CIRCLE 163 110 3
+
+'prim/sec text
+WINFONT Microsoft 8
+TEXT 20 20 primary
+TEXT 110 20 secondary
+TEXT 20 150 MAIN
+TEXT 20 170 110/220V
+TEXT 120 150 OUT
+TEXT 120 170 U2
+COLOR 181 48 12
+WINFONT Microsoft 14
+TEXT 20 205 N1:U1
+TEXT 100 205 N2:U2
+'-----------------------
+INBOX 300 50 101
+COLOR 0 0 0
+WINFONT Microsoft 8
+TEXT 200 52 Primary Voltage
+INBOX 300 80 102
+TEXT 200 82 Secondary Voltage
+INBOX 300 110 103
+TEXT 200 112 Trafo Power
+
+OUTBOX 300 160 151
+TEXT 200 162 Primary Turns
+OUTBOX 300 190 152
+TEXT 200 192 Secondary Turns
+
+BUTTON 220 230 110 20 SYS 51
+CTSETTEXT 51 CALCULATE
+
+' wait for events
+WAIT 0
+
+' define constants
+SUB constants
+LET f% = 50
+LET const% = f% * 6.28
+LET null% = 0
+LET p% = 60
+RETURN
+
+SUBB 51
+SETOUTBOX 151 null%
+SETOUTBOX 152 null%
+READINBOX 101
+GETINBOX 101 u1%
+READINBOX 102
+GETINBOX 102 u2%
+SETINBOX 103 p%
+
+LET n1% = u1% / const%
+LET n1% = n1% * 1000
+SETOUTBOX 151 n1%
+LET u2u1% = u2% / u1%
+LET n2% = n1% * u2u1%
+SETOUTBOX 152 n2%	
+LET n1% = 0
+LET u2u1% = 0
+LET n2% = 0
+ENDSUB

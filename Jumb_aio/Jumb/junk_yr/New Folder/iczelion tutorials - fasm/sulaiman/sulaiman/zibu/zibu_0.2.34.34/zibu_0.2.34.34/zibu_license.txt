@@ -1,0 +1,35 @@
+; +-------------------------------------+
+; | zibu editor source code		|
+; | version	: 0.2.34.34		|
+; | author	: sulaiman chang	|
+; +-------------------------------------+
+; | license	: al-fatihah freeware	|
+; +-------------------------------------+
+;
+; copyright (c) 2004 sulaiman chang
+; creativeright 2004 sulaiman chang
+
+Al-Fatihah
+==========
+1. In the Name of Allâh, the Most Gracious, the Most Merciful.
+
+2. All the praises and thanks be to Allâh, the Lord of the Âlamîn
+
+3. The Most Gracious, the Most Merciful.
+
+4. The Only Owner of the Day of Recompense
+
+5. You we worship, and You we ask for help.
+
+6. Guide us to the Straight Way.
+
+7. The Way of those on whom You have bestowed Your Grace, not of those
+   who earned Your Anger, nor of those who went astray.
+
+
+
+
+
+thank you very much :)
+sincerely,
+sulaiman chang

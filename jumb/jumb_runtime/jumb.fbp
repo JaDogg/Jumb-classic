@@ -1,0 +1,29 @@
+[Project]
+Version=3
+Description=jumb
+Api=fb (FreeBASIC),win (Windows)
+Grouping=1
+AddMainFiles=1
+AddModuleFiles=1
+ResExport=
+CompileIfNewer=0
+IncVersion=0
+RunCmd=0
+[Make]
+Current=1
+1=Windows dll,fbc -s gui -dll -export
+Recompile=2
+Module=Module Build,fbc -c
+Output=
+Run=
+Delete=
+[TabOrder]
+TabOrder=1,2
+[File]
+1=jumb.bas
+2=jumb.rc
+[BreakPoint]
+1=
+[FileInfo]
+1=0,69,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,134 @@
+' New code :'Perry the pumpkin.by Joseph E./converted from Just basic
+'code under comment is JB code 
+'NoMainWin
+DEFSTR cap$
+LET cap$ = Perry Pumpkin
+Win 0 0 400 340 cap$
+    'WindowWidth = 202
+    'WindowHeight = 268
+    'UpperLeftX = Int((DisplayWidth-WindowWidth)/2)
+    'UpperLeftY = Int((DisplayHeight-WindowHeight)/2)
+    'GraphicBox #Win.g, 0, 0, 196, 240
+    'Open "Perry" For Window_NF As #Win
+    '#Win, "TrapClose [Quit]"
+    '#Win.g, "when leftButtonUp [Whoa]"
+
+    '#Win.g, "down; fill black; backcolor black; color 240 240 0"
+WinColor 0 0 0
+Color 240 240 0
+    '#Win.g, "Place 36 20; Font Comic_Sans_MS 16"
+    '#Win.g, "|Do not click!"
+WinFont Microsoft 16
+TEXT 36 250 Do not click!
+    '#Win.g, "color 216 114 1; backcolor 255 96 0"
+Color 216 114 1
+    '#Win.g, "size 4; place 96 131 ; ellipsefilled 160 158"
+CIRCLE 96 131 4
+PIXEL 50 140
+FILL 15 140 RGB 255 96 0
+    '#Win.g, "color 255 145 34; size 2"
+Color 255 145 34
+    '#Win.g, "place 96 131 ; ellipse 160 158"
+CIRCLE 96 131 2
+'-----------------------------------------------------
+    '#Win.g, "place 96 131 ; ellipse 120 158"
+	'#Win.g, "place 96 131 ; ellipse 70 158"
+CIRCLE 80 138 70
+CIRCLE 110 138 70
+CIRCLE 95 138 70
+'-----------------------------------------------------
+    '#Win.g, "color 38 15 0; size 7; line 106 123 119 98"
+Color 138 15 0
+line 106 123 119 98
+    '#Win.g, "line 134 122 106 123; line 122 100 134 122"
+line 134 122 106 123
+line 122 100 134 122
+    '#Win.g, "line 72 99 64 123; line 72 99 85 124"
+line 72 99 64 123
+line 72 99 85 124
+    '#Win.g, "line 67 124 85 124; line 74 111 70 121"
+line 67 124 85 124
+line 74 111 70 121
+    '#Win.g, "line 74 111 80 122; line 73 120 80 122"
+line 74 111 80 122
+line 73 120 80 122
+    '#Win.g, "line 121 106 113 121; line 121 106 126 118"
+line 121 106 113 121
+line 121 106 126 118
+    '#Win.g, "line 113 118 126 118; color 111 46 2"
+line 113 118 126 118
+Color 111 46 2
+    '#Win.g, "size 4; line 71 97 62 123"
+line 71 97 62 123
+    '#Win.g, "color 111 46 2; line 71 97 87 124"
+line 71 97 87 124
+    '#Win.g, "line 62 126 87 124; line 119 97 104 124; line 119 97 137 124"
+line 62 126 87 124
+line 119 97 104 124
+line 119 97 137 124
+    '#Win.g, "line 106 126 137 124; line 74 157 67 177"
+line 106 126 137 124
+line 74 157 67 177
+    '#Win.g, "line 75 156 87 175; line 99 158 90 175"
+line 75 156 87 175
+line 99 158 90 175
+    '#Win.g, "line 100 159 110 176; line 120 159 131 173"
+line 100 159 110 176
+line 120 159 131 173
+    '#Win.g, "color 111 46 2; size 6; line 112 175 120 160"
+line 112 175 120 160
+    '#Win.g, "line 68 175 85 175; line 80 174 68 178"
+line 68 175 85 175
+line 80 174 68 178
+    '#Win.g, "line 77 162 80 173; line 72 174 77 162"
+line 77 162 80 173
+line 72 174 77 162
+    '#Win.g, "line 132 174 114 175; line 121 167 125 173"
+line 132 174 114 175
+line 121 167 125 173
+    '#Win.g, "line 116 174 121 167; line 87 175 111 176"
+line 116 174 121 167
+line 87 175 111 176
+    '#Win.g, "line 99 164 94 175; line 99 164 107 174"
+line 99 164 94 175
+line 99 164 107 174
+    '#Win.g, "line 99 171 105 175; color 244 98 0"
+line 99 171 105 175
+Color 244 98 0
+    ''#Win.g, "backcolor 255 128 0; size 1"
+    '#Win.g, "place 96 62 ; ellipsefilled 44 18"
+    '#Win.g, "color 30 77 44; Size 6; line 87 46 87 59"
+    '#Win.g, "color 30 77 44; line 92 41 87 46"
+    '#Win.g, "line 98 36 92 41; line 107 32 98 36"
+    '#Win.g, "line 111 32 119 35; line 111 39 119 35"
+    '#Win.g, "line 106 47 111 39"
+    '#Win.g, "line 106 47 111 56; line 111 56 114 60"
+   ' #Win.g, "line 107 64 114 60; line 100 65 107 64"
+    '#Win.g, "line 93 63 100 65; line 89 60 93 63"
+    '#Win.g, "color 45 100 53; line 106 50 106 60"
+    '#Win.g, "line 107 60 111 60"
+    '#Win.g, "line 101 51 110 60; line 109 40 103 51"
+    '#Win.g, "line 113 35 109 40; line 102 46 113 35"
+    '#Win.g, "line 101 60 102 46; line 101 60 105 62"
+    '#Win.g, "color 57 119 82; line 99 45 98 60; set 97 50"
+    '#Win.g, "line 110 36 99 45; line 112 34 110 36"
+    '#Win.g, "line 98 39 112 34; line 89 50 98 39"
+    '#Win.g, "line 89 50 91 59; line 91 59 101 62"
+    '#Win.g, "line 93 50 95 58 line 93 54 97 43"
+    '#Win.g, "flush"
+
+'Wait
+
+'[Quit]
+    'Close #Win
+'End
+
+'[Whoa]
+ '   Msg$ = "Ahem..."+Chr$(13)+_
+   ' "Perry Pumpkin gets nervous in the autumn."+Chr$(13)+Chr$(13)+_
+    '"There's a chance he'll get turned into pumpkin pie for Thanksgiving after Halloween."+Chr$(13)+Chr$(13)+_
+   ' "But you clicking on the screen isn't helping."+Chr$(13)+Chr$(13)+_
+   ' "It just scares him."
+   ' Notice Msg$
+'Wait 
+

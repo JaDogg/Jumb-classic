@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>Remove Favorites, Recent Documents and ActiveX Desktop</title>
+		<meta name="Description"	content="Remove Favorites, Recent Documents and ActiveX Desktop">
+		<meta name="Keywords"		content="remove favourite, remove recent documents, start menu, windows 9x, Sulaiman Chang">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Remove Favorites, Recent Documents and ActiveX Desktop</div>
+<br>
+Set the appropriate key to display or hide Favorites and Recent Documents in start menu.
+
+<pre class="fl2">
+Remove Favorites from start menu
+--------------------------------
+User Key:     [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+System Key:   [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+Value Name:   NoFavoritesMenu
+Data Type:    REG_DWORD (DWORD Value)
+Value Data:   (0 = show favorites, 1 = no favorites)
+</pre>
+
+
+<pre class="fl2">
+Remove Recent Documents from start menu
+---------------------------------------
+User Key:     [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+System Key:   [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+Value Name:   NoRecentDocsMenu
+Data Type:    REG_DWORD (DWORD Value)
+Value Data:   (0 = display, 1 = remove)
+</pre>
+
+<pre class="fl2">
+Remove Active Desktop
+---------------------
+User Key:     [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+System Key:   [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+Value Name:   NoActiveDesktop
+Data Type:    REG_DWORD (DWORD Value)
+Value Data:   (0 = disable restriction, 1 = enable restriction)
+</pre>
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

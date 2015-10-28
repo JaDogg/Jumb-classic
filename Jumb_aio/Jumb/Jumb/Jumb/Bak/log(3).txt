@@ -1,0 +1,16 @@
+JUMB:Future Of BASIC !!
+started day 2009 DEC 25
+
+
+
+2009 Dec 26,27
+-----------
+*
+
+2009 Dec 28
+------------
+added compile window which also has the log box
+
+2009 Dec 29
+-----------
+started working on the compile thing

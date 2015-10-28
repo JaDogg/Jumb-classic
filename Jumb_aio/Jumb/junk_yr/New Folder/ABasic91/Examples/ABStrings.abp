@@ -1,0 +1,36 @@
+' Ifstring equal
+WIN 0 0 400 300 LongStringIF
+DEFSTR a$ b$ c$ f$ g$ long$ msgname$
+DEFNUM a% b% c%
+WINCOLOR 200 200 210
+
+LET msgname$ = MessageBox Long Name
+LET a% = 10
+LET g$ = This is long string test
+
+LET f$ = two
+LET a$ = This is long string test
+COLOR 0 130 0
+PRINT 20 20 a$
+
+LET b$ = one
+COLOR 0 0 200
+PRINT 20 50 b$
+
+LET c$ = f$
+COLOR 200 0 0
+PRINT 20 80 c$
+
+IF a$ <> b$ THEN GOSUB printA
+
+WAIT 0
+
+SUB printA
+COLOR 200 100 200
+PRINT 20 110 a%
+WINFONT Verdana 8
+LET long$ = This is long string in SUB
+COLOR 200 0 0
+PRINT 20 130 long$
+MSGBOX msgname$ This is AB Strings Program !
+RETURN 

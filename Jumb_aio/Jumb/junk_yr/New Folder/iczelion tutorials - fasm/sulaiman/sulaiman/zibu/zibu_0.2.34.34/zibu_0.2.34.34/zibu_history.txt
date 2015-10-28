@@ -1,0 +1,37 @@
+; +---------------------+
+; | ZIBU EDITOR HISTORY |
+; +---------------------+
+; copyright (c) 2004 - 2005 sulaiman chang
+; creativeright 2004 - 2005 sulaiman chang
+
+version 0.0.18.00 (Nov 29, 2004)
+--------------------------------
+- project started, mostly notepad basic features are up and could be used
+- first alpha released in fasm messageboard
+
+version 0.2.32.32 (Dec 30, 2004)
+--------------------------------
+- fix the gotoline counting from zero
+- code a m_message macro to handle windows message
+- recode zibu for better code management
+- fix the font bug issue (thanks decard,JohnFound and those who tested it)
+- add the new drag and drop feature
+- replace function now support match case and match whole word
+- support zibu.ini file to store and retrieve default font and color
+- add keyboard short-cut or accelerator
+- enable zibu to load file based on supplied command line argument. (a regedit patch needed)
+  [HKEY_CLASSES_ROOT\txtfile\shell\Open Zibu]
+  [HKEY_CLASSES_ROOT\txtfile\shell\Open Zibu\command]
+  @="H:\\CHANGE_TO_YOUR_ZIBU_LOCATION\\ZIBU.EXE %1"
+- the first color in custom color for background and foreground is COLOR_WINDOW
+
+version 0.2.33.33 (Dec 31, 2004)
+--------------------------------
+- new tonggle comment on and off feature,
+  Ctrl + D to comment, and Ctrl + T to uncomment (for ASM code)
+- change the variable derive from a structure to "sWhatsoever"
+
+version 0.2.34.34 (Jan 01, 2005)
+--------------------------------
+- update the copyright year, we are in 2005 now :)
+- fix the comment and uncomment bug, it should run better now :) (thanks iklin)

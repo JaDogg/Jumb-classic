@@ -1,0 +1,46 @@
+'new example written in IF/OR/THEN/GOSUB
+DEFNUM a% b% c% d%
+WIN 0 0 400 300 IfOrThenGosub
+WINCOLOR 220 220 220
+WINFONT Microsoft 10
+
+LET a% = 5
+LET b% = 10
+LET c% = 20
+LET d% = 30
+
+;next line not be executed becose both expressions not true
+IF a% < 5 OR b% > 11 THEN GOSUB IfOR
+
+;next line will be executed becose second expression is true
+IF a% = 5 OR b% > 11 THEN GOSUB IfOR2
+
+;next line will be executed becose first expression is true
+IF a% < 5 OR d% = 30 THEN GOSUB IfOR3
+
+WAIT 0
+
+SUB IfOR
+TEXT 20 20 Ready!
+RETURN
+
+SUB IfOR2
+TEXT 20 40 Second-True
+RETURN
+
+SUB IfOR3
+TEXT 20 60 First-true
+RETURN
+
+
+
+
+
+
+
+
+
+
+
+
+

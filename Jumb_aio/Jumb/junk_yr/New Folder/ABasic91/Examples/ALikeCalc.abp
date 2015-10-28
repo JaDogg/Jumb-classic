@@ -1,0 +1,251 @@
+' simple calculator
+DEFNUM plus% minus% multi% devide% decimal% temp% 
+DEFNUM num1% num2% result%
+DEFSTR num1$ num2$ result$
+DEFSTR one$ two$ tree$ four$ five$ six$ seven$
+DEFSTR eight$ nine$ zero$ dot$
+DEFSTR wc$ next$ temp$
+LET wc$ = AB Calculator
+WIN 0 0 400 300 wc$
+WINCOLOR 200 200 220
+LET temp% = 0
+'WINFONT Microsoft 8
+COLOR 200 0 200
+
+LET plus% = 0
+LET minus% = 0
+LET multi% = 0
+LET devide% = 0
+LET num1% = 0
+LET num2% = 0
+LET result% = 0
+
+'display
+EDITBOX 10 10 144 28 500  
+CONTROLFONT 500 Verdana 12
+'CTSETTEXT 500 0
+
+'buttons
+BUTTON 20 60 32 32 SYS 51
+CTSETTEXT 51 1
+BUTTON 56 60 32 32 SYS 52
+CTSETTEXT 52 2
+BUTTON 92 60 32 32 SYS 53
+CTSETTEXT 53 3
+
+BUTTON 20 96 32 32 SYS 54
+CTSETTEXT 54 4
+BUTTON 56 96 32 32 SYS 55
+CTSETTEXT 55 5
+BUTTON 92 96 32 32 SYS 56
+CTSETTEXT 56 6
+
+BUTTON 20 132 32 32 SYS 57
+CTSETTEXT 57 7
+BUTTON 56 132 32 32 SYS 58
+CTSETTEXT 58 8
+BUTTON 92 132 32 32 SYS 59
+CTSETTEXT 59 9
+
+BUTTON 20 168 32 32 SYS 60
+CTSETTEXT 60 0
+BUTTON 56 168 32 32 SYS 61
+CONTROLFONT 61 Verdana 14
+CTSETTEXT 61 .
+BUTTON 92 168 32 32 SYS 62
+CONTROLFONT 62 Verdana 14
+CTSETTEXT 62 C
+
+BUTTON 140 60 32 32 SYS 63
+CONTROLFONT 63 Verdana 14
+CTSETTEXT 63 +
+BUTTON 140 96 32 32 SYS 64
+CONTROLFONT 64 Verdana 22
+CTSETTEXT 64 -
+BUTTON 140 132 32 32 SYS 65
+CONTROLFONT 65 Verdana 18
+CTSETTEXT 65 *
+BUTTON 140 168 32 32 SYS 66
+CONTROLFONT 66 Verdana 14
+CTSETTEXT 66 /
+'equal
+BUTTON 186 60 32 32 SYS 80
+CONTROLFONT 80 Verdana 14
+CTSETTEXT 80 =
+
+
+WAIT 0
+
+SUBB 51
+	LET one$ = 1
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ one$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 52
+	LET two$ = 2
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ two$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 53
+	LET tree$ = 3
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ tree$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 54
+	LET four$ = 4
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ four$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 55
+	LET five$ = 5
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ five$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 56
+	LET six$ = 6
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ six$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 57
+	LET seven$ = 7
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ seven$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 58
+	LET eight$ = 8
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ eight$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 59
+	LET nine$ = 9
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ nine$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 60
+	LET zero$ = 0
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ zero$
+	CTSETTEXT 500 next$
+ENDSUB
+
+SUBB 61
+	LET dot$ = .
+	CTGETTEXT 500 temp$
+	CON$ next$ = temp$ dot$
+	CTSETTEXT 500 next$
+ENDSUB
+
+'clear
+SUBB 62
+	CLEARCONTROL 500
+	LET num1% = 0
+	LET num2% = 0
+	LET result% = 0
+ENDSUB
+
+'pplus
+SUBB 63
+	CTGETTEXT 500 num1$
+	CLEARCONTROL 500
+	LET plus% = 1
+	LET minus% = 0
+	LET multi% = 0
+	LET devide% = 0
+	'LET next$ = 
+ENDSUB
+
+'pminus
+SUBB 64
+	CTGETTEXT 500 num1$
+	CLEARCONTROL 500
+	LET plus% = 0
+	LET minus% = 1
+	LET multi% = 0
+	LET devide% = 0
+	'LET next$ = 
+ENDSUB
+
+'pmulti
+SUBB 65
+	CTGETTEXT 500 num1$
+	CLEARCONTROL 500
+	LET plus% = 0
+	LET minus% = 0
+	LET multi% = 1
+	LET devide% = 0
+	'LET next$ = 
+ENDSUB
+
+'pdevide
+SUBB 66
+	CTGETTEXT 500 num1$
+	CLEARCONTROL 500
+	LET plus% = 0
+	LET minus% = 0
+	LET multi% = 0
+	LET devide% = 1
+	'LET next$ = 
+ENDSUB
+
+'equal
+SUBB 80
+	CTGETTEXT 500 num2$
+	CLEARCONTROL 500
+	IF plus% = 1 THEN GOSUB eqplus
+	IF minus% = 1 THEN GOSUB eqminus
+	IF multi% = 1 THEN GOSUB eqmulti
+	IF devide% = 1 THEN GOSUB eqdevide
+ENDSUB 
+
+
+SUB eqplus
+	LET num1% = VAL ( num1$ )
+	LET num2% = VAL ( num2$ )
+	LET result% = num1% + num2%
+	LET result$ = STR$ ( result% )
+	CTSETTEXT 500 result$
+	LET num1% = 0
+	LET num2% = 0
+RETURN
+
+SUB eqminus
+	LET num1% = VAL ( num1$ )
+	LET num2% = VAL ( num2$ )
+	LET result% = num1% - num2%
+	LET result$ = STR$ ( result% )
+	CTSETTEXT 500 result$
+RETURN
+
+SUB eqmulti
+	LET num1% = VAL ( num1$ )
+	LET num2% = VAL ( num2$ )
+	LET result% = num1% * num2%
+	LET result$ = STR$ ( result% )
+	CTSETTEXT 500 result$
+RETURN
+
+SUB eqdevide
+	LET num1% = VAL ( num1$ )
+	LET num2% = VAL ( num2$ )
+	LET result% = num1% / num2%
+	LET result$ = STR$ ( result% )
+	CTSETTEXT 500 result$
+RETURN 

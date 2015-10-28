@@ -1,0 +1,7 @@
+' Main
+DEFNUM a% b% c%
+WIN 0 0 400 0 SpeedCalc
+WINCOLOR 200 200 
+
+LET c% 5 + 3
+PRINT 20 20 x%

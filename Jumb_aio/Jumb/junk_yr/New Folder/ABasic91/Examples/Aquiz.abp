@@ -1,0 +1,111 @@
+' example quiz
+WIN 0 0 500 350 AQuiz
+WINCOLOR 220 220 225
+  COLOR 180 0 180
+    WINFONT Ariel 16
+ 	TEXT 28 285 AQuiz
+	COLOR 100 100 110
+	  RECT 20 285 450 25
+	  COLOR 0 0 170
+	WINFONT Verdana 10
+     TEXT 100 290 Made in Aurel Basic |||||||||||||||||||||||||||||||||	
+WINFONT Microsoft 8
+DEFNUM quest% score% true% count%
+DEFSTR answ$ true$ false$
+LET true$ = RIGHT
+LET false$ = WRONG
+ 
+BUTTON 350 30 80 22 FLAT 51
+CTSETTEXT 51 Question 1
+BUTTON 350 60 80 22 FLAT 55
+CTSETTEXT 55 Question 2
+
+BUTTON 20 240 40 22 FLAT 52
+CTSETTEXT 52 A 
+BUTTON 80 240 40 22 FLAT 53
+CTSETTEXT 53 B
+BUTTON 140 240 40 22 FLAT 54
+CTSETTEXT 54 C
+GOSUB frame
+
+WAIT 0
+
+SUB frame
+ COLOR 220 0 220
+  RECT 20 30 200 200
+ RECT 22 32 196 196
+RETURN
+
+SUBB 51
+IF quest% > 0 THEN ENDSUB
+COLOR 0 0 180
+TEXT 15 10 Which programming language is easiest ?
+COLOR 200 0 0
+CLEARSPACE 40 40 35
+TEXT 40 40 A - C++
+CLEARSPACE 40 80 40
+TEXT 40 80 B - PHP
+CLEARSPACE 40 120 35
+TEXT 40 120 C - BASIC
+CLEARSPACE 40 160 35
+LET quest% = 1
+LET true% = 3
+LET count% = 0
+ENDSUB
+
+SUBB 55
+IF quest% > 1 THEN ENDSUB
+COLOR 0 0 180
+TEXT 15 10 Which old basic command start program ?
+COLOR 200 0 0
+CLEARSPACE 40 40 35
+TEXT 40 40 A - GO
+CLEARSPACE 40 80 40
+TEXT 40 80 B - RUN
+CLEARSPACE 40 120 40
+TEXT 40 120 C - READY 
+CLEARSPACE 40 160 40
+LET quest% = 2
+LET true% = 2
+LET count% = 0
+ENDSUB
+'------------------------------------------
+SUBB 52
+IF count% = 1 THEN ENDSUB
+LET count% = count% + 1
+IF true% = 3 THEN answ$ = false$
+IF true% = 2 THEN answ$ = false$
+CLEARSPACE 40 160 35
+COLOR 140 0 140
+PRINT 40 160 answ$
+ENDSUB
+
+SUBB 53
+IF count% = 1 THEN ENDSUB
+LET count% = count% + 1
+IF true% = 3 THEN answ$ = false$
+IF true% = 2 THEN answ$ = true$
+CLEARSPACE 40 160 35
+COLOR 140 0 140
+PRINT 40 160 answ$
+GOSUB scoresub 
+ENDSUB
+
+SUBB 54
+IF count% = 1 THEN ENDSUB
+LET count% = count% + 1
+IF true% = 3 THEN answ$ = true$
+IF true% = 2 THEN answ$ = false$
+CLEARSPACE 40 160 35
+COLOR 140 0 140
+PRINT 40 160 answ$
+GOSUB scoresub 
+ENDSUB
+'---------------------------------------
+SUB scoresub
+IF answ$ <> true$ THEN RETURN
+LET score% = score% + 1
+COLOR 0 0 0
+TEXT 240 230 "SCORE":
+PRINT 300 230 score%
+RETURN 

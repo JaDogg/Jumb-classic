@@ -1,0 +1,44 @@
+Hi friends I’m going to create a new compiler named ‘Jumb’
+
+
+*Jumb has a ‘to native code’ compiler and Runtime DLL
+--(Both currently written in freeBASIC) 
+*Jumb has an easy and a new syntax (it is not BASIC, C, OR ASM)
+*Support inline assembly
+*Also Jumb will be an open source compiler
+ And available only for windows
+
+
+Currently I’ve started creating the compiler and runtime DLL myself
+But I need help 
+If you are interest in helping please post a reply here (please specify your email)
+
+
+The source code and binaries will be released as soon as I got some help
+And I and the helpers finish first beta version.
+
+
+
+Help I need now
+----------------
+*FASM (used as the assembler, linker in Jumb)
+*Writing the compiler
+*Writing the runtime DLL
+*and any other way you like
+
+
+Help I will need later (after the first release)
+-------------------------------------------------
+*Launching the project (in sourceforge.net)
+*Creating a forum
+*Writing a help file
+
+
+
+You will see a sample Jumb code and a screenshot of compiled app
+(of the code posted here)
+(Compiled Using Jumb as compiler and FASM as assembler, linker)
+
+
+
+Thanks For reading this ;)

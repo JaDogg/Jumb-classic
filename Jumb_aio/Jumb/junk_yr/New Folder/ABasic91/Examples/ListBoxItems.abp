@@ -1,0 +1,52 @@
+; Add item to listbox & show selected item 
+WIN 0 0 400 200 ListBoxItems
+DEFSTR a$ b$ c$ d$ e$ sel$
+LET a$ = 1.item
+LET b$ = 2.item
+LET c$ = 3.item
+LET d$ = 4.item
+LET e$ = 5.item
+WINCOLOR 200 200 220
+WINFONT Microsoft 8
+;
+BUTTON 250 25 90 20 SYS 51
+CTSETTEXT 51 GetSelectedItem
+LISTBOX 20 30 100 120 201
+COLOR 160 0 0
+TEXT 20 10 List Box
+;
+CONTROLCOLOR 201 200 200 250 100 100 100
+; add items like string variable names
+LBADDSTRING 201 a$
+LBADDSTRING 201 b$
+LBADDSTRING 201 c$
+LBADDSTRING 201 d$
+LBADDSTRING 201 e$
+; add items like strings
+LBADDSTRING 201 6.item
+LBADDSTRING 201 7.item
+LBADDSTRING 201 8.item
+;
+WAIT 0
+;
+SUBB 51
+LBGETSTRING 201 sel$
+CLEARSPACE 200 100
+COLOR 0 0 160
+PRINT 200 100 sel$
+ENDSUB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

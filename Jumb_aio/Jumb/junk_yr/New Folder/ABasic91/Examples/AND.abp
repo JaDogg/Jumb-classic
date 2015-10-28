@@ -1,0 +1,85 @@
+'new example written in IF/AND/THEN/GOSUB
+DEFNUM a% b% c%
+WIN 0 0 400 300 IfAndThenGosub(2)
+WINCOLOR 220 220 220
+WINFONT Microsoft 10
+
+LET a% = 5
+LET b% = 10
+LET c% = 20
+
+' don't be confused with subname it's a just a string
+COLOR 200 0 0
+IF a% = 5 AND b% = 10 THEN GOSUB If(=&=)
+IF a% = 5 AND b% < 11 THEN GOSUB If(=&<)
+IF a% = 5 AND b% > 9 THEN GOSUB If(=&>)
+IF a% = 5 AND b% <> 12 THEN GOSUB If(=&<>)
+
+COLOR 0 150 0
+IF a% < 6 AND b% = 10 THEN GOSUB If(<&=)
+IF a% < 6 AND b% < 11 THEN GOSUB If(<&<)
+IF a% < 6 AND b% > 9 THEN GOSUB If(<&>)
+IF a% < 6 AND b% <> 12 THEN GOSUB If(<&<>)
+
+COLOR 0 0 200
+IF a% > 4 AND b% = 10 THEN GOSUB If(>&=)
+IF a% > 4 AND b% < 11 THEN GOSUB If(>&<)
+IF a% > 4 AND b% > 9 THEN GOSUB If(>&>)
+IF a% > 4 AND b% <> 12 THEN GOSUB If(>&<>)
+
+
+WAIT 0
+
+' 1 ------------------------------
+
+SUB If(=&=)
+TEXT 20 20 Equal-Equal
+RETURN
+
+SUB If(=&<)
+TEXT 20 40 Equal-Less
+RETURN
+
+SUB If(=&>)
+TEXT 20 60 Equal-More
+RETURN
+
+SUB If(=&<>)
+TEXT 20 80 Equal-Notequal
+RETURN
+
+' 2 --------------------------------
+
+SUB If(<&=)
+TEXT 140 20 Less-Equal
+RETURN
+
+SUB If(<&<)
+TEXT 140 40 Less-Less
+RETURN
+
+SUB If(<&>)
+TEXT 140 60 Less-More
+RETURN
+
+SUB If(<&<>)
+TEXT 140 80 Less-Notequal
+RETURN
+
+' 3 -------------------------------
+
+SUB If(>&=)
+TEXT 260 20 More-Equal
+RETURN
+
+SUB If(>&<)
+TEXT 260 40 More-Less
+RETURN
+
+SUB If(>&>)
+TEXT 260 60 More-More
+RETURN
+
+SUB If(>&<>)
+TEXT 260 80 More-Notequal
+RETURN 

@@ -1,0 +1,25 @@
+' progress bar
+DEFNUM progress% pos%
+WIN 0 0 400 300 ProgressBar
+WINCOLOR 200 200 210 
+COLOR 0 0 200
+
+' create progress bar(ID 550-599)
+PROGRESSBAR 50 50 200 15 552
+PBSETRANGE 552 0 200
+
+LOOP 51
+ LET progress% = progress% + 1
+  LET pos% = progress% / 2
+   PBSETPOS 552 pos%
+ PRINT 50 100 progress%
+ENDLOOP
+
+IF progress% > 50 THEN GOSUB over50
+
+WAIT 0
+
+SUB over50
+COLOR 200 0 0 
+TEXT 50 200 Progress over 50%
+RETURN 

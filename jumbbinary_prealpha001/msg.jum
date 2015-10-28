@@ -1,0 +1,4 @@
+;Compile as GUI
+
+TITLE("Jumb Hello !!")
+OKMSG("Hi") 

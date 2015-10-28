@@ -1,0 +1,142 @@
+'rich edit control
+DEFSTR cap$
+LET cap$ = Rich Edit Example
+WIN 0 0 600 500 cap$
+WINCOLOR 220 220 230
+DEFSTR arialf$ couriernewf$ msserif$ timesf$ tahomaf$ verdanaf$
+DEFSTR selfont$ selsize$
+DEFNUM fsize% 
+LET arialf$ = Arial
+LET couriernewf$ = CourierNew
+LET msserif$ = MSSansSerif
+LET timesf$ = TimesNewRoman
+LET tahomaf$ = Tahoma
+LET verdanaf$ = Verdana
+ 
+' create rich edit control
+RICHEDIT 10 40 570 400 650
+' set font
+'CONTROLFONT 650 CourierNew 10
+' set rich edit set colors 
+RESETCOLOR 650 200 0 0 250 250 230
+
+BUTTON 10 5 20 20 BMP 51
+REPLACESTATICBMP 51 mininew.bmp
+BUTTON 35 5 20 20 BMP 52
+REPLACESTATICBMP 52 miniopen.bmp
+BUTTON 60 5 20 20 BMP 53
+REPLACESTATICBMP 53 minisave.bmp
+BUTTON 85 5 20 20 BMP 54
+REPLACESTATICBMP 54 miniundo.bmp
+BUTTON 110 5 20 20 BMP 55
+REPLACESTATICBMP 55 minicut.bmp
+BUTTON 135 5 20 20 BMP 56
+REPLACESTATICBMP 56 minicopy.bmp
+BUTTON 160 5 20 20 BMP 57
+REPLACESTATICBMP 57 minipaste.bmp
+
+'error in next line;
+COMBOBOX 190 5 120 100 451
+GOSUB addfontitems
+
+COMBOBOX 320 5 60 140 452
+GOSUB addsizeitems
+
+BUTTON 400 5 60 20 SYS 58
+CTSETTEXT 58 SetFont
+
+WAIT 0
+
+SUBB 51
+'new
+CLEARCONTROL 650
+ENDSUB 
+
+SUBB 52
+'open
+OPENFILE ASRICHTEXT 650
+ENDSUB 
+
+SUBB 53
+'save
+SAVEFILE ASRICHTEXT 650
+ENDSUB
+
+SUBB 54
+RTFUNDO 650
+ENDSUB
+
+SUBB 55
+RTFCUT 650
+ENDSUB
+
+SUBB 56
+RTFCOPY 650
+ENDSUB
+
+SUBB 57
+RTFPASTE 650
+ENDSUB
+
+SUBB 58
+CBGETSTRING 451 selfont$
+CBGETSTRING 452 selsize$
+LET fsize% = VAL ( selsize$ )
+IF selfont$ = arialf$ THEN GOSUB setarial
+IF selfont$ = couriernewf$ THEN GOSUB setcouriernew
+IF selfont$ = msserif$ THEN GOSUB setmsserif
+IF selfont$ = timesf$ THEN GOSUB settimes
+IF selfont$ = tahomaf$ THEN GOSUB settahoma
+IF selfont$ = verdanaf$ THEN GOSUB setverdana
+ENDSUB 
+
+SUB addfontitems
+CBADDSTRING 451 arialf$
+CBADDSTRING 451 couriernewf$
+CBADDSTRING 451 msserif$
+CBADDSTRING 451 timesf$
+CBADDSTRING 451 tahomaf$
+CBADDSTRING 451 verdanaf$
+RETURN 
+
+SUB addsizeitems
+CBADDSTRING 452 8
+CBADDSTRING 452 9
+CBADDSTRING 452 10
+CBADDSTRING 452 12
+CBADDSTRING 452 14
+CBADDSTRING 452 16
+CBADDSTRING 452 18
+CBADDSTRING 452 22
+CBADDSTRING 452 24
+RETURN
+
+SUB setarial
+CONTROLFONT 650 Arial fsize%
+CTSETTEXT 650 selfont$
+RETURN
+
+SUB setcouriernew
+CONTROLFONT 650 CourierNew fsize%
+CTSETTEXT 650 selfont$
+RETURN
+
+SUB setmsserif
+CONTROLFONT 650 Microsoft fsize%
+CTSETTEXT 650 selfont$
+RETURN
+
+SUB settimes
+CONTROLFONT 650 TimesNewRoman fsize%
+CTSETTEXT 650 selfont$
+RETURN
+
+SUB settahoma
+CONTROLFONT 650 Tahoma fsize%
+CTSETTEXT 650 selfont$
+RETURN
+
+SUB setverdana
+CONTROLFONT 650 Verdana fsize%
+CTSETTEXT 650 selfont$
+RETURN 

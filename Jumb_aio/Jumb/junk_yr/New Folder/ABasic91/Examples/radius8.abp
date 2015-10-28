@@ -1,0 +1,48 @@
+' example for looping circles/ABv1.1
+DEFNUM x% y% r% pi%
+' open window
+WIN 0 0 500 400 Radius
+' set window color
+WINCOLOR 200 220 225
+' write some text
+TEXT 20 10 This program draw circles
+
+' loop1
+LET x% = 100  
+LET y% = 100  
+LET r% = 10  
+COLOR 0 80 250
+  LOOP 30
+	LET x% = x% + 10
+	LET r% = r% + 1
+	CIRCLE x% y% r%
+  ENDLOOP
+
+' loop2
+LET x% = 100  
+LET y% = 170  
+LET r% = 10   
+COLOR 0 180 90
+  LOOP 30
+	BEEP 3000 20
+	LET x% = x% + 10
+	CIRCLE x% y% r%
+  ENDLOOP
+
+' loop3
+LET x% = 100 
+LET y% = 240  
+LET r% = 40   
+COLOR 0 80 250
+  LOOP 30
+	LET x% = x% + 10
+	LET r% = r% - 1
+	CIRCLE x% y% r%
+  ENDLOOP
+
+
+
+
+
+
+

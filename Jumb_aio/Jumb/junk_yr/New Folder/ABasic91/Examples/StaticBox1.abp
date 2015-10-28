@@ -1,0 +1,57 @@
+; StaticBox example
+WIN 0 0 400 300 StaticBox
+DEFSTR singletext$ multitext$
+;LET multitext$ = This_is_a_multiline_staticbox_control
+LET singletext$ = StaticBoxSingle
+WINCOLOR 200 200 210
+WINFONT Microsoft 9
+
+BUTTON 250 25 100 20 SYS 51
+CTSETTEXT 51 Clear Multiline 
+BUTTON 250 55 100 20 SYS 52
+CTSETTEXT 52 Replace StaticBMP
+
+COLOR 200 0 0
+TEXT 20 20 Static Box Control Types
+
+; create staticbox as multiline
+COLOR 0 0 180
+TEXT 20 50 MULTILINE
+STATICBOX 90 50 94 50 MULTI 301
+CONTROLCOLOR 301 150 250 150 0 0 0
+; better way to set text in staticbox
+CTSETTEXT 301 This is MULTILINE Static-Box   Control
+
+; create staticbox as single
+TEXT 20 118 SINGLE
+STATICBOX 90 120 74 13 SINGLE 302
+CTSETTEXT 302 singletext$
+
+; create staticbox as bmp
+TEXT 20 150 BMP
+; control size must be same size as bmp.image
+STATICBOX 90 150 80 24 BMP 303 xpbutton2.bmp
+
+WAIT 0
+
+SUBB 51
+CLEARCONTROL 301
+ENDSUB
+
+SUBB 52
+REPLACESTATICBMP 303 empty1.bmp
+ENDSUB
+
+
+
+
+
+
+
+
+
+
+
+
+
+

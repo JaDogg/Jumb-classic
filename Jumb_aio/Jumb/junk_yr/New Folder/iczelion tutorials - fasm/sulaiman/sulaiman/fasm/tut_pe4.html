@@ -1,0 +1,251 @@
+<html>
+	<head>
+		<title>Windows PE File Format Walkthrough (Code)</title>
+		<meta name="Description"	content="Windows PE File Format Walkthrough (Code)">
+		<meta name="Keywords"		content="FASM, PE, Sulaiman Chang">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Windows PE File Format Walkthrough (Code)</div><br>
+Sulaiman Chang<br>
+September 16, 2004<br>
+<br><br>
+Download <a href="pe.asm">Tab-Unfilled version here</a>
+<pre class="fl2">
+IMAGE_DOS_HEADER:                         ;start : 00 (0) to 3F (63)
+       .e_magic      dw     0x5A4D        ;00 01
+       .e_cblp       dw     0x0080        ;02 03
+       .e_cp         dw     0x0001        ;04 05
+       .e_crlc       dw     0x0000        ;06 07
+       .e_cparhdr    dw     0x0004        ;08 09
+       .e_minalloc   dw     0x0010        ;10 11
+       .e_maxalloc   dw     0xFFFF        ;12 13
+       .e_ss         dw     0x0000        ;14 15
+       .e_sp         dw     0x0140        ;16 17
+       .e_csum       dw     0x0000        ;18 19
+       .e_ip         dw     0x0000        ;20 21
+       .e_cs         dw     0x0000        ;22 23
+       .e_lfarlc     dw     0x0040        ;24 25
+       .e_ovno       dw     0x0000        ;26 27
+       .e_res        rw     4             ;28 29 | 30 31 | 32 33 | 34 35
+       .e_oemid      dw     0x0000        ;36 37
+       .e_oeminfo    dw     0x0000        ;38 39
+       .e_res2       rw     10            ;40 41 | 42 43 | 44 45 | 46 47 | 48 49 | 50 51
+       .e_lfanew     dd     0x00000080    ;52 53 | 54 55 | 56 57 | 58 59
+                                          ;60 61 62 63
+;=====================================================================================================
+DOS_STUB:                          ;start : 40 (64) to 7F (127)
+       use16                       ;DOS-STUB is a 16-bit program
+                                   ;push  cs <- we save 1 byte here
+                                   ;pop   ds <- we save another 1 byte here
+                                   ;our DS is less 100h from CS, DS received PSP address
+       mov    dx,0x100 + 0x0B      ;our db message starts at 0x0B because we save 3 bytes already
+       mov    ah,0x9
+       int    0x21
+       mov    ah,0x4C              ;save 1 byte here because we need to use AH only for function
+       int    0x21
+       
+       db     'This program cannot be run in DOS mode.',13,10,'$'
+
+       rb     0x80 - $             ;0x80 - 0x75 = rb 0xB
+;=====================================================================================================
+IMAGE_NT_HEADERS:                                ;start : 80 (128) to 1EF (495)
+       .Signature           db     'PE',0,0      ;128 131
+       
+
+       IMAGE_FILE_HEADER:                        ;start : 84 (132) to 97 (151)
+              .Machine                           dw     0x014C        ;132 133 for intel 386
+              .NumberOfSection                   dw     0x0003        ;134 135
+              .TimeDateStamp                     dd     %t            ;136 139
+              .PointerToSymbolTable              dd     0             ;140 143
+              .NumberOfSymbols                   dd     0             ;144 147
+              .SizeOfOptionalHeader              dw     0x00E0        ;148 149
+              .Characteristic                    dw     0x818F        ;150 151
+       
+
+       IMAGE_OPTIONAL_HEADER:                    ;start : 98 (152) to F7 (247) * till IMAGE_DATA_DIRECTORY
+                                                                      ;offset
+              .Magic                             dw     0x010B        ;152 153
+              .MajorLinkerVersion                db     0x01          ;154
+              .MinorLinkerVersion                db     0x37          ;155
+              .SizeOfCode                        dd     0             ;156 159
+              .SizeOfInitializedData             dd     0             ;160 163
+              .SizeOfUninitializedData           dd     0             ;164 167
+              .AddressOfEntryPoint               dd     0x2000        ;168 171 = base + 2000 = 402000 (.code section)
+              .BaseOfCode                        dd     0             ;172 175
+              .BaseOfData                        dd     0             ;176 179
+              .ImageBase                         dd     0x00400000    ;180 183 (default)
+              .SectionAlignment                  dd     0x00001000    ;184 187 4096 bytes
+              .FileAlignment                     dd     0x00000200    ;188 191 512 bytes (default)
+              .MajorOperatingSystemVersion       dw     1             ;192 193
+              .MinorOperatingSystemVersion       dw     0             ;194 195
+              .MajorImageVersion                 dw     0             ;196 197
+              .MinorImageVersion                 dw     0             ;198 199
+              .MajorSubsystemVersion             dw     4             ;200 201
+              .MinorSubsystemVersion             dw     0             ;202 203
+              .Win32VersionValue                 dd     0             ;204 207
+              .SizeOfImage                       dd     0x00004000    ;208 211
+              .SizeOfHeaders                     dd     0x00000200    ;212 215
+              .CheckSum                          dd     0x0000EF20    ;216 219
+              .Subsystem                         dw     2             ;220 221 IMAGE_SUBSYSTEM_WINDOWS_GUI
+              .DllCharacteristics                dw     0             ;222 223
+              .SizeOfStackReserve                dd     0x00001000    ;224 227 4096 bytes
+              .SizeOfStackCommit                 dd     0x00001000    ;228 231 4096 bytes
+              .SizeOfHeapReserve                 dd     0x00100000    ;232 235 1048576 bytes
+              .SizeOfHeapCommit                  dd     0             ;236 239
+              .LoaderFlags                       dd     0             ;240 243
+              .NumberOfRvaAndSizes               dd     0x10          ;244 247 16 decimal
+              
+              IMAGE_DATA_DIRECTORY:              ;start : F8 (248) to 177 (375) * till IMAGE_SECTION_TABLE
+                     rq     1                    ;248 255
+                     .ImportTableVA              dd     0x00003000           ;256 263
+                     .ImportTableSize            dd     0x00000090
+                     rq     14                   ;we don't need them also    ;263 + 112 = 375
+
+              IMAGE_SECTION_TABLE:                                           ;start : 178 (376) to 1EF (495)
+                     SECTION_1:
+                            .Name                       dq     '.data'       ;start : 178 (376)
+                            .VirtualSize                dd     0x0000001D
+                            .VirtualAddress             dd     0x00001000    ;-> in memory, it is 401000
+                            .SizeOfRawData              dd     0x00000200 
+                            .PointerToRawData           dd     0x00000200    ;-> in our file, it is 0x200 (512) (offset from zero)
+                            .PointerToRelocations       dd     0
+                            .PointerToLineNumbers       dd     0
+                            .NumberOfRelocations        dw     0
+                            .NumberOfLineNumbers        dw     0
+                            .Characteristic             dd     0xC0000040    ;end   : 19F (415)
+                     SECTION_2:
+                            .Name                       dq     '.code'       ;start : 1A0 (416)
+                            .VirtualSize                dd     0x0000001C
+                            .VirtualAddress             dd     0x00002000    ;-> in memory, it is 402000
+                            .SizeOfRawData              dd     0x00000200
+                            .PointerToRawData           dd     0x00000400    ;-> in our file, it is 0x400 (1024) (offset from zero)
+                            .PointerToRelocations       dd     0
+                            .PointerToLineNumbers       dd     0
+                            .NumberOfRelocations        dw     0
+                            .NumberOfLineNumbers        dw     0
+                            .Characteristic             dd     0x60000020    ;end   : 1C7 (455)
+                     SECTION_3:
+                            .Name                       dq     '.idata'      ;start : 1C8 (456)
+                            .VirtualSize                dd     0x00000090
+                            .VirtualAddress             dd     0x00003000    ;-> in memory, it is 403000
+                            .SizeOfRawData              dd     0x00000200
+                            .PointerToRawData           dd     0x00000600    ;-> in our file, it is 0x600 (1536) (offset from zero)
+                            .PointerToRelocations       dd     0
+                            .PointerToLineNumbers       dd     0
+                            .NumberOfRelocations        dw     0
+                            .NumberOfLineNumbers        dw     0
+                            .Characteristic             dd     0x40000040    ;end   : 1EF (495)
+;                                                                                      |
+;our SECTION_1 &ltPointerToRawData&gt points at 0x200 or (512) bytes from zero             |
+;since we are currently in file offset 1EF  -------------------------------------------+
+;we need to "rb 0xF" or "rq 2" so that our address from 1F0 to 1FF are filled.
+                     rq     2                                                ;start : 1F0 (496) to 1FF (511)
+                     
+                     ;file offset   = 0x200
+                     ;memory offset = 0x401000 = (IMAGE_OPTIONAL_HEADER.ImageBase) + (SECTION_1.VirtualAddress)
+                     ;=========================================================================================
+                     SECTION_1_RAW_DATA:                                     ;start : 200 (512) to 3FF (1023)
+                     org 0x401000
+                            msgText       db     'Message Text',0            ;\  ;512 524 
+                                                                             ; } we use 1D (29) bytes here
+                            msgCaption    db     'Message Caption',0         ;/  ;525 540
+                            
+                            ; 541 to 1023 should be filled
+                            ; (1023 - 541) + 1 = 483 bytes
+                            
+                            ; we NEED to + 1 because 1023 is not INCLUDED when
+                            ; we use it to minus 541.
+                            rb     483                         ;because our .code raw data start at 400 (1024)
+                                                               ;and because our IMAGE_OPTIONAL_HEADER > FileAlignment is 0x200 (512) bytes
+
+                     ;file offset   = 0x400
+                     ;memory offset = 0x402000 = (IMAGE_OPTIONAL_HEADER.ImageBase) + (SECTION_2.VirtualAddress)
+                     ;=========================================================================================
+                     org 0x2000
+                     SECTION_2_RAW_DATA:                                            ;start : 400 (1024) to 5FF (1535)
+                            use32                                                   ;we are using 32-bit instruction
+                            push   0x40                 ;6A 40                      ;MB_OK + MB_ICONASTERIK + MB_APPLMODAL
+                            push   msgCaption           ;68 0D 10 40 00             ;push msgCaption
+                            push   msgText              ;68 00 00 40 00             ;push msgText
+                            push   0                    ;6A 00                      ;push HWND_DESKTOP
+                            call   dword [0x0040307A]   ;FF 15 7A 30 40 00          ;call MessageBoxA
+                            push   0                    ;6A 00                      ;push zero for ExitProcess parameter
+                            call   dword [0x0040305C]   ;FF 15 5C 30 40 00          ;call ExitProcess
+                            
+                            ;we have used 1C (28) bytes here
+                            ;1052 to 1535 should be filled
+                            ;(1535 - 1052) + 1 = 484 bytes
+                            rb     484
+
+                     ;file offset   = 0x600
+                     ;memory offset = 0x403000 = (IMAGE_OPTIONAL_HEADER.ImageBase) + (SECTION_3.VirtualAddress)
+                     ;=========================================================================================
+                     org 0x3000
+                     SECTION_3_RAW_DATA:                                     ;start : 600 (1536) to 7FF (2047)
+                            IMAGE_IMPORT_DESCRIPTOR_1:
+                                   .OriginalFirstThunk  dd     0x00003054    ;3000 3003
+                                   .TimeDateStamp       dd     0             ;3004 3007
+                                   .ForwarderChain      dd     0             ;3008 300B
+                                   .Name                dd     0x0000303C    ;300C 300F
+                                   .FirstThunk          dd     0x0000305C    ;3010 3013
+                            IMAGE_IMPORT_DESCRIPTOR_2:
+                                   .OriginalFirstThunk  dd     0x00003072    ;3014 3017
+                                   .TimeDateStamp       dd     0             ;3018 301B
+                                   .ForwarderChain      dd     0             ;301C 301F
+                                   .Name                dd     0x00003049    ;3020 3023
+                                   .FirstThunk          dd     0x0000307A    ;3024 3027
+                            
+                                          ;terminated with IMAGE_IMPORT_DESCRIPTIOR that filled with 0 zeros
+                            rd     5      ;the structure size of IMAGE_IMPORT_DESCRIPTOR
+                                                                             ;3028 to 303B
+                            
+                     ;Our DLL Name
+                     .KERNEL32     db     'KERNEL32.DLL',0                   ;303C to 3048
+                     .USER32       db     'USER32.DLL',0                     ;3049 to 3053
+
+                     IMAGE_THUNK_DATA32_1:
+                            .ForwarderString     dd     0x00003064           ;3054 3057
+                            .Function            dd     0                    ;3058 305B
+                            .Ordinal             dd     0x00003064           ;305C 305F
+                            .AddressOfData       dd     0                    ;3060 3063
+
+                            IMAGE_IMPORT_BY_NAME_1:
+                                   .Hint         dw     0                    ;3064 3065
+                                   .Name         db     'ExitProcess',0      ;3066 3071
+
+                     IMAGE_THUNK_DATA32_2:
+                            .ForwarderString     dd     0x00003082           ;3072 3075
+                            .Function            dd     0                    ;3076 3079
+                            .Ordinal             dd     0x00003082           ;307A 307D
+                            .AddressOfData       dd     0                    ;307E 3081
+
+                            IMAGE_IMPORT_BY_NAME_2:
+                                   .Hint         dw     0                    ;3082 3083
+                                   .Name         db     'MessageBoxA',0      ;3084 308F
+
+                     ;308F = 143 bytes used
+                     ;must filled 2047 - (1536 + 143) = 368 + 1 = 369 bytes
+                     rb 367
+                     db 0
+</pre>
+sorry, i end it so quickly, because i am a bit lazy now :p<br><br>
+
+References:<br>
+1. Create PE from scratch http://flatassembler.net/viewtopic.php?t=1309<br>
+2. LUEVELSMEYER's description about PE file format<br>
+3. Microsoft PSDK July 2000 Edition<br>
+4. Iczelion's PE Tutorial<br>
+
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

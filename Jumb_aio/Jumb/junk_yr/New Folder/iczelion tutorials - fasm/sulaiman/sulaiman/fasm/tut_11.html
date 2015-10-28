@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<title>Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 11 : More about Dialog Box</title>
+		<meta name="Author"			content="Sulaiman Chang Chen Yee">
+		<meta name="Description"	content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 11 : More about Dialog Box">
+		<meta name="Keywords"		content="Iczelion's Win32 Assembly Tutorial in FASM : Tutorial 11 : More about Dialog Box">
+		<link href="../index.css"	rel="stylesheet">
+	</head>
+	<body bgcolor="#6E6A86" leftmargin="0" topmargin="0">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%">
+			<tr><td bgcolor="#525062">&nbsp;<a href="../index.html">Sulaiman Chang Personal Website</a></td></tr>
+		</table>
+
+	        <table cellpadding="6" width="100%"><tr><td>
+
+<div class="ah1">Tutorial 11 : More about Dialog Box</div>
+<br>
+<pre class="fl2">
+format PE GUI 4.0
+entry start
+
+include '%fasminc%\win32a.inc'
+
+MI_OPEN   equ  110
+MI_EXIT   equ  120
+
+section '.data' data readable writeable
+     hMain          dd   ?
+     hInstance      dd   ?
+
+     wTitle         db   'Tutorial 11',0
+     wClsName       db   'TUT11',0
+
+     wMsg      MSG
+     wCls      WNDCLASS
+
+     dlgOpenTitle   db   'Open File',0
+     dlgOpenOfn     OPENFILENAME
+     dlgOpenFilter  db   'All Files (*.*)',0,'*.*',0
+                    db   'Text Files (*.txt)',0,'*.txt',0,0
+     dlgOpenBuffer: times 512 db 0
+
+     str1           db   'The Full Filename with Path is : ',0
+     str2           db   'The Filename is : ',0
+     str3           db   'The Extension is : ',0
+     strMsgSize     equ  512
+     strMsg:        times strMsgSize db 0
+     br             db   0xD,0xA,0
+
+section '.code' code readable executable
+     start:
+          ; +------------------------------+
+          ; | registering the window class |
+          ; +------------------------------+
+          invoke    GetModuleHandle,NULL
+                    mov  [hInstance],eax
+                    mov  [wCls.hInstance],eax
+                    mov  [wCls.style],CS_HREDRAW or CS_VREDRAW
+                    mov  [wCls.lpfnWndProc],window_procedure
+                    mov  [wCls.lpszClassName],wClsName
+                    mov  [wCls.lpszMenuName],30
+                    mov  [wCls.hbrBackground],COLOR_WINDOW+1
+          invoke    LoadIcon,NULL,IDI_APPLICATION
+                    mov  [wCls.hIcon],eax
+          invoke    LoadCursor,NULL,IDC_ARROW
+                    mov  [wCls.hCursor],eax
+          invoke    RegisterClass,wCls
+
+          ; +--------------------------+
+          ; | creating the main window |
+          ; +--------------------------+
+          invoke    CreateWindowEx,\
+                         WS_EX_CLIENTEDGE,\
+                         wClsName,\
+                         wTitle,\
+                         WS_OVERLAPPEDWINDOW or WS_VISIBLE,\
+                         CW_USEDEFAULT,\
+                         CW_USEDEFAULT,\
+                         300,\
+                         200,\
+                         NULL,\
+                         NULL,\
+                         [hInstance],\
+                         NULL
+                    mov  [hMain],eax
+          ;invoke   ShowWindow,[wHMain],SW_SHOW
+          ; +---------------------------+
+          ; | entering the message loop |
+          ; +---------------------------+
+          window_message_loop_start:
+               invoke    GetMessage,wMsg,NULL,0,0
+                         or   eax,eax
+                         je   window_message_loop_end
+               invoke    TranslateMessage,wMsg
+               invoke    DispatchMessage,wMsg
+                         jmp  window_message_loop_start
+
+          window_message_loop_end:
+               invoke    ExitProcess,0
+
+          ; +----------------------+
+          ; | the window procedure |
+          ; +----------------------+
+          proc window_procedure,hWnd,uMsg,wParam,lParam
+               push ebx esi edi
+               cmp  [uMsg],WM_COMMAND
+               je   wmCOMMAND
+               cmp  [uMsg],WM_DESTROY
+               je   wmDESTROY
+
+               wmDEFAULT:
+                    invoke    DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+                              jmp  wmBYE
+               wmCOMMAND:
+                    cmp  [wParam],0xFFFF and MI_OPEN
+                    je   wmCOMMAND_MI_OPEN
+                    cmp  [wParam],0xFFFF and MI_EXIT
+                    je   wmCOMMAND_MI_EXIT
+                    jmp  wmBYE
+
+                    wmCOMMAND_MI_EXIT:
+                         invoke    DestroyWindow,[hWnd]
+                                   jmp  wmBYE
+
+                    wmCOMMAND_MI_OPEN:
+                                   mov  [dlgOpenOfn.lStructSize],sizeof.OPENFILENAME
+                                   push [hWnd]
+                                   pop  [dlgOpenOfn.hwndOwner]
+                                   push [hInstance]
+                                   pop  [dlgOpenOfn.hInstance]
+                                   mov  [dlgOpenOfn.lpstrFilter],dlgOpenFilter
+                                   mov  [dlgOpenOfn.lpstrFile],dlgOpenBuffer
+                                   mov  [dlgOpenOfn.nMaxFile],256
+                                   mov  [dlgOpenOfn.Flags],OFN_FILEMUSTEXIST or\
+                                        OFN_PATHMUSTEXIST or OFN_LONGNAMES or\
+                                        OFN_EXPLORER or OFN_HIDEREADONLY
+                                   mov  [dlgOpenOfn.lpstrTitle],dlgOpenTitle
+                         invoke    GetOpenFileName,dlgOpenOfn
+                                   cmp  eax,TRUE  ;user return us with file
+                                   je   wmCOMMAND_MI_OPEN_TRUE
+                                   jmp  wmBYE
+
+                    wmCOMMAND_MI_OPEN_TRUE:
+                         invoke    lstrcat,strMsg,str1
+                         invoke    lstrcat,strMsg,[dlgOpenOfn.lpstrFile]
+                         invoke    lstrcat,strMsg,br
+                         invoke    lstrcat,strMsg,str2
+                                   mov  eax,[dlgOpenOfn.lpstrFile]
+                                   push ebx
+                                   xor  ebx,ebx   ;clear the ebx
+                                   mov  bx,[dlgOpenOfn.nFileOffset]
+                                   add  eax,ebx
+                                   pop  ebx
+                         invoke    lstrcat,strMsg,eax
+                         invoke    lstrcat,strMsg,br
+                         invoke    lstrcat,strMsg,str3
+                                   mov  eax,[dlgOpenOfn.lpstrFile]
+                                   push ebx
+                                   xor  ebx,ebx
+                                   mov  bx,[dlgOpenOfn.nFileExtension]
+                                   add  eax,ebx
+                                   pop  ebx
+                         invoke    lstrcat,strMsg,eax
+                         invoke    MessageBox,[hWnd],strMsg,wTitle,MB_OK
+                         invoke    RtlZeroMemory,strMsg,strMsgSize
+                                   jmp  wmBYE
+
+               wmDESTROY:
+                    invoke    PostQuitMessage,0
+               wmBYE:
+                    pop  edi esi ebx
+                    return
+          endp
+
+section '.idata' import data readable writeable
+     library   KERNEL32, 'KERNEL32.DLL',\
+               USER32,   'USER32.DLL',\
+               COMDLG32, 'COMDLG32.DLL'
+
+     import    KERNEL32,\
+               GetModuleHandle,    'GetModuleHandleA',\
+               lstrcat,            'lstrcat',\
+               RtlZeroMemory,      'RtlZeroMemory',\
+               ExitProcess,        'ExitProcess'
+
+     import    USER32,\
+               RegisterClass,      'RegisterClassA',\
+               CreateWindowEx,     'CreateWindowExA',\
+               DefWindowProc,      'DefWindowProcA',\
+               LoadCursor,         'LoadCursorA',\
+               LoadIcon,           'LoadIconA',\
+               MessageBox,         'MessageBoxA',\
+               GetMessage,         'GetMessageA',\
+               DestroyWindow,      'DestroyWindow',\
+               TranslateMessage,   'TranslateMessage',\
+               DispatchMessage,    'DispatchMessageA',\
+               PostQuitMessage,    'PostQuitMessage'
+
+     import    COMDLG32,\
+               GetOpenFileName,    'GetOpenFileNameA'
+
+section '.rsrc' resource data readable
+     directory RT_MENU,appMenu
+
+     resource  appMenu,\
+               30,LANG_NEUTRAL,menuMain
+
+     menu menuMain
+          menuitem  '&File',0,MFR_POPUP + MFR_END
+          menuitem       'Op&en',MI_OPEN,0
+                         menuseparator
+          menuitem       'E&xit',MI_EXIT,MFR_END
+</pre>
+Result :<br>
+<table width="100%"><tr valign="top"><td><img src="../img/tut_11a.gif"></td><td><img src="../img/tut_11b.gif"></td></tr></table>
+	        </td></tr></table>
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<tr><td bgcolor="#525062" align="right">Copyright &copy 2004 Sulaiman Chang. All Rights Reserved.</td></tr>
+			</table>
+        </body>
+</html>

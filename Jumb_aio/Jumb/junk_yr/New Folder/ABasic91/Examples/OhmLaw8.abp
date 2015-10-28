@@ -1,0 +1,47 @@
+' example for Ohm Law/ABv1.1
+DEFNUM i% u% r% p%
+' open window
+WIN 0 0 400 300 OhmLaw
+WINCOLOR 200 220 150
+TEXT 20 10 This program calculate electric current / Ohms Law
+' draw resistor
+COLOR 160 160 180
+RECT 100 100 100 30
+FILL 104 104 RGB 252 244 200
+' gold RGB 242 214 0
+RECT 50 112 51 5
+FILL 52 114 RGB 235 235 245
+RECT 199 112 50 5
+FILL 201 114 RGB 235 235 245
+' yellow
+RECT 120 100 10 30 
+FILL 122 102 RGB 255 255 0
+' purple
+RECT 140 100 10 30 
+FILL 142 102 RGB 202 0 240
+' black
+RECT 160 100 10 30 
+FILL 162 102 RGB 50 50 50
+' gold
+RECT 180 100 10 30 
+FILL 182 102 RGB 242 224 0
+' volts (V) -------------------------------
+LET u% = 24
+COLOR 0 0 200 
+PRINT 20 140 u%
+TEXT 50 140 ( V )  
+' ohms (E)
+LET r% = 47
+COLOR 0 0 0 
+PRINT 20 170 r%
+TEXT 50 170 ( OHM )  
+
+BEEP 3900 30
+' calculation current ----------------------
+LET i% = u% / r%
+COLOR 240 0 0 
+PRINT 20 200 i%
+TEXT 70 200 (A)
+
+
+

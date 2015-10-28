@@ -1,0 +1,2005 @@
+; +-------------------------------------+
+; | zibu editor source code		|
+; | version	: 0.2.34.34		|
+; | author	: sulaiman chang	|
+; +-------------------------------------+
+; | license	: al-fatihah freeware	|
+; +-------------------------------------+
+;
+; copyright (c) 2004 sulaiman chang
+; creativeright 2004 sulaiman chang
+
+format PE GUI 4.0
+include '%fasminc%\win32a.inc'
+entry start
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				DEFINATION				|
+; |									|
+; +---------------------------------------------------------------------+
+				;.offical released counter
+				;.alpha beta released counter for next official released
+				;.project start day counter
+				;.total day counter
+ZIBU_FILE_VER			equ '0.2.34.34'
+ZIBU_PRODUCT_VER		equ '0.2.34.34'
+
+SCF_ALL				= 0x4
+ES_DISABLENOSCROLL		= 0x00002000
+CFM_COLOR			= 0x40000000
+SF_TEXT				= 0x0001
+EM_SETTEXTMODE			= 0x459
+ST_KEEPUNDO			= 1
+ST_SELECTION			= 2
+CP_ACP				= 0
+EM_CANUNDO			= 0x00C6
+EM_CANPASTE			= WM_USER + 50
+EM_EXGETSEL			= WM_USER + 52
+EM_EXSETSEL			= WM_USER + 55
+EM_GETSELTEXT			= WM_USER + 62
+EM_SETBKGNDCOLOR		= WM_USER + 67
+EM_SETCHARFORMAT		= WM_USER + 68
+EM_STREAMIN			= WM_USER + 73
+EM_STREAMOUT			= WM_USER + 74
+EM_FINDTEXTEX			= WM_USER + 79
+EM_REDO				= WM_USER + 84
+EM_CANREDO			= WM_USER + 85
+EM_SETTEXTEX			= WM_USER + 97
+EM_EXLINEFROMCHAR		= 0x436
+EM_GETTEXTRANGE			= 0x44B
+HEAP_ZERO_MEMORY		= 0x00000008
+
+struct EDITSTREAM
+	.dwCookie		dd ?
+	.dwError		dd ?
+	.pfnCallback		dd ?
+ends
+
+struct CHARRANGE
+	.cpMin			dd ?
+	.cpMax			dd ?
+ends
+
+struct TEXTRANGE
+	.chrg			CHARRANGE
+	.lpstrText		dd ?
+ends
+
+struct CHARFORMAT
+	.cbSize			dd ?
+	.dwMask			dd ?
+	.dwEffects		dd ?
+	.yHeight		dd ?
+	.yOffset		dd ?
+	.crTextColor		dd ?
+	.bCharSet		db ?
+	.bPitchAndFamily	db ?
+	.szFaceName		rb 34
+ends
+
+struct FINDTEXTEX
+	.chrg			CHARRANGE
+	.lpstrText		dd ?
+	.chrgText		CHARRANGE
+ends
+
+struct SETTEXTEX
+	.flags			dd ?
+	.codepage		dd ?
+ends
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				MACRO					|
+; |									|
+; +---------------------------------------------------------------------+
+macro m_message reg, [msg, msgHandler] {
+	cmp  reg,msg
+	je   msgHandler
+}
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				.data SECTION				|
+; |									|
+; +---------------------------------------------------------------------+
+section '.data' data readable writeable
+
+	wndClsName	db 'Zibu',0
+	wndTitle	db 'Untitled - Zibu',0
+	wndPrependTitle	db ' - Zibu',0
+	insH		dd ?
+	wndH		dd ?
+	appH		dd ?
+	accelH		dd ?
+
+	wndCls	WNDCLASS
+	wndMsg	MSG
+
+	ctlClsNameRe2	db 'RICHEDIT20A',0
+	ctlClsDllRe2	db 'riched20.DLL',0
+
+	re2DllH		dd ?
+	re2H		dd ?
+	re2DefProc	dd ?
+
+	heapH		dd ?
+
+	colorBg		dd ?
+	colorBgPrev	dd ?
+	colorFg		dd ?
+	colorFgPrev	dd ?
+
+	rect		RECT
+
+	buf		rb 0xFF
+	f1		db '%lu',0
+
+	; +----------+
+	; | proc_INI |
+	; +----------+
+	struct struct_INI
+		.startup		db 'startup',0
+			.colorBg	db 'colorBg',0
+			.colorFg	db 'colorFg',0
+			.font		db 'font',0
+	ends
+	iniPath		rb 0xFF
+	iniFile		db '\zibu.ini',0
+	ini		struct_INI
+
+	; +-----------------+
+	; | struct_FOR_EDIT |
+	; +-----------------+
+	struct struct_FOR_EDIT
+		.commentR		TEXTRANGE
+		.commentInfo		dd ST_KEEPUNDO + ST_SELECTION
+					dd CP_ACP
+		.commentSComma		dd ?
+		.allocSize		dd ?
+		.allocFrom		dd ?
+		.allocReplace		dd ?
+	ends
+	sEdit		struct_FOR_EDIT
+
+	; +-------------------+
+	; | struct_FOR_SEARCH |
+	; +-------------------+
+	struct struct_FOR_SEARCH
+		.option		dd ?
+		.searchH	dd ?
+		.searchInfo	FINDTEXTEX
+		.searchBuffer	rb 0xFF
+		.replaceInfo	SETTEXTEX
+		.replaceBuffer	rb 0xFF
+		.replaceFirst	dd TRUE			;so that we don't mark next word if user select it already
+		.replaceMarked	dd ?
+		.enteredBuffer	rb 0xFF
+		.eFromH		dd ?
+		.eFromProcAddr	dd ?
+		.eToH		dd ?
+		.gotoLineInfo	CHARRANGE
+	ends
+	sSearch	struct_FOR_SEARCH
+
+	; +--------------------+
+	; | struct_FOR_OPTIONS |
+	; +--------------------+
+	struct struct_FOR_OPTIONS
+
+		; MI_SETFONT
+		; ==========
+		.cf		CHOOSEFONT
+		.lf		LOGFONT
+		.fontH		dd ?
+
+		; MI_SETCOLOR
+		; ===========
+		.sbgH		dd ?
+		.sfgH		dd ?
+		.brushBgH	dd ?
+		.brushFgH	dd ?
+		.cc		CHOOSECOLOR
+		.ccCustom	dd 0x00E6E6F2,0x00F9F6E9,0x006F7677,0x00B4A6AE,0x00DCE2E0,0x00696B39,0x00A29688,0x00A57669,\
+				   0x00232343,0x004C4214,0x00CFCFCF,0x00F1EBEE,0x00333333,0x00FFFFE3,0x00E0DAD2,0x00FFFFFF
+	ends
+	sOptions	struct_FOR_OPTIONS
+
+	; +-----------------+
+	; | struct_FOR_FILE |
+	; +-----------------+
+	struct struct_FOR_FILE
+		.ofn		OPENFILENAME
+		.openTitle	db ' File :: Open ... ',0
+		.openFileName	rb 0xFF
+		.openFilter	db 'All Files (*.*)',0,'*.*',0
+				db 'Asm Files (*.asm)',0,'*.asm',0
+				db 'Text Files (*.txt)',0,'*.txt',0,0
+		.openFail	db 'Zibu could not open the requested file.',0
+		.saveTitle	db ' File :: Save ... ',0
+		.savePrompt	db 'The text has been changed, do you want to save?',0
+		.saveFail	db 'Zibu could not save your file.',0
+		.fileH		dd ?
+		.fileOpened	dd ?
+		.fileTitle	rb 0xFF
+		.editS		EDITSTREAM
+		.charR		CHARRANGE
+	ends
+	sFile		struct_FOR_FILE
+
+	; +----------------+
+	; | proc_RE2_COLOR |
+	; +----------------+
+	chrFmt		CHARFORMAT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				.code SECTION				|
+; |									|
+; +---------------------------------------------------------------------+
+section '.code' code readable executable
+start:
+	; WIN MAIN
+	; ========
+	invoke	LoadLibrary,ctlClsDllRe2
+		cmp  eax,NULL
+		je   exit
+		mov  [re2DllH],eax
+	invoke	GetProcessHeap
+		mov  [heapH],eax
+	invoke	GetModuleHandle,NULL
+		mov  [insH],eax
+		mov  [wndCls.hInstance],eax
+		mov  [wndCls.style],CS_HREDRAW + CS_VREDRAW
+		mov  [wndCls.lpfnWndProc],proc_window
+		mov  [wndCls.lpszMenuName],M_MAIN
+	invoke	LoadIcon,NULL,IDI_APPLICATION
+		mov  [wndCls.hIcon],eax
+	invoke	LoadCursor,NULL,IDC_ARROW
+		mov  [wndCls.hCursor],eax
+		mov  [wndCls.hbrBackground],COLOR_BTNFACE + 1
+		mov  [wndCls.lpszClassName],wndClsName
+	invoke	RegisterClass,wndCls
+
+	invoke	CreateWindowEx,NULL,wndClsName,wndTitle,\
+		WS_OVERLAPPEDWINDOW + WS_VISIBLE,\
+		CW_USEDEFAULT,CW_USEDEFAULT,500,400,\
+		NULL,NULL,[insH],NULL
+		mov  [wndH],eax
+
+	invoke	DragAcceptFiles,eax,TRUE
+	invoke	LoadAccelerators,[insH],0x60
+		mov  [accelH],eax	
+
+	invoke	GetSysColor,COLOR_WINDOW
+		mov  [colorBg],eax
+		mov  [colorBgPrev],eax
+		mov  [sOptions.ccCustom],eax
+	invoke	GetSysColor,COLOR_WINDOWTEXT
+		mov  [colorFg],eax
+		mov  [colorFgPrev],eax
+
+	invoke	GetCurrentDirectory,0xFF,iniPath
+		lea  edx,[iniPath]
+		add  edx,eax
+	invoke	lstrcat,edx,iniFile
+
+	call	proc_INI
+	invoke	SendMessage,[re2H],WM_SETFONT,[sOptions.fontH],0
+	call	proc_RE2_COLOR
+	invoke	SendMessage,[re2H],EM_SETMODIFY,FALSE,0
+
+	invoke	GetCommandLine
+		push ebx
+		mov  ebx,eax
+		mov  ecx,0
+	.parse_start:
+		cmp  ecx,0xFF
+		je   .parse_end
+		cmp  [ebx], byte 0x20
+		jne  @f
+		inc  ebx
+		inc  ebx
+		cmp  [ebx], byte ':'
+		jne  @f
+		sub  ebx,1
+		mov  eax,ebx
+	invoke	lstrcpy,sFile.openFileName,eax
+	stdcall	proc_MI_OPEN,[appH]
+		jmp  .parse_end
+	@@:
+		inc  ebx
+		inc  ecx
+		jmp  .parse_start
+	.parse_end:
+		pop  ebx
+
+
+	; WINDOW MESSAGE 
+	; ==============
+	window_message_loop_start:
+		invoke	GetMessage,wndMsg,NULL,0,0
+			or   eax,eax
+			je   window_message_loop_end
+		invoke	IsDialogMessage,[sSearch.searchH],wndMsg
+			cmp  eax,0
+			jne  window_message_loop_start
+		invoke	TranslateAccelerator,[wndH],[accelH],wndMsg
+			or   eax,eax
+			jne  window_message_loop_start
+		invoke	TranslateMessage,wndMsg
+		invoke	DispatchMessage,wndMsg
+			jmp  window_message_loop_start
+	window_message_loop_end:
+		invoke	FreeLibrary,[re2DllH]
+	exit:
+		invoke	ExitProcess,0
+
+
+proc proc_INI
+	invoke	GetFileAttributes,iniPath
+		cmp  eax,-1
+		je   .ini_BYE
+
+	invoke	GetPrivateProfileInt,ini.startup,ini.colorBg,0,iniPath
+		cmp  eax,0
+		je   @f
+		mov  [colorBg],eax
+		mov  [colorBgPrev],eax
+	@@:
+	invoke	GetPrivateProfileInt,ini.startup,ini.colorFg,0,iniPath
+		cmp  eax,0
+		je   @f
+		mov  [colorFg],eax
+		mov  [colorFgPrev],eax
+	@@:
+	invoke	GetPrivateProfileStruct,ini.startup,ini.font,sOptions.lf,sizeof.LOGFONT,iniPath
+	invoke	CreateFontIndirect,sOptions.lf
+		mov  [sOptions.fontH],eax
+
+	.ini_BYE:
+	return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_window				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_window,hWnd,uMsg,wParam,lParam
+			push ebx esi edi
+			mov  eax,[uMsg]
+		m_message eax,\
+			WM_COMMAND,		.wmCOMMAND,\
+			WM_SIZE,		.wmSIZE,\
+			WM_SETFOCUS,		.wmSETFOCUS,\
+			WM_INITMENUPOPUP,	.wmINITMENUPOPUP,\
+			WM_CREATE,		.wmCREATE,\
+			WM_DROPFILES,		.wmDROPFILES,\
+			WM_CLOSE,		.wmCLOSE,\
+			WM_DESTROY,		.wmDESTROY
+			
+	.wmDEFAULT:
+		invoke	DefWindowProc,[hWnd],[uMsg],[wParam],[lParam]
+			jmp  .wmBYE
+
+
+	.wmCREATE:
+			push [hWnd]
+			pop  [appH]
+		invoke	CreateWindowEx,WS_EX_STATICEDGE,ctlClsNameRe2,0,\
+			WS_CHILD + WS_HSCROLL + WS_VSCROLL + ES_NOHIDESEL + ES_MULTILINE + ES_DISABLENOSCROLL + WS_VISIBLE,\
+			0,0,0,0,[hWnd],10,[insH],0
+			mov  [re2H],eax
+		invoke	SetFocus,eax
+		invoke	SendMessage,[re2H],EM_SETTEXTMODE,1,0
+		invoke	SendMessage,[re2H],EM_LIMITTEXT,-1,0
+
+		; +----------+
+		; | DLG_OPEN |
+		; +----------+
+			mov  [sFile.ofn.lStructSize],sizeof.OPENFILENAME
+			push [hWnd]
+			push [insH]
+			pop  [sFile.ofn.hInstance]
+			pop  [sFile.ofn.hwndOwner]
+			mov  [sFile.ofn.lpstrFilter],sFile.openFilter
+			mov  [sFile.ofn.lpstrFile],sFile.openFileName
+			mov  [sFile.ofn.nMaxFile],0xFF
+			mov  [sFile.ofn.Flags],OFN_FILEMUSTEXIST + OFN_PATHMUSTEXIST + OFN_LONGNAMES + OFN_HIDEREADONLY + OFN_EXPLORER
+
+		; +-------------+
+		; | DLG_SETFONT |
+		; +-------------+
+		invoke	RtlZeroMemory,sOptions.cf,sizeof.CHOOSEFONT
+			mov  [sOptions.cf.lStructSize],sizeof.CHOOSEFONT
+			push [hWnd]
+			push [insH]
+			pop  [sOptions.cf.hInstance]
+			pop  [sOptions.cf.hwndOwner]
+			mov  [sOptions.cf.lpTemplateName],DLG_SETFONT
+			mov  [sOptions.cf.lpLogFont],sOptions.lf
+			mov  [sOptions.cf.Flags],CF_SCREENFONTS + CF_ENABLETEMPLATE + CF_INITTOLOGFONTSTRUCT
+
+		; +--------------+
+		; | DLG_SETCOLOR |
+		; +--------------+
+		invoke	RtlZeroMemory,sOptions.cc,sizeof.CHOOSECOLOR
+			mov  [sOptions.cc.lStructSize],sizeof.CHOOSECOLOR
+			mov  [sOptions.cc.lpCustColors],sOptions.ccCustom
+			mov  [sOptions.cc.Flags],CC_FULLOPEN + CC_RGBINIT
+			jmp  .wmBYE
+
+	.wmCOMMAND:
+			mov  eax,[wParam]
+		m_message ax,\
+			MI_NEW,		.wmCOMMAND_MI_NEW,	MI_OPEN,	.wmCOMMAND_MI_OPEN,\
+			MI_SAVEAS,	.wmCOMMAND_MI_SAVEAS,	MI_SAVE,	.wmCOMMAND_MI_SAVE,\
+			MI_EXIT,	.wmCOMMAND_MI_EXIT,	MI_SETFONT,	.wmCOMMAND_MI_SETFONT,\
+			MI_SETCOLOR,	.wmCOMMAND_MI_SETCOLOR,\
+			\
+			MI_UNDO,	.wmCOMMAND_MI_UNDO,	MI_REDO,	.wmCOMMAND_MI_REDO,\
+			MI_CUT,		.wmCOMMAND_MI_CUT,	MI_COPY,	.wmCOMMAND_MI_COPY,\
+			MI_PASTE,	.wmCOMMAND_MI_PASTE,	MI_DELETE,	.wmCOMMAND_MI_DELETE,\
+			MI_SELECTALL,	.wmCOMMAND_MI_SELECTALL,MI_COMMENT,	.wmCOMMAND_MI_COMMENT,\
+			MI_UNCOMMENT,	.wmCOMMAND_MI_COMMENT,\
+			\
+			MI_FIND,	.wmCOMMAND_MI_FIND,\
+			MI_FINDPREV,	.wmCOMMAND_MI_FINDCOMMON_1,\
+			MI_FINDNEXT,	.wmCOMMAND_MI_FINDCOMMON_1,\
+			MI_REPLACE,	.wmCOMMAND_MI_REPLACE,\
+			MI_GOTOLINE,	.wmCOMMAND_MI_GOTOLINE,\
+			\
+			MI_ABOUT,	.wmCOMMAND_MI_ABOUT
+			jmp  .wmBYE
+
+		; +------+
+		; | FILE |
+		; +------+
+		.wmCOMMAND_MI_NEW:
+			call	proc_STREAM_MODIFY
+				cmp  eax,FALSE
+				je   .wmBYE
+			invoke	SetWindowText,[re2H],NULL
+			invoke	SetWindowText,[hWnd],wndTitle
+				mov  [sFile.fileOpened],FALSE
+			invoke	RtlZeroMemory,sFile.openFileName,0xFF
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_OPEN:
+				mov  [sFile.ofn.lpstrTitle],sFile.openTitle
+			invoke	GetOpenFileName,sFile.ofn
+				cmp  eax,0
+				je   .wmBYE
+			stdcall	proc_MI_OPEN,[hWnd]
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_SAVEAS:
+				mov  [sFile.ofn.lpstrTitle],sFile.saveTitle
+			invoke	GetSaveFileName,sFile.ofn
+				cmp  eax,0
+				je   .wmBYE
+				jmp  @f
+
+		.wmCOMMAND_MI_SAVE:
+				cmp  [sFile.fileOpened],TRUE
+				jne  .wmCOMMAND_MI_SAVEAS
+			@@:
+			invoke	CreateFile,[sFile.ofn.lpstrFile],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+				cmp  eax,INVALID_HANDLE_VALUE
+				je   @f
+				mov  [sFile.fileH],eax
+				mov  [sFile.editS.dwCookie],eax
+				mov  [sFile.editS.pfnCallback],proc_STREAM_OUT
+			invoke	SendMessage,[re2H],EM_STREAMOUT,SF_TEXT,sFile.editS
+			invoke	SendMessage,[re2H],EM_SETMODIFY,FALSE,0
+			invoke	CloseHandle,[sFile.fileH]
+			call	proc_FILE_TITLE_GET
+				jmp  .wmBYE
+			@@:
+			invoke	MessageBox,[hWnd],sFile.saveFail,wndClsName,MB_OK + MB_ICONERROR
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_EXIT:
+			invoke	SendMessage,[hWnd],WM_CLOSE,0,0
+				jmp  .wmBYE
+
+		; +------+
+		; | EDIT |
+		; +------+
+		.wmCOMMAND_MI_UNDO:
+			invoke	SendMessage,[re2H],EM_UNDO,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_REDO:
+			invoke	SendMessage,[re2H],EM_REDO,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_CUT:
+			invoke	SendMessage,[re2H],WM_CUT,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_COPY:
+			invoke	SendMessage,[re2H],WM_COPY,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_PASTE:
+			invoke	SendMessage,[re2H],WM_PASTE,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_DELETE:
+			invoke	SendMessage,[re2H],EM_REPLACESEL,TRUE,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_SELECTALL:
+				mov  [sFile.charR.cpMin],0
+				mov  [sFile.charR.cpMax],-1
+			invoke	SendMessage,[re2H],EM_EXSETSEL,0,sFile.charR
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_COMMENT:
+			invoke	SendMessage,[re2H],EM_EXGETSEL,0,sEdit.commentR.chrg
+				mov  eax,[sEdit.commentR.chrg.cpMin]
+				cmp  eax,[sEdit.commentR.chrg.cpMax]
+				je   .wmBYE
+			invoke	SendMessage,[re2H],EM_EXLINEFROMCHAR,0,eax					; get the cpMin line number
+				push eax
+			invoke	SendMessage,[re2H],EM_LINEINDEX,eax,0
+				mov  [sEdit.commentR.chrg.cpMin],eax
+			invoke	SendMessage,[re2H],EM_EXLINEFROMCHAR,0,[sEdit.commentR.chrg.cpMax]		; get the cpMax line number
+				push eax
+			invoke	SendMessage,[re2H],EM_LINEINDEX,eax,0
+				cmp  eax,[sEdit.commentR.chrg.cpMax]						; if the cpMax line == chrg.cpMax, it
+				jne  @f										; means the last char is [crlf]
+				pop  eax
+				dec  eax
+				push eax
+				dec  [sEdit.commentR.chrg.cpMax]						; clear the [crlf]
+			@@:
+			invoke	SendMessage,[re2H],EM_EXSETSEL,NULL,sEdit.commentR.chrg				; make new selection
+				pop  eax
+				pop  edx
+				sub  eax,edx
+				inc  eax
+				mov  [sEdit.commentSComma],eax							; store how many to add into cpMax later
+				mov  edx,[sEdit.commentR.chrg.cpMax]
+				sub  edx,[sEdit.commentR.chrg.cpMin]
+				add  edx,eax
+				add  edx,0xA
+				mov  [sEdit.allocSize],edx
+			invoke	HeapAlloc,[heapH],HEAP_ZERO_MEMORY,edx
+				mov  [sEdit.allocFrom],eax
+				mov  [sEdit.commentR.lpstrText],eax
+			invoke	HeapAlloc,[heapH],HEAP_ZERO_MEMORY,[sEdit.allocSize]
+				mov  [sEdit.allocReplace],eax
+			invoke	SendMessage,[re2H],EM_GETTEXTRANGE,0,sEdit.commentR
+
+				mov  esi,[sEdit.allocFrom]
+				mov  edi,[sEdit.allocReplace]
+
+				mov  eax,[wParam]
+				cmp  ax,MI_UNCOMMENT
+				je   .wmCOMMAND_MI_UNCOMMENT
+
+				mov  byte [edi],';'
+				inc  edi
+
+			.MI_COMMENT_REPLACE:
+					cmp  byte [esi],0
+					je   .REPLACE_FINISH
+					cmp  byte [esi],0xD
+					je   .REPLACE_COMMENT
+					mov  al,byte [esi]
+					mov  byte [edi],al
+					inc  esi
+					inc  edi
+					jmp  .MI_COMMENT_REPLACE
+
+				.REPLACE_COMMENT:
+						mov  byte [edi],0xD
+						inc  edi
+						mov  byte [edi],';'
+						inc  edi
+						inc  esi
+						jmp  .MI_COMMENT_REPLACE
+
+				.REPLACE_FINISH:
+						mov  byte [edi],0
+
+			invoke	SendMessage,[re2H],EM_SETTEXTEX,sEdit.commentInfo,[sEdit.allocReplace]
+				mov  eax,[sEdit.commentSComma]
+				add  [sEdit.commentR.chrg.cpMax],eax
+
+			.MI_UNCOMMENT_RELEASE:
+				invoke	SendMessage,[re2H],EM_EXSETSEL,NULL,sEdit.commentR.chrg
+				invoke	HeapFree,[heapH],NULL,[sEdit.allocFrom]
+				invoke	HeapFree,[heapH],NULL,[sEdit.allocReplace]
+					jmp  .wmBYE
+
+		.wmCOMMAND_MI_UNCOMMENT:
+				cmp  byte [esi],';'
+				jne  .MI_UNCOMMENT_REMOVE
+				dec  [sEdit.commentR.chrg.cpMax]
+				inc  esi
+
+			.MI_UNCOMMENT_REMOVE:
+					cmp  byte [esi],0
+					je   .REMOVE_FINISH
+					cmp  byte [esi],';'
+					jne  @f
+					cmp  byte [esi - 1],0xD
+					jne  @f
+					inc  esi
+					dec  [sEdit.commentR.chrg.cpMax]
+					jmp  .MI_UNCOMMENT_REMOVE
+				@@:
+					mov  al,byte [esi]
+					mov  byte [edi],al
+					inc  esi
+					inc  edi
+					jmp  .MI_UNCOMMENT_REMOVE
+
+				.REMOVE_FINISH:
+						mov  byte [edi],0
+					invoke	SendMessage,[re2H],EM_SETTEXTEX,sEdit.commentInfo,[sEdit.allocReplace]
+						jmp  .MI_UNCOMMENT_RELEASE
+
+		; +---------+
+		; | OPTIONS |
+		; +---------+
+		.wmCOMMAND_MI_SETFONT:
+			invoke	ChooseFont,sOptions.cf
+				or   eax,eax
+				je   .wmBYE
+			invoke	WritePrivateProfileStruct,ini.startup,ini.font,sOptions.lf,sizeof.LOGFONT,iniPath
+				mov  eax,sOptions.lf.lfFaceName
+			invoke	CreateFontIndirect,sOptions.lf
+				or   eax,eax
+				je   .wmBYE
+				push eax
+			invoke	DeleteObject,[sOptions.fontH]
+				pop  [sOptions.fontH]
+			invoke	SendMessage,[re2H],EM_GETMODIFY,0,0
+				push eax
+			invoke	SendMessage,[re2H],WM_SETFONT,[sOptions.fontH],0
+			call	proc_RE2_COLOR
+				pop  eax
+			invoke	SendMessage,[re2H],EM_SETMODIFY,eax,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_SETCOLOR:
+			invoke	SendMessage,[re2H],EM_GETMODIFY,0,0
+				push eax
+			invoke	DialogBoxParam,[insH],DLG_SETCOLOR,[hWnd],proc_DLG_SETCOLOR,[hWnd]
+			call	proc_RE2_COLOR
+				pop  eax
+			invoke	SendMessage,[re2H],EM_SETMODIFY,eax,0
+				jmp  .wmBYE
+
+		; +------+
+		; | HELP |
+		; +------+
+		.wmCOMMAND_MI_ABOUT:
+			invoke	DialogBoxParam,[insH],DLG_ABOUT,[hWnd],proc_DLG_ABOUT,[hWnd]
+				jmp  .wmBYE
+
+		; +--------+
+		; | SEARCH |
+		; +--------+
+		.wmCOMMAND_MI_FIND:
+				cmp  [sSearch.searchH],0
+				jne  .wmBYE
+			invoke	CreateDialogParam,[insH],DLG_FIND,[hWnd],proc_DLG_FIND,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_FINDCOMMON_1:
+			invoke	lstrlen,sSearch.searchBuffer
+				cmp  eax,0
+				je   .wmBYE
+			invoke	SendMessage,[re2H],EM_EXGETSEL,0,sSearch.searchInfo.chrg
+				mov  eax,[wParam]
+				cmp  ax,MI_FINDNEXT
+				je   .wmCOMMAND_MI_FINDNEXT
+
+		.wmCOMMAND_MI_FINDPREV:
+				mov  [sSearch.option],0
+				mov  [sSearch.searchInfo.chrg.cpMax],0
+
+		.wmCOMMAND_MI_FINDCOMMON_2:
+				mov  [sSearch.searchInfo.lpstrText],sSearch.searchBuffer
+			invoke	SendMessage,[re2H],EM_FINDTEXTEX,[sSearch.option],sSearch.searchInfo
+				cmp  eax,-1
+				je   .wmBYE
+			invoke	SendMessage,[re2H],EM_EXSETSEL,0,sSearch.searchInfo.chrgText
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_FINDNEXT:
+				mov  eax,[sSearch.searchInfo.chrg.cpMin]
+				cmp  eax,[sSearch.searchInfo.chrg.cpMax]
+				je   @f
+				push [sSearch.searchInfo.chrg.cpMax]
+				pop  [sSearch.searchInfo.chrg.cpMin]
+			@@:
+				mov  [sSearch.searchInfo.chrg.cpMax],-1
+				or   [sSearch.option],FR_DOWN
+				jmp  .wmCOMMAND_MI_FINDCOMMON_2
+
+		.wmCOMMAND_MI_REPLACE:
+				cmp  [sSearch.searchH],0
+				jne  .wmBYE
+			invoke	CreateDialogParam,[insH],DLG_REPLACE,[hWnd],proc_DLG_REPLACE,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_MI_GOTOLINE:
+				cmp  [sSearch.searchH],0
+				jne  .wmBYE
+			invoke	CreateDialogParam,[insH],DLG_GOTOLINE,[hWnd],proc_DLG_GOTOLINE,0
+				jmp  .wmBYE
+
+	.wmINITMENUPOPUP:
+		mov  eax,[lParam]
+		cmp  ax,1
+		je   .wmINITMENUPOPUP_EDIT
+		cmp  ax,4
+		je   .wmINITMENUPOPUP_HELP
+		jmp  .wmBYE
+
+		.wmINITMENUPOPUP_EDIT:
+			invoke	EnableMenuItem,[wParam],MI_UNDO,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_REDO,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_CUT,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_COPY,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_PASTE,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_DELETE,MF_ENABLED
+			invoke	EnableMenuItem,[wParam],MI_WORDWRAP,MF_GRAYED
+
+			invoke	SendMessage,[re2H],EM_CANUNDO,0,0
+				cmp  eax,0
+				jne  @f
+			invoke	EnableMenuItem,[wParam],MI_UNDO,MF_GRAYED
+		@@:
+			invoke	SendMessage,[re2H],EM_CANREDO,0,0
+				cmp  eax,0
+				jne  @f
+			invoke	EnableMenuItem,[wParam],MI_REDO,MF_GRAYED
+		@@:
+			invoke	SendMessage,[re2H],EM_CANPASTE,0,0
+				cmp  eax,0
+				jne  @f
+			invoke	EnableMenuItem,[wParam],MI_PASTE,MF_GRAYED
+		@@:
+			invoke	SendMessage,[re2H],EM_EXGETSEL,0,sFile.charR
+				mov  eax,[sFile.charR.cpMin]
+				cmp  eax,[sFile.charR.cpMax]
+				jne  @f
+			invoke	EnableMenuItem,[wParam],MI_CUT,MF_GRAYED
+			invoke	EnableMenuItem,[wParam],MI_COPY,MF_GRAYED
+			invoke	EnableMenuItem,[wParam],MI_DELETE,MF_GRAYED
+		@@:
+				jmp  .wmBYE
+
+		.wmINITMENUPOPUP_HELP:
+			invoke	EnableMenuItem,[wParam],MI_HTMLHELP,MF_GRAYED
+				jmp  .wmBYE
+
+
+	.wmSIZE:
+			mov  eax,[lParam]
+			mov  edx,eax
+			shr  edx,16
+			add  eax,0xFFFF
+		invoke	MoveWindow,[re2H],0,0,eax,edx,TRUE
+			jmp  .wmBYE
+
+	.wmDROPFILES:
+		invoke	DragQueryFile,[wParam],0,buf,0xFF
+		call	proc_STREAM_MODIFY
+			cmp  eax,FALSE
+			je   @f
+		invoke	SetWindowText,[re2H],NULL
+		invoke	lstrcpy,sFile.openFileName,buf
+		stdcall	proc_MI_OPEN,[hWnd]
+		@@:
+		invoke	DragFinish,[wParam]
+			jmp  .wmBYE
+
+	.wmSETFOCUS:
+		invoke	SetFocus,[re2H]
+			jmp  .wmBYE
+
+	.wmCLOSE:
+		call	proc_STREAM_MODIFY
+			cmp  eax,TRUE
+			jne  .wmBYE
+		invoke	DestroyWindow,[hWnd]
+			jmp  .wmBYE
+
+	.wmDESTROY:
+		invoke	PostQuitMessage,0
+
+	.wmBYE:
+			pop  edi esi ebx
+			return
+endp
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_MI_OPEN				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_MI_OPEN,hWnd
+	invoke	CreateFile,[sFile.ofn.lpstrFile],GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		cmp  eax,INVALID_HANDLE_VALUE
+		je   @f
+		mov  [sFile.fileH],eax
+		mov  [sFile.editS.dwCookie],eax
+		mov  [sFile.editS.pfnCallback],proc_STREAM_IN
+	invoke	SendMessage,[re2H],EM_STREAMIN,SF_TEXT,sFile.editS
+	invoke	SendMessage,[re2H],EM_SETMODIFY,FALSE,0
+	invoke	CloseHandle,[sFile.fileH]
+	call	proc_FILE_TITLE_GET
+		return
+	@@:
+	invoke	MessageBox,[hWnd],sFile.openFail,wndClsName,MB_OK + MB_ICONERROR
+		return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_DLG_FIND				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_DLG_FIND,hDlg,uMsg,wParam,lParam
+		mov  eax,[uMsg]
+	m_message eax,\
+		WM_COMMAND,	.wmCOMMAND,\
+		WM_INITDIALOG,	.wmINITDIALOG,\
+		WM_CLOSE,	.wmCLOSE
+		mov  eax,FALSE
+		return
+
+	.wmINITDIALOG:
+			push [hDlg]
+			pop  [sSearch.searchH]
+		invoke	CheckRadioButton,[hDlg],FIND_RUP,FIND_RDOWN,FIND_RDOWN
+		invoke	SendMessage,[re2H],EM_EXGETSEL,0,sSearch.searchInfo.chrg
+			mov  eax,[sSearch.searchInfo.chrg.cpMin]
+			cmp  eax,[sSearch.searchInfo.chrg.cpMax]
+			jne  .wmINITDIALOG_PRESELECT
+		invoke	lstrlen,sSearch.searchBuffer
+			cmp  eax,0
+			je   .wmBYE
+			jmp  @f
+
+		.wmINITDIALOG_PRESELECT:
+			invoke	SendMessage,[re2H],EM_GETSELTEXT,0,sSearch.searchBuffer
+		@@:
+			invoke	GetDlgItem,[hDlg],FIND_ETXT
+			invoke	SetWindowText,eax,sSearch.searchBuffer
+				jmp  .wmBYE
+
+	.wmCOMMAND:
+			mov  eax,[wParam]
+			push eax
+			shr  eax,16
+			cmp  ax,BN_CLICKED
+			jne  .wmBYE
+			pop  eax
+		m_message ax,\
+			FIND_BOK,	.wmCOMMAND_FIND_BOK,\
+			FIND_BCC,	.wmCOMMAND_FIND_BCC,\
+			FIND_BTONGGLE,	.wmCOMMAND_FIND_BTONGGLE
+			mov  eax,FALSE
+			return
+	
+		.wmCOMMAND_FIND_BOK:
+				mov  [sSearch.option],0
+			invoke	SendMessage,[re2H],EM_EXGETSEL,0,sSearch.searchInfo.chrg
+			invoke	GetDlgItemText,[hDlg],FIND_ETXT,sSearch.searchBuffer,0xFF
+				cmp  eax,0
+				je   .wmBYE
+			invoke	IsDlgButtonChecked,[hDlg],FIND_RDOWN
+				cmp  eax,BST_CHECKED
+				je   .wmCOMMAND_FIND_RDOWN_CHECKED
+				mov  [sSearch.searchInfo.chrg.cpMax],0
+
+			.wmCOMMAND_FIND_CMCASE:
+				invoke	IsDlgButtonChecked,[hDlg],FIND_CMCASE
+					cmp  eax,BST_CHECKED
+					jne  .wmCOMMAND_FIND_CMWHOLE
+					or   [sSearch.option],FR_MATCHCASE
+
+			.wmCOMMAND_FIND_CMWHOLE:
+				invoke	IsDlgButtonChecked,[hDlg],FIND_CMWHOLE
+					cmp  eax,BST_CHECKED
+					jne  @f
+					or   [sSearch.option],FR_WHOLEWORD
+				@@:
+					mov  [sSearch.searchInfo.lpstrText],sSearch.searchBuffer
+				invoke	SendMessage,[re2H],EM_FINDTEXTEX,[sSearch.option],sSearch.searchInfo
+					cmp  eax,-1
+					je   .wmBYE
+				invoke	SendMessage,[re2H],EM_EXSETSEL,0,sSearch.searchInfo.chrgText
+					jmp  .wmBYE
+
+			.wmCOMMAND_FIND_RDOWN_CHECKED:
+					or   [sSearch.option],FR_DOWN
+					mov  eax,[sSearch.searchInfo.chrg.cpMin]
+					cmp  eax,[sSearch.searchInfo.chrg.cpMax]
+					je   @f
+					push [sSearch.searchInfo.chrg.cpMax]
+					pop  [sSearch.searchInfo.chrg.cpMin]
+				@@:
+					mov  [sSearch.searchInfo.chrg.cpMax],-1
+					jmp  .wmCOMMAND_FIND_CMCASE	
+
+		.wmCOMMAND_FIND_BCC:
+			invoke	SendMessage,[hDlg],WM_CLOSE,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_FIND_BTONGGLE:
+			invoke	IsDlgButtonChecked,[hDlg],FIND_RDOWN
+				cmp  eax,BST_CHECKED
+				je   @f
+			invoke	CheckDlgButton,[hDlg],FIND_RDOWN,BST_CHECKED
+			invoke	CheckDlgButton,[hDlg],FIND_RUP,BST_UNCHECKED
+				jmp  .wmBYE
+			@@:
+			invoke	CheckDlgButton,[hDlg],FIND_RUP,BST_CHECKED
+			invoke	CheckDlgButton,[hDlg],FIND_RDOWN,BST_UNCHECKED
+				jmp  .wmBYE
+
+	.wmCLOSE:
+			mov  [sSearch.searchH],0
+		invoke	EndDialog,[hDlg],0
+
+	.wmBYE:
+			mov  eax,TRUE
+			return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_DLG_REPLACE			|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_DLG_REPLACE,hDlg,uMsg,wParam,lParam
+		mov  eax,[uMsg]
+	m_message eax,\
+		WM_COMMAND,	.wmCOMMAND,\
+		WM_INITDIALOG,	.wmINITDIALOG,\
+		WM_CLOSE,	.wmCLOSE
+		mov  eax,FALSE
+		return
+
+	.wmINITDIALOG:
+			push [hDlg]
+			pop  [sSearch.searchH]
+			mov  [sSearch.replaceFirst],TRUE
+		invoke	GetDlgItem,[hDlg],REPLACE_ETO
+			mov  [sSearch.eToH],eax
+		invoke	GetDlgItem,[hDlg],REPLACE_EFROM
+			mov  [sSearch.eFromH],eax
+		invoke	SetWindowLong,eax,GWL_WNDPROC,proc_DLG_REPLACE_EFROM
+			mov  [sSearch.eFromProcAddr],eax
+
+		invoke	SendMessage,[re2H],EM_EXGETSEL,0,sSearch.searchInfo.chrg
+			mov  eax,[sSearch.searchInfo.chrg.cpMin]
+			cmp  eax,[sSearch.searchInfo.chrg.cpMax]
+			jne  .wmINITDIALOG_PRESELECT
+		invoke	lstrlen,sSearch.searchBuffer
+			cmp  eax,0
+			je   .wmBYE
+
+		.wmINITDIALOG_PRESELECT:
+			invoke	SendMessage,[re2H],EM_GETSELTEXT,0,sSearch.searchBuffer
+	@@:
+		invoke	SetWindowText,[sSearch.eFromH],sSearch.searchBuffer
+			jmp  .wmBYE
+
+	.wmCOMMAND:
+			mov  eax,[wParam]
+			shr  eax,16
+			cmp  ax,BN_CLICKED
+			jne  .wmBYE
+			mov  eax,[wParam]
+		m_message eax,\
+			REPLACE_BMARK,	.wmCOMMAND_REPLACE_BMARK,\
+			REPLACE_BREP,	.wmCOMMAND_REPLACE_BREP,\
+			REPLACE_BREPALL,.wmCOMMAND_REPLACE_BREPALL,\
+			REPLACE_BCC,	.wmCOMMAND_REPLACE_BCC
+			mov  eax,FALSE
+			return
+
+		.wmCOMMAND_REPLACE_BMARK:
+			invoke	GetWindowText,[sSearch.eFromH],sSearch.enteredBuffer,0xFF
+			invoke	lstrlen,sSearch.enteredBuffer
+				cmp  eax,0
+				je   .wmBYE
+			invoke	lstrcpy,sSearch.searchBuffer,sSearch.enteredBuffer
+				mov  [sSearch.option],0
+			invoke	IsDlgButtonChecked,[hDlg],REPLACE_CMCASE
+				cmp  eax,BST_CHECKED
+				jne  @f
+				or   [sSearch.option],FR_MATCHCASE
+			@@:
+			invoke	IsDlgButtonChecked,[hDlg],REPLACE_CMWHOLE
+				cmp  eax,BST_CHECKED
+				jne  @f
+				or   [sSearch.option],FR_WHOLEWORD
+			@@:
+			invoke	SendMessage,[appH],WM_COMMAND,MI_FINDNEXT,0
+				cmp  eax,-1
+				je   @f
+				mov  [sSearch.replaceMarked],TRUE
+				jmp  .wmBYE
+			@@:
+				mov  [sSearch.replaceMarked],FALSE
+				jmp  .wmBYE
+
+		.wmCOMMAND_REPLACE_BREP:
+				cmp  [sSearch.replaceMarked],TRUE
+				jne  .wmBYE
+			invoke	GetWindowText,[sSearch.eToH],sSearch.replaceBuffer,0xFF
+				mov  [sSearch.replaceInfo.flags],ST_SELECTION + ST_KEEPUNDO
+				mov  [sSearch.replaceInfo.codepage],CP_ACP
+			invoke	SendMessage,[re2H],EM_SETTEXTEX,sSearch.replaceInfo,sSearch.replaceBuffer
+			invoke	SendMessage,[hDlg],WM_COMMAND,REPLACE_BMARK,0
+				jmp  .wmBYE
+			
+		.wmCOMMAND_REPLACE_BREPALL:
+				cmp  [sSearch.replaceMarked],TRUE
+				jne  .wmBYE
+				mov  [sSearch.searchInfo.chrg.cpMin],0
+				mov  [sSearch.searchInfo.chrg.cpMax],-1
+				mov  [sSearch.searchInfo.lpstrText],sSearch.searchBuffer
+			invoke	GetWindowText,[sSearch.eToH],sSearch.replaceBuffer,0xFF
+				mov  [sSearch.replaceInfo.flags],ST_SELECTION + ST_KEEPUNDO
+				mov  [sSearch.replaceInfo.codepage],CP_ACP
+			@@:
+			invoke	SendMessage,[re2H],EM_FINDTEXTEX,[sSearch.option],sSearch.searchInfo
+				cmp  eax,-1
+				je   @f
+			invoke	SendMessage,[re2H],EM_EXSETSEL,0,sSearch.searchInfo.chrgText
+			invoke	SendMessage,[re2H],EM_SETTEXTEX,sSearch.replaceInfo,sSearch.replaceBuffer
+				push [sSearch.searchInfo.chrgText.cpMax]
+				pop  [sSearch.searchInfo.chrg.cpMin]
+				mov  [sSearch.searchInfo.chrg.cpMax],-1
+				jne  @b
+			@@:
+				mov  [sSearch.searchInfo.chrg.cpMin],0
+				mov  [sSearch.searchInfo.chrg.cpMax],0
+			invoke	SendMessage,[re2H],EM_EXSETSEL,0,sSearch.searchInfo.chrg
+				jmp  .wmBYE
+
+		.wmCOMMAND_REPLACE_BCC:
+			invoke	SendMessage,[hDlg],WM_CLOSE,0,0
+				jmp  .wmBYE
+
+	.wmCLOSE:
+			mov  [sSearch.searchH],0
+		invoke	EndDialog,[hDlg],0
+
+	.wmBYE:
+		mov  eax,TRUE
+		return
+
+endp
+
+proc proc_DLG_REPLACE_EFROM,hCtl,uMsg,wParam,lParam
+		cmp  [uMsg],WM_KILLFOCUS
+		jne  .wmBYE
+		cmp  [sSearch.replaceFirst],TRUE
+		jne  @f
+	invoke	GetWindowText,[sSearch.eFromH],sSearch.enteredBuffer,0xFF
+	invoke	SendMessage,[re2H],EM_GETSELTEXT,0,sSearch.searchBuffer
+	invoke	lstrcmp,sSearch.searchBuffer,sSearch.enteredBuffer
+		cmp  eax,0
+		jne  @f
+		mov  [sSearch.replaceMarked],TRUE
+		mov  [sSearch.replaceFirst],FALSE
+		jmp  .wmBYE
+
+	@@:
+	invoke	GetParent,[hCtl]
+	invoke	SendMessage,eax,WM_COMMAND,REPLACE_BMARK,0
+
+	.wmBYE:
+	invoke	CallWindowProc,[sSearch.eFromProcAddr],[hCtl],[uMsg],[wParam],[lParam]
+		return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_DLG_GOTOLINE			|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_DLG_GOTOLINE,hDlg,uMsg,wParam,lParam
+		mov  eax,[uMsg]
+	m_message eax,\
+		WM_COMMAND,	.wmCOMMAND,\
+		WM_INITDIALOG,	.wmINITDIALOG,\
+		WM_CLOSE,	.wmCLOSE
+		mov  eax,FALSE
+		return
+
+	.wmINITDIALOG:
+			push [hDlg]
+			pop  [sSearch.searchH]
+			jmp  .wmBYE
+
+	.wmCOMMAND:
+			mov  eax,[wParam]
+			cmp  eax,BN_CLICKED shl 16 or GOTOLINE_BCC
+			je   .wmCOMMAND_GOTOLINE_BCC
+			cmp  eax,BN_CLICKED shl 16 or GOTOLINE_BOK
+			je   .wmCOMMAND_GOTOLINE_BOK
+			jmp  .wmBYE
+
+		.wmCOMMAND_GOTOLINE_BCC:
+			invoke	SendMessage,[hDlg],WM_CLOSE,0,0
+				jmp  .wmBYE
+
+		.wmCOMMAND_GOTOLINE_BOK:
+			invoke	GetDlgItemInt,[hDlg],GOTOLINE_ELINE,NULL,FALSE
+				dec  eax
+				push eax
+				push eax
+			invoke	SendMessage,[re2H],EM_GETLINECOUNT,0,0
+				pop  edx
+				cmp  eax,edx
+				jl   .wmBYE
+			invoke	SendMessage,[re2H],EM_LINEINDEX,edx,0
+				mov  [sSearch.gotoLineInfo.cpMin],eax
+				pop  eax
+				inc  eax
+			invoke	SendMessage,[re2H],EM_LINEINDEX,eax,0
+				dec  eax
+				mov  [sSearch.gotoLineInfo.cpMax],eax
+			invoke	SendMessage,[re2H],EM_EXSETSEL,0,sSearch.gotoLineInfo
+			invoke	SendMessage,[hDlg],WM_CLOSE,0,0
+				jmp  .wmBYE
+
+	.wmCLOSE:
+			mov  [sSearch.searchH],0
+		invoke	EndDialog,[hDlg],0
+
+	.wmBYE:
+			mov  eax,TRUE
+			return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_DLG_SETCOLOR			|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_DLG_SETCOLOR,hDlg,uMsg,wParam,lParam
+		mov  eax,[uMsg]
+	m_message eax,\
+		WM_COMMAND,	.wmCOMMAND,	WM_CTLCOLORSTATIC,	.wmCTLCOLORSTATIC,\
+		WM_INITDIALOG,	.wmINITDIALOG,	WM_CLOSE,		.wmCLOSE
+		mov  eax,0
+		return
+
+	.wmCOMMAND:
+			mov  eax,[wParam]
+		m_message eax,\
+			BN_CLICKED shl 16 or SETCOLOR_SBG,	.wmCOMMAND_SETCOLOR_SBG,\
+			BN_CLICKED shl 16 or SETCOLOR_SFG,	.wmCOMMAND_SETCOLOR_SFG,\
+			BN_CLICKED shl 16 or SETCOLOR_BOK,	.wmCOMMAND_SETCOLOR_BOK,\
+			BN_CLICKED shl 16 or SETCOLOR_BCC,	.wmCOMMAND_SETCOLOR_BCC
+			return
+
+		.wmCOMMAND_SETCOLOR_SBG:
+				mov  eax,[colorBg]
+				mov  [sOptions.cc.rgbResult],eax
+			invoke	ChooseColor,sOptions.cc
+				cmp  eax,0
+				je   @f
+				mov  eax,[sOptions.cc.rgbResult]
+				mov  [colorBg],eax
+			invoke	DeleteObject,[sOptions.brushBgH]
+			invoke	CreateSolidBrush,[sOptions.cc.rgbResult]
+				mov  [sOptions.brushBgH],eax
+			invoke	InvalidateRect,[sOptions.sbgH],0,TRUE
+			@@:
+				return
+
+		.wmCOMMAND_SETCOLOR_SFG:
+				mov  eax,[colorFg]
+				mov  [sOptions.cc.rgbResult],eax
+			invoke	ChooseColor,sOptions.cc
+				cmp  eax,0
+				je   @f
+				mov  eax,[sOptions.cc.rgbResult]
+				mov  [colorFg],eax
+			invoke	DeleteObject,[sOptions.brushFgH]
+			invoke	CreateSolidBrush,[sOptions.cc.rgbResult]
+				mov  [sOptions.brushFgH],eax
+			invoke	InvalidateRect,[sOptions.sfgH],0,TRUE
+			@@:
+				return
+
+		.wmCOMMAND_SETCOLOR_BOK:
+				mov  eax,[colorBg]
+				mov  [colorBgPrev],eax
+				mov  eax,[colorFg]
+				mov  [colorFgPrev],eax
+			invoke	wsprintf,buf,f1,[colorBg]
+			invoke	WritePrivateProfileString,ini.startup,ini.colorBg,buf,iniPath
+			invoke	wsprintf,buf,f1,[colorFg]
+			invoke	WritePrivateProfileString,ini.startup,ini.colorFg,buf,iniPath
+			invoke	SendMessage,[re2H],EM_EMPTYUNDOBUFFER,0,0
+				jmp  @f
+
+		.wmCOMMAND_SETCOLOR_BCC:
+				mov  eax,[colorBgPrev]
+				mov  [colorBg],eax
+				mov  eax,[colorFgPrev]
+				mov  [colorFg],eax
+			@@:
+			invoke	DeleteObject,[sOptions.brushBgH]
+			invoke	DeleteObject,[sOptions.brushFgH]
+			invoke	EndDialog,[hDlg],0
+				return
+
+	.wmCTLCOLORSTATIC:
+			mov  eax,[lParam]
+			cmp  eax,[sOptions.sbgH]
+			je   .wmCTLCOLORSTATIC_SETCOLOR_SBG
+			cmp  eax,[sOptions.sfgH]
+			je   .wmCTLCOLORSTATIC_SETCOLOR_SFG
+			mov  eax,FALSE
+			return
+
+		.wmCTLCOLORSTATIC_SETCOLOR_SBG:
+				mov  eax,[sOptions.brushBgH]
+				return
+
+		.wmCTLCOLORSTATIC_SETCOLOR_SFG:
+				mov  eax,[sOptions.brushFgH]
+				return
+
+	.wmINITDIALOG:
+		invoke	GetDlgItem,[hDlg],SETCOLOR_SBG
+			mov  [sOptions.sbgH],eax
+		invoke	GetDlgItem,[hDlg],SETCOLOR_SFG
+			mov  [sOptions.sfgH],eax
+		invoke	CreateSolidBrush,[colorBg]
+			mov  [sOptions.brushBgH],eax
+		invoke	CreateSolidBrush,[colorFg]
+			mov  [sOptions.brushFgH],eax
+			return
+
+	.wmCLOSE:
+		invoke	SendMessage,[hDlg],WM_COMMAND,SETCOLOR_BCC,0
+			return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				proc_DLG_ABOUT				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_DLG_ABOUT,hDlg,uMsg,wParam,lParam
+	cmp  [uMsg],WM_COMMAND
+	je   .wmCOMMAND
+	cmp  [uMsg],WM_CLOSE
+	je   .wmCLOSE
+	mov  eax,FALSE
+	return
+
+	.wmCOMMAND:
+			cmp  [wParam],BN_CLICKED shl 16 or IDCANCEL
+			jne  .wmBYE
+		invoke	SendMessage,[hDlg],WM_CLOSE,0,0
+			jmp  .wmBYE
+
+	.wmCLOSE:
+		invoke	EndDialog,[hDlg],0
+
+	.wmBYE:
+			mov  eax,TRUE
+			return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |			proc_RE2_COLOR					|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_RE2_COLOR
+	invoke	SendMessage,[re2H],EM_SETBKGNDCOLOR,0,[colorBg]
+	invoke	RtlZeroMemory,chrFmt,sizeof.CHARFORMAT
+		mov  [chrFmt.cbSize],sizeof.CHARFORMAT
+		mov  [chrFmt.dwMask],CFM_COLOR
+		push [colorFg]
+		pop  [chrFmt.crTextColor]
+	invoke	SendMessage,[re2H],EM_SETCHARFORMAT,SCF_ALL,chrFmt
+	invoke	SendMessage,[re2H],EM_EMPTYUNDOBUFFER,0,0
+	return
+endp
+
+; +---------------------------------------------------------------------+
+; |									|
+; |			proc_FILE_TITLE_GET				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_FILE_TITLE_GET
+		push ebx
+		lea  ebx,[sFile.openFileName]
+	@@:	cmp  byte [ebx],'\'
+		je   .slash_mark
+		cmp  byte [ebx],0
+		je   .slash_end
+		inc  ebx
+		inc  ecx
+		jmp  @b
+
+	.slash_mark:
+		mov  eax,ebx
+		inc  ebx
+		xor  ecx,ecx
+		jmp  @b
+		
+	.slash_end:
+			pop  ebx
+			inc  eax
+		invoke	lstrcpy,sFile.fileTitle,eax
+			add  eax,ecx
+		invoke	lstrcpy,eax,wndPrependTitle
+			mov  [sFile.fileOpened],TRUE
+		invoke	SetWindowText,[appH],sFile.fileTitle
+			return
+endp
+
+; +---------------------------------------------------------------------+
+; |									|
+; |			proc_STREAM_MODIFY				|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_STREAM_MODIFY
+	invoke	SendMessage,[re2H],EM_GETMODIFY,0,0
+		cmp  eax,0
+		je   @f
+	invoke	MessageBox,[appH],sFile.savePrompt,wndClsName,MB_ICONQUESTION + MB_YESNOCANCEL
+		cmp  eax,IDYES
+		je   .IDYES
+		cmp  eax,IDCANCEL
+		je   .IDCANCEL
+		jmp  @f
+
+	.IDCANCEL:
+			mov  eax,FALSE
+			return
+
+	.IDYES:
+		invoke	SendMessage,[appH],WM_COMMAND,MI_SAVE,0
+
+	@@:
+		mov  eax,TRUE
+		return
+endp
+
+; +---------------------------------------------------------------------+
+; |									|
+; |		proc_STREAM_IN / proc_STREAM_OUT			|
+; |									|
+; +---------------------------------------------------------------------+
+proc proc_STREAM_IN,fileH,buf,bufSize,bufRead
+	invoke	ReadFile,[fileH],[buf],[bufSize],[bufRead],0
+		xor  eax,1
+		return
+endp
+
+proc proc_STREAM_OUT,fileH,buf,bufSize,bufWritten
+	invoke	WriteFile,[fileH],[buf],[bufSize],[bufWritten],0
+		xor  eax,1
+		return
+endp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				.idata SECTION				|
+; |									|
+; +---------------------------------------------------------------------+
+section '.idata' import data readable
+library	kernel32,'KERNEL32.DLL',\
+	user32,  'USER32.DLL',\
+	gdi32,   'GDI32.DLL',\
+	comdlg32,'COMDLG32.DLL',\
+	shell32, 'SHELL32.DLL'
+
+include '%fasminc%\apia\Kernel32.inc'
+include '%fasminc%\apia\User32.inc'
+include '%fasminc%\apia\Gdi32.inc'
+include '%fasminc%\apia\Comdlg32.inc'
+import	shell32,\
+	DragAcceptFiles,	'DragAcceptFiles',\
+	DragFinish,		'DragFinish',\
+	DragQueryFile,		'DragQueryFile'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; +---------------------------------------------------------------------+
+; |									|
+; |				.rsrc SECTION				|
+; |									|
+; +---------------------------------------------------------------------+
+section '.rsrc' resource data readable
+M_MAIN			= 30h
+	MI_NEW		= 3000h
+	MI_OPEN		= 3001h
+	MI_SAVE		= 3002h
+	MI_SAVEAS	= 3003h
+	MI_EXIT		= 3004h
+
+	MI_UNDO		= 3010h
+	MI_REDO		= 3011h
+	MI_CUT		= 3012h
+	MI_COPY		= 3013h
+	MI_PASTE	= 3014h
+	MI_DELETE	= 3015h
+	MI_SELECTALL	= 3016h
+	MI_WORDWRAP	= 3017h
+	MI_COMMENT	= 3018h
+	MI_UNCOMMENT	= 3019h
+
+	MI_FIND		= 3020h
+	MI_FINDPREV	= 3021h
+	MI_FINDNEXT	= 3022h
+	MI_REPLACE	= 3023h
+	MI_GOTOLINE	= 3024h
+
+	MI_SETFONT	= 3030h
+	MI_SETCOLOR	= 3031h
+
+	MI_HTMLHELP	= 3040h
+	MI_ABOUT	= 3041h
+
+DLG_SETCOLOR		= 90h
+	SETCOLOR_SBG	= 9000h
+	SETCOLOR_SFG	= 9001h
+	SETCOLOR_BOK	= IDOK
+	SETCOLOR_BCC	= IDCANCEL
+
+DLG_SETFONT		= 91h
+DLG_FIND		= 92h
+	FIND_ETXT	= 9201h
+	FIND_CMCASE	= 9202h
+	FIND_CMWHOLE	= 9203h
+	FIND_RUP	= 9204h
+	FIND_RDOWN	= 9205h
+	FIND_BOK	= IDOK
+	FIND_BCC	= IDCANCEL
+	FIND_BTONGGLE	= 9206h
+DLG_REPLACE		= 93h
+	REPLACE_EFROM	= 9300h
+	REPLACE_ETO	= 9301h
+	REPLACE_BMARK	= 9302h
+	REPLACE_BREP	= 9303h
+	REPLACE_BREPALL	= 9304h
+	REPLACE_CMCASE	= 9305h
+	REPLACE_CMWHOLE	= 9306h
+	REPLACE_BCC	= IDCANCEL
+DLG_GOTOLINE		= 94h
+	GOTOLINE_ELINE	= 9400h
+	GOTOLINE_BOK	= IDOK
+	GOTOLINE_BCC	= IDCANCEL
+DLG_ABOUT		= 95h
+_	equ ,9,
+
+
+directory	RT_MENU,_appMenus,\
+		RT_DIALOG,_appDialogs,\
+		RT_VERSION,_appVersion,\
+		RT_ACCELERATOR,_appAccelerator
+
+resource	_appMenus,\
+		M_MAIN,LANG_NEUTRAL,_menuMain
+
+resource	_appDialogs,\
+		DLG_FIND,LANG_NEUTRAL,_dlgFind,\
+		DLG_REPLACE,LANG_NEUTRAL,_dlgReplace,\
+		DLG_GOTOLINE,LANG_NEUTRAL,_dlgGotoline,\
+		DLG_SETCOLOR,LANG_NEUTRAL,_dlgSetcolor,\
+		DLG_SETFONT,LANG_NEUTRAL,_dlgSetfont,\
+		DLG_ABOUT,LANG_NEUTRAL,_dlgAbout
+
+resource	_appVersion,\
+		1,LANG_NEUTRAL,_versionInfo
+
+resource	_appAccelerator,\
+		0x60,LANG_NEUTRAL,_acceleratorKey
+
+menu	_menuMain
+	menuitem '&File',0,MFR_POPUP
+	menuitem	'&New' _		'Ctrl + N',MI_NEW,0
+	menuitem	'Op&en ...' _		'Ctrl + E',MI_OPEN,0
+	menuitem	'&Save' _		'Ctrl + S',MI_SAVE,0
+	menuitem	'Save &As ...'		,MI_SAVEAS,0
+	menuseparator
+	menuitem	'E&xit' _		'Alt + X',MI_EXIT,MFR_END
+
+	menuitem '&Edit',0,MFR_POPUP
+	menuitem	'Undo' _		'Ctrl + Z',MI_UNDO,0
+	menuitem	'Redo' _		'Ctrl + Alt + Z',MI_REDO,0
+	menuseparator
+	menuitem	'Cut' _			'Ctrl + X',MI_CUT,0
+	menuitem	'Copy' _		'Ctrl + C',MI_COPY,0
+	menuitem	'Paste' _		'Ctrl + V',MI_PASTE,0
+	menuitem	'Delete' _		'Del'	,MI_DELETE,0
+	menuseparator
+	menuitem	'Select All' _		'Ctrl + A',MI_SELECTALL,0
+	menuseparator
+	menuitem	'Word Wrap',MI_WORDWRAP,0
+	menuseparator
+	menuitem	'Comment' _		'Ctrl + D',MI_COMMENT,0
+	menuitem	'Uncomment' _		'Ctrl + T',MI_UNCOMMENT,MFR_END
+
+	menuitem '&Search',0,MFR_POPUP
+	menuitem	'Find ...' _		'Ctrl + F',MI_FIND,0
+	menuitem	'Find Previous' _	'Ctrl + Alt + Arrow Up',MI_FINDPREV,0
+	menuitem	'Find Next' _		'Ctrl + Alt + Arrow Down',MI_FINDNEXT,0
+	menuseparator
+	menuitem	'Replace' _		'Ctrl + R',MI_REPLACE,0
+	menuseparator
+	menuitem	'Goto Line' _		'Ctrl + G',MI_GOTOLINE,MFR_END
+	
+	menuitem 'Op&tions',0,MFR_POPUP
+	menuitem	'Set Font ...',MI_SETFONT,0
+	menuitem	'Set Color ...',MI_SETCOLOR,MFR_END
+
+	menuitem '&Help',0,MFR_POPUP + MFR_END
+	menuitem	'Zibu HTML Help',MI_HTMLHELP,0
+	menuseparator
+	menuitem	'Zibu About',MI_ABOUT,MFR_END
+
+dialog	_dlgSetcolor,' Options :: Set Color',0,0,162,60,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU
+	dialogitem	'BUTTON',' Editor Color ',0,5,4,98,50,BS_GROUPBOX + WS_VISIBLE
+	dialogitem	'STATIC','Background',0,13,17,41,10,SS_LEFT + WS_GROUP + WS_VISIBLE
+	dialogitem	'STATIC','Foreground',0,13,36,43,10,SS_LEFT + WS_GROUP + WS_VISIBLE
+	dialogitem	'STATIC','',SETCOLOR_SBG,59,14,29,15,SS_NOTIFY + SS_SUNKEN + WS_VISIBLE
+	dialogitem	'STATIC','',SETCOLOR_SFG,59,33,29,15,SS_NOTIFY + SS_SUNKEN + WS_VISIBLE
+	dialogitem	'BUTTON','&Ok',SETCOLOR_BOK,110,9,47,15,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE	
+	dialogitem	'BUTTON','&Cancel',SETCOLOR_BCC,110,29,47,15,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+enddialog
+
+dialog	_dlgSetfont,' Options :: Set Font',0,0,216,177,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU
+	dialogitem	'STATIC','&Font :',0x440,7,9,32,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','Font St&yle :',0x441,7,105,36,10,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','&Size :',0x442,110,9,20,10,SS_LEFT + WS_VISIBLE
+	dialogitem	'COMBOBOX','',0x470,7,20,100,80,CBS_SIMPLE + CBS_OWNERDRAWFIXED + CBS_AUTOHSCROLL + CBS_SORT + CBS_HASSTRINGS + CBS_DISABLENOSCROLL + WS_VSCROLL + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'COMBOBOX','',0x471,7,115,60,50,CBS_SIMPLE + CBS_AUTOHSCROLL + WS_VSCROLL + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'COMBOBOX','',0x472,110,20,42,80,CBS_SIMPLE + CBS_OWNERDRAWFIXED + CBS_AUTOHSCROLL + CBS_SORT + CBS_HASSTRINGS + CBS_DISABLENOSCROLL + WS_VSCROLL + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Ok',1,159,20,50,14,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Cancel',2,159,41,50,14,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON',' Sampel ',0x431,76,102,133,67,BS_GROUPBOX + WS_VISIBLE
+	dialogitem	'STATIC','AaBbYyZz',0x444,84,114,117,49,SS_CENTER + SS_NOPREFIX
+enddialog
+
+dialog	_dlgFind,' Search :: Find ...',0,0,239,100,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU + WS_VISIBLE
+	dialogitem	'STATIC','&Find what :',0,7,6,38,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'EDIT','',FIND_ETXT,46,5,127,12,ES_LEFT + ES_AUTOHSCROLL + WS_BORDER + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','Match c&ase',FIND_CMCASE,7,23,60,15,BS_AUTOCHECKBOX + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','Match &whole word',FIND_CMWHOLE,7,37,74,16,BS_AUTOCHECKBOX + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON',' Direction ',0,91,23,83,28,BS_GROUPBOX + WS_VISIBLE
+	dialogitem	'BUTTON','&Up',FIND_RUP,98,32,25,14,BS_AUTORADIOBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Down',FIND_RDOWN,134,32,34,14,BS_AUTORADIOBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Ok',FIND_BOK,183,4,50,14,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Cancel',FIND_BCC,183,25,50,14,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON',' Tips ',0,7,56,226,39,BS_GROUPBOX + WS_VISIBLE
+	dialogitem	'STATIC','Pressing [Enter] would easily move you to next or previous match.',0,13,68,208,8,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','Pressing [Alt + V] would tonggle the direction flag.',0,13,80,144,8,SS_LEFT + WS_VISIBLE
+	dialogitem	'BUTTON','&v',FIND_BTONGGLE,184,45,5,12,BS_PUSHBUTTON + WS_TABSTOP
+enddialog
+
+dialog	_dlgReplace,' Search :: Replace',0,0,228,94,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU + WS_VISIBLE
+	dialogitem	'STATIC','&Find what :',0,6,6,38,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'EDIT','',REPLACE_EFROM,55,5,167,12,ES_LEFT + ES_AUTOHSCROLL + WS_BORDER + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'STATIC','R&eplace with :',0,5,22,47,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'EDIT','',REPLACE_ETO,55,21,167,12,ES_LEFT + ES_AUTOHSCROLL + WS_BORDER + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','Mark Nex&t',REPLACE_BMARK,5,39,50,14,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Replace',REPLACE_BREP,61,39,50,14,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','Replace &All',REPLACE_BREPALL,117,39,50,14,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Cancel',REPLACE_BCC,173,39,50,14,BS_PUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON',' Tips ',0,5,55,146,35,BS_GROUPBOX + WS_VISIBLE
+	dialogitem	'STATIC','Pressing [Enter] would easily move you to next match.',0,13,67,133,17,SS_LEFT + WS_VISIBLE
+	dialogitem	'BUTTON','Matc&h case',REPLACE_CMCASE,159,63,52,10,BS_AUTOCHECKBOX + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','Match &whole',REPLACE_CMWHOLE,159,75,55,12,BS_AUTOCHECKBOX + WS_TABSTOP + WS_VISIBLE
+enddialog
+
+dialog	_dlgGotoline,' Search :: Goto Line',0,0,119,22,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU + WS_VISIBLE
+	dialogitem	'STATIC','Lin&e',0,5,6,19,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'EDIT','',GOTOLINE_ELINE,27,4,30,12,ES_RIGHT + ES_NUMBER + WS_BORDER + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','&Ok',GOTOLINE_BOK,65,4,50,14,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'BUTTON','',GOTOLINE_BCC,0,0,1,1,BS_PUSHBUTTON
+enddialog
+
+dialog	_dlgAbout,' Help :: Zibu About',0,0,165,122,\
+	DS_MODALFRAME + WS_POPUP + WS_CAPTION + WS_SYSMENU + WS_VISIBLE
+	dialogitem	'STATIC','Zibu Editor',0,9,8,37,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','Alpha Version - 0.2.34.34',0,9,25,100,10,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','Copyright (c) 2004 - 2005 Sulaiman Chang',0,9,37,133,9,SS_LEFT + WS_VISIBLE
+	dialogitem	'STATIC','with thanks to :',0,105,64,53,9,SS_RIGHT + WS_VISIBLE
+	dialogitem	'STATIC','FASM assembler -',0,91,75,59,10,SS_RIGHT + WS_VISIBLE
+	dialogitem	'STATIC','Iczelion Tutorial -',0,95,85,55,9,SS_RIGHT + WS_VISIBLE
+	dialogitem	'BUTTON','&Ok',IDCANCEL,9,50,50,14,BS_DEFPUSHBUTTON + WS_TABSTOP + WS_VISIBLE
+	dialogitem	'STATIC','Please pray me an Al-Fatihah if you like this freeware.',0,9,101,127,32,SS_LEFT + WS_VISIBLE
+enddialog
+
+version	_versionInfo,VOS__WINDOWS32,VFT_APP,VFT2_UNKNOWN,LANG_NEUTRAL,0,\
+	'FileDescription',	'Zibu Editor',\
+	'LegalCopyright',	'Copyright (c) 2004 Sulaiman Chang.',\
+	'FileVersion',		ZIBU_FILE_VER,\
+	'ProductVersion',	ZIBU_PRODUCT_VER,\
+	'OriginalFilename',	'ZIBU.EXE'
+
+accelerator	_acceleratorKey,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'N'	,MI_NEW,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'E'	,MI_OPEN,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'S'	,MI_SAVE,\
+	FVIRTKEY+FNOINVERT+FALT,		'X'	,MI_EXIT,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'Z'	,MI_UNDO,\
+	FVIRTKEY+FNOINVERT+FCONTROL+FALT,	'Z'	,MI_REDO,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'X'	,MI_CUT,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'C'	,MI_COPY,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'V'	,MI_PASTE,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'A'	,MI_SELECTALL,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'D'	,MI_COMMENT,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'T'	,MI_UNCOMMENT,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'F'	,MI_FIND,\
+	FVIRTKEY+FNOINVERT+FCONTROL+FALT,	0x26	,MI_FINDPREV,\
+	FVIRTKEY+FNOINVERT+FCONTROL+FALT,	0x28	,MI_FINDNEXT,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'R'	,MI_REPLACE,\
+	FVIRTKEY+FNOINVERT+FCONTROL,		'G'	,MI_GOTOLINE
